@@ -14,7 +14,7 @@ import {
   type InsertUserBucketList,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc, and } from "drizzle-orm";
+import { eq, desc, and, gte, lt, asc, isNull, isNotNull } from "drizzle-orm";
 
 export interface IStorage {
   // User operations (required for Replit Auth)
@@ -28,10 +28,12 @@ export interface IStorage {
   getPublishedCities(): Promise<City[]>;
   getCityById(id: string): Promise<City | undefined>;
   getCityByName(name: string): Promise<City | undefined>;
+  getCityByScheduledDate(date: string): Promise<City | undefined>;
   createCity(city: InsertCity): Promise<City>;
   updateCity(id: string, city: Partial<InsertCity>): Promise<City>;
   deleteCity(id: string): Promise<void>;
   getTodaysCity(): Promise<City | undefined>;
+  getScheduledCities(): Promise<City[]>;
 
   // City content operations
   getCityContent(cityId: string): Promise<CityContent[]>;
@@ -115,6 +117,23 @@ export class DatabaseStorage implements IStorage {
     return city;
   }
 
+  async getCityByScheduledDate(date: string): Promise<City | undefined> {
+    const targetDate = new Date(date);
+    const startOfDay = new Date(targetDate.getFullYear(), targetDate.getMonth(), targetDate.getDate());
+    const endOfDay = new Date(targetDate.getFullYear(), targetDate.getMonth(), targetDate.getDate() + 1);
+    
+    const [city] = await db
+      .select()
+      .from(cities)
+      .where(
+        and(
+          gte(cities.scheduledDate, startOfDay),
+          lt(cities.scheduledDate, endOfDay)
+        )
+      );
+    return city;
+  }
+
   async createCity(cityData: InsertCity): Promise<City> {
     const [city] = await db.insert(cities).values(cityData).returning();
     return city;
@@ -135,20 +154,47 @@ export class DatabaseStorage implements IStorage {
 
   async getTodaysCity(): Promise<City | undefined> {
     const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const tomorrow = new Date(today);
-    tomorrow.setDate(tomorrow.getDate() + 1);
-
-    const [city] = await db
+    const startOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    const endOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1);
+    
+    // First, try to find a city scheduled for today
+    const [scheduledCity] = await db
       .select()
       .from(cities)
       .where(
         and(
           eq(cities.isPublished, true),
-          eq(cities.publishedDate, today)
+          gte(cities.scheduledDate, startOfDay),
+          lt(cities.scheduledDate, endOfDay)
         )
-      );
-    return city;
+      )
+      .limit(1);
+    
+    if (scheduledCity) {
+      return scheduledCity;
+    }
+    
+    // Fallback: get the most recently published city without scheduled date
+    const [fallbackCity] = await db
+      .select()
+      .from(cities)
+      .where(
+        and(
+          eq(cities.isPublished, true),
+          isNull(cities.scheduledDate)
+        )
+      )
+      .orderBy(desc(cities.publishedDate))
+      .limit(1);
+    return fallbackCity;
+  }
+
+  async getScheduledCities(): Promise<City[]> {
+    return await db
+      .select()
+      .from(cities)
+      .where(isNotNull(cities.scheduledDate))
+      .orderBy(asc(cities.scheduledDate));
   }
 
   // City content operations

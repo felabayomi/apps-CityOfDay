@@ -47,7 +47,8 @@ export const cities = pgTable("cities", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   name: varchar("name").notNull(),
   country: varchar("country").notNull(),
-  publishedDate: timestamp("published_date"),
+  scheduledDate: timestamp("scheduled_date"), // When content should appear to users
+  publishedDate: timestamp("published_date"), // When admin published it
   isPublished: boolean("is_published").default(false),
   isPinned: boolean("is_pinned").default(false),
   createdAt: timestamp("created_at").defaultNow(),

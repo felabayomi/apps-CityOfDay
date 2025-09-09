@@ -85,7 +85,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/admin/cities/generate", isAuthenticated, async (req, res) => {
     try {
-      const { cityName, country, focus = "balanced", autoPublish = false } = req.body;
+      const { cityName, country, focus = "balanced", autoPublish = false, scheduledDate } = req.body;
       
       if (!cityName) {
         return res.status(400).json({ message: "City name is required" });
@@ -116,12 +116,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Generate content using OpenAI
       const generatedContent = await generateCityContent(finalCityName, finalCountry, focus);
       
+      // Check if date is already scheduled (if scheduledDate provided)
+      if (scheduledDate) {
+        const existingScheduled = await storage.getCityByScheduledDate(scheduledDate);
+        if (existingScheduled) {
+          return res.status(400).json({ message: "A city is already scheduled for this date" });
+        }
+      }
+
       // Create city record
       const cityData = {
         name: finalCityName,
         country: finalCountry,
         isPublished: autoPublish,
         publishedDate: autoPublish ? new Date() : null,
+        scheduledDate: scheduledDate ? new Date(scheduledDate) : null,
       };
       
       const city = await storage.createCity(cityData);
