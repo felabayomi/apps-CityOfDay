@@ -9,7 +9,7 @@ import { z } from "zod";
 
 // Initialize Stripe
 const stripe = process.env.STRIPE_SECRET_KEY ? new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: "2023-10-16",
+  apiVersion: "2025-08-27.basil",
 }) : null;
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -318,7 +318,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           
           res.json({
             subscriptionId: subscription.id,
-            clientSecret: (invoice.payment_intent as any)?.client_secret,
+            clientSecret: (invoice as any)?.payment_intent?.client_secret,
           });
           return;
         }

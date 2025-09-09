@@ -36,7 +36,7 @@ export default function Admin() {
   }, [isAuthenticated, isLoading, toast]);
 
   // Fetch all cities for admin
-  const { data: cities, isLoading: loadingCities } = useQuery({
+  const { data: cities, isLoading: loadingCities } = useQuery<any[]>({
     queryKey: ["/api/admin/cities"],
     retry: false,
     enabled: !!user,

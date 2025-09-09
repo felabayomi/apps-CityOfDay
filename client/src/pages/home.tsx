@@ -32,13 +32,13 @@ export default function Home() {
   }, [isAuthenticated, isLoading, toast]);
 
   // Fetch today's city
-  const { data: todaysCityData, isLoading: loadingToday } = useQuery({
+  const { data: todaysCityData, isLoading: loadingToday } = useQuery<{city: any, content: any[]}>({
     queryKey: ["/api/cities/today"],
     retry: false,
   });
 
   // Fetch user's collected cities
-  const { data: collectedCities, isLoading: loadingCollected } = useQuery({
+  const { data: collectedCities, isLoading: loadingCollected } = useQuery<any[]>({
     queryKey: ["/api/user/collected"],
     retry: false,
     enabled: !!user,
@@ -242,11 +242,11 @@ export default function Home() {
 
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
               {todaysContent
-                .sort((a, b) => {
+                .sort((a: any, b: any) => {
                   const order = { morning: 0, afternoon: 1, evening: 2, bonus: 3 };
                   return order[a.cardType as keyof typeof order] - order[b.cardType as keyof typeof order];
                 })
-                .map((content) => (
+                .map((content: any) => (
                   <CityCard
                     key={content.id}
                     content={content}
@@ -294,7 +294,7 @@ export default function Home() {
             </h4>
             
             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-              {collectedCities.slice(0, 11).map((city) => (
+              {collectedCities.slice(0, 11).map((city: any) => (
                 <div 
                   key={city.id}
                   className="aspect-square rounded-lg overflow-hidden postcard-shadow cursor-pointer hover:transform hover:scale-105 transition-all group bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center relative"
