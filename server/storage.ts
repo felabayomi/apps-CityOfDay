@@ -1,0 +1,241 @@
+import {
+  users,
+  cities,
+  cityContent,
+  userCollectedCities,
+  userBucketList,
+  type User,
+  type UpsertUser,
+  type City,
+  type CityContent,
+  type InsertCity,
+  type InsertCityContent,
+  type InsertUserCollectedCity,
+  type InsertUserBucketList,
+} from "@shared/schema";
+import { db } from "./db";
+import { eq, desc, and } from "drizzle-orm";
+
+export interface IStorage {
+  // User operations (required for Replit Auth)
+  getUser(id: string): Promise<User | undefined>;
+  upsertUser(user: UpsertUser): Promise<User>;
+  updateUserStripeInfo(userId: string, customerId: string, subscriptionId: string): Promise<User>;
+  updateUserStats(userId: string, stats: { discoveredCities?: number; bucketListCities?: number; currentStreak?: number }): Promise<User>;
+
+  // City operations
+  getAllCities(): Promise<City[]>;
+  getPublishedCities(): Promise<City[]>;
+  getCityById(id: string): Promise<City | undefined>;
+  getCityByName(name: string): Promise<City | undefined>;
+  createCity(city: InsertCity): Promise<City>;
+  updateCity(id: string, city: Partial<InsertCity>): Promise<City>;
+  deleteCity(id: string): Promise<void>;
+  getTodaysCity(): Promise<City | undefined>;
+
+  // City content operations
+  getCityContent(cityId: string): Promise<CityContent[]>;
+  createCityContent(content: InsertCityContent): Promise<CityContent>;
+  updateCityContent(id: string, content: Partial<InsertCityContent>): Promise<CityContent>;
+  deleteCityContent(id: string): Promise<void>;
+
+  // User interactions
+  addCityToCollection(userId: string, cityId: string): Promise<void>;
+  removeCityFromCollection(userId: string, cityId: string): Promise<void>;
+  addCityToBucketList(userId: string, cityId: string): Promise<void>;
+  removeCityFromBucketList(userId: string, cityId: string): Promise<void>;
+  getUserCollectedCities(userId: string): Promise<City[]>;
+  getUserBucketList(userId: string): Promise<City[]>;
+}
+
+export class DatabaseStorage implements IStorage {
+  // User operations
+  async getUser(id: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user;
+  }
+
+  async upsertUser(userData: UpsertUser): Promise<User> {
+    const [user] = await db
+      .insert(users)
+      .values(userData)
+      .onConflictDoUpdate({
+        target: users.id,
+        set: {
+          ...userData,
+          updatedAt: new Date(),
+        },
+      })
+      .returning();
+    return user;
+  }
+
+  async updateUserStripeInfo(userId: string, customerId: string, subscriptionId: string): Promise<User> {
+    const [user] = await db
+      .update(users)
+      .set({
+        stripeCustomerId: customerId,
+        stripeSubscriptionId: subscriptionId,
+        subscriptionTier: "premium",
+        updatedAt: new Date(),
+      })
+      .where(eq(users.id, userId))
+      .returning();
+    return user;
+  }
+
+  async updateUserStats(userId: string, stats: { discoveredCities?: number; bucketListCities?: number; currentStreak?: number }): Promise<User> {
+    const [user] = await db
+      .update(users)
+      .set({
+        ...stats,
+        updatedAt: new Date(),
+      })
+      .where(eq(users.id, userId))
+      .returning();
+    return user;
+  }
+
+  // City operations
+  async getAllCities(): Promise<City[]> {
+    return await db.select().from(cities).orderBy(desc(cities.createdAt));
+  }
+
+  async getPublishedCities(): Promise<City[]> {
+    return await db.select().from(cities).where(eq(cities.isPublished, true)).orderBy(desc(cities.publishedDate));
+  }
+
+  async getCityById(id: string): Promise<City | undefined> {
+    const [city] = await db.select().from(cities).where(eq(cities.id, id));
+    return city;
+  }
+
+  async getCityByName(name: string): Promise<City | undefined> {
+    const [city] = await db.select().from(cities).where(eq(cities.name, name));
+    return city;
+  }
+
+  async createCity(cityData: InsertCity): Promise<City> {
+    const [city] = await db.insert(cities).values(cityData).returning();
+    return city;
+  }
+
+  async updateCity(id: string, cityData: Partial<InsertCity>): Promise<City> {
+    const [city] = await db
+      .update(cities)
+      .set({ ...cityData, updatedAt: new Date() })
+      .where(eq(cities.id, id))
+      .returning();
+    return city;
+  }
+
+  async deleteCity(id: string): Promise<void> {
+    await db.delete(cities).where(eq(cities.id, id));
+  }
+
+  async getTodaysCity(): Promise<City | undefined> {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    const [city] = await db
+      .select()
+      .from(cities)
+      .where(
+        and(
+          eq(cities.isPublished, true),
+          eq(cities.publishedDate, today)
+        )
+      );
+    return city;
+  }
+
+  // City content operations
+  async getCityContent(cityId: string): Promise<CityContent[]> {
+    return await db.select().from(cityContent).where(eq(cityContent.cityId, cityId));
+  }
+
+  async createCityContent(content: InsertCityContent): Promise<CityContent> {
+    const [newContent] = await db.insert(cityContent).values(content).returning();
+    return newContent;
+  }
+
+  async updateCityContent(id: string, contentData: Partial<InsertCityContent>): Promise<CityContent> {
+    const [updatedContent] = await db
+      .update(cityContent)
+      .set({ ...contentData, updatedAt: new Date() })
+      .where(eq(cityContent.id, id))
+      .returning();
+    return updatedContent;
+  }
+
+  async deleteCityContent(id: string): Promise<void> {
+    await db.delete(cityContent).where(eq(cityContent.id, id));
+  }
+
+  // User interactions
+  async addCityToCollection(userId: string, cityId: string): Promise<void> {
+    await db.insert(userCollectedCities).values({ userId, cityId }).onConflictDoNothing();
+    
+    // Update user stats
+    const collectedCount = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(userCollectedCities)
+      .where(eq(userCollectedCities.userId, userId));
+    
+    await this.updateUserStats(userId, { discoveredCities: collectedCount[0].count });
+  }
+
+  async removeCityFromCollection(userId: string, cityId: string): Promise<void> {
+    await db.delete(userCollectedCities).where(
+      and(
+        eq(userCollectedCities.userId, userId),
+        eq(userCollectedCities.cityId, cityId)
+      )
+    );
+  }
+
+  async addCityToBucketList(userId: string, cityId: string): Promise<void> {
+    await db.insert(userBucketList).values({ userId, cityId }).onConflictDoNothing();
+    
+    // Update user stats
+    const bucketListCount = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(userBucketList)
+      .where(eq(userBucketList.userId, userId));
+    
+    await this.updateUserStats(userId, { bucketListCities: bucketListCount[0].count });
+  }
+
+  async removeCityFromBucketList(userId: string, cityId: string): Promise<void> {
+    await db.delete(userBucketList).where(
+      and(
+        eq(userBucketList.userId, userId),
+        eq(userBucketList.cityId, cityId)
+      )
+    );
+  }
+
+  async getUserCollectedCities(userId: string): Promise<City[]> {
+    const result = await db
+      .select({ city: cities })
+      .from(userCollectedCities)
+      .innerJoin(cities, eq(userCollectedCities.cityId, cities.id))
+      .where(eq(userCollectedCities.userId, userId));
+    
+    return result.map(r => r.city);
+  }
+
+  async getUserBucketList(userId: string): Promise<City[]> {
+    const result = await db
+      .select({ city: cities })
+      .from(userBucketList)
+      .innerJoin(cities, eq(userBucketList.cityId, cities.id))
+      .where(eq(userBucketList.userId, userId));
+    
+    return result.map(r => r.city);
+  }
+}
+
+export const storage = new DatabaseStorage();

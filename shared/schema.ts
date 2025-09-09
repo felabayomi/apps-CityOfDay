@@ -1,0 +1,166 @@
+import { sql } from 'drizzle-orm';
+import {
+  index,
+  jsonb,
+  pgTable,
+  timestamp,
+  varchar,
+  text,
+  boolean,
+  integer,
+} from "drizzle-orm/pg-core";
+import { relations } from "drizzle-orm";
+import { createInsertSchema } from "drizzle-zod";
+import { z } from "zod";
+
+// Session storage table for Replit Auth
+export const sessions = pgTable(
+  "sessions",
+  {
+    sid: varchar("sid").primaryKey(),
+    sess: jsonb("sess").notNull(),
+    expire: timestamp("expire").notNull(),
+  },
+  (table) => [index("IDX_session_expire").on(table.expire)],
+);
+
+// User storage table
+export const users = pgTable("users", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  email: varchar("email").unique(),
+  firstName: varchar("first_name"),
+  lastName: varchar("last_name"),
+  profileImageUrl: varchar("profile_image_url"),
+  stripeCustomerId: varchar("stripe_customer_id"),
+  stripeSubscriptionId: varchar("stripe_subscription_id"),
+  subscriptionTier: varchar("subscription_tier").default("free"), // free, premium, enterprise
+  discoveredCities: integer("discovered_cities").default(0),
+  bucketListCities: integer("bucket_list_cities").default(0),
+  currentStreak: integer("current_streak").default(0),
+  lastVisitDate: timestamp("last_visit_date"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Cities table
+export const cities = pgTable("cities", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: varchar("name").notNull(),
+  country: varchar("country").notNull(),
+  publishedDate: timestamp("published_date"),
+  isPublished: boolean("is_published").default(false),
+  isPinned: boolean("is_pinned").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// City content cards
+export const cityContent = pgTable("city_content", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  cityId: varchar("city_id").references(() => cities.id, { onDelete: "cascade" }),
+  cardType: varchar("card_type").notNull(), // morning, afternoon, evening, bonus
+  title: varchar("title").notNull(),
+  content: text("content").notNull(),
+  imageUrl: varchar("image_url"),
+  affiliateLinks: jsonb("affiliate_links"), // array of {text, url, type}
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// User collected cities (for digital postcards)
+export const userCollectedCities = pgTable("user_collected_cities", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").references(() => users.id, { onDelete: "cascade" }),
+  cityId: varchar("city_id").references(() => cities.id, { onDelete: "cascade" }),
+  collectedAt: timestamp("collected_at").defaultNow(),
+});
+
+// User bucket list
+export const userBucketList = pgTable("user_bucket_list", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").references(() => users.id, { onDelete: "cascade" }),
+  cityId: varchar("city_id").references(() => cities.id, { onDelete: "cascade" }),
+  addedAt: timestamp("added_at").defaultNow(),
+});
+
+// Relations
+export const usersRelations = relations(users, ({ many }) => ({
+  collectedCities: many(userCollectedCities),
+  bucketList: many(userBucketList),
+}));
+
+export const citiesRelations = relations(cities, ({ many }) => ({
+  content: many(cityContent),
+  collectors: many(userCollectedCities),
+  bucketListUsers: many(userBucketList),
+}));
+
+export const cityContentRelations = relations(cityContent, ({ one }) => ({
+  city: one(cities, {
+    fields: [cityContent.cityId],
+    references: [cities.id],
+  }),
+}));
+
+export const userCollectedCitiesRelations = relations(userCollectedCities, ({ one }) => ({
+  user: one(users, {
+    fields: [userCollectedCities.userId],
+    references: [users.id],
+  }),
+  city: one(cities, {
+    fields: [userCollectedCities.cityId],
+    references: [cities.id],
+  }),
+}));
+
+export const userBucketListRelations = relations(userBucketList, ({ one }) => ({
+  user: one(users, {
+    fields: [userBucketList.userId],
+    references: [users.id],
+  }),
+  city: one(cities, {
+    fields: [userBucketList.cityId],
+    references: [cities.id],
+  }),
+}));
+
+// Insert schemas
+export const insertUserSchema = createInsertSchema(users).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertCitySchema = createInsertSchema(cities).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertCityContentSchema = createInsertSchema(cityContent).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertUserCollectedCitySchema = createInsertSchema(userCollectedCities).omit({
+  id: true,
+  collectedAt: true,
+});
+
+export const insertUserBucketListSchema = createInsertSchema(userBucketList).omit({
+  id: true,
+  addedAt: true,
+});
+
+// Types
+export type UpsertUser = z.infer<typeof insertUserSchema>;
+export type User = typeof users.$inferSelect;
+export type City = typeof cities.$inferSelect;
+export type CityContent = typeof cityContent.$inferSelect;
+export type UserCollectedCity = typeof userCollectedCities.$inferSelect;
+export type UserBucketList = typeof userBucketList.$inferSelect;
+export type InsertCity = z.infer<typeof insertCitySchema>;
+export type InsertCityContent = z.infer<typeof insertCityContentSchema>;
+export type InsertUserCollectedCity = z.infer<typeof insertUserCollectedCitySchema>;
+export type InsertUserBucketList = z.infer<typeof insertUserBucketListSchema>;
