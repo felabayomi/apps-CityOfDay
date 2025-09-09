@@ -55,7 +55,7 @@ export default function Landing() {
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button 
                   size="lg" 
-                  className="bg-white text-primary hover:bg-gray-100"
+                  className="bg-white text-blue-600 hover:bg-gray-100"
                   onClick={handleSignIn}
                   data-testid="button-start-journey"
                 >
@@ -120,7 +120,7 @@ export default function Landing() {
                 <p className="text-muted-foreground text-sm mb-4">
                   Discover authentic local cuisine and cultural experiences that define each destination.
                 </p>
-                <Button variant="ghost" size="sm" className="text-secondary">
+                <Button variant="ghost" size="sm" className="text-blue-600">
                   Find Cafés
                 </Button>
               </CardContent>
