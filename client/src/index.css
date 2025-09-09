@@ -214,11 +214,10 @@
 .tagline {
   @apply text-sm text-muted-foreground;
   @apply font-medium;
-  @apply hidden sm:inline;
 }
 
 .nav-links {
-  @apply hidden md:flex space-x-8;
+  @apply hidden sm:flex space-x-4 md:space-x-8;
 }
 
 .nav-links a {
@@ -285,12 +284,24 @@
     @apply text-lg;
   }
   
+  .tagline {
+    @apply text-xs;
+  }
+  
   .auth-area {
     @apply space-x-2;
   }
   
   .sign-in-btn {
     @apply px-3 py-1.5 text-xs;
+  }
+  
+  .nav-links {
+    @apply space-x-3;
+  }
+  
+  .nav-links a {
+    @apply text-xs px-2 py-1;
   }
 }
 
