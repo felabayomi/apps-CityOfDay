@@ -32,7 +32,7 @@ export function PricingTier({
   ...props
 }: PricingTierProps) {
   return (
-    <Card className={`postcard-shadow relative ${popular ? 'border-2 border-primary' : ''}`}>
+    <Card className={`postcard-shadow hover:transform hover:scale-105 transition-all duration-300 relative ${popular ? 'border-2 border-primary' : ''}`}>
       {popular && (
         <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
           <Badge className="bg-primary text-primary-foreground px-4 py-1">
