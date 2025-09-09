@@ -4,6 +4,15 @@
 
 /* LIGHT MODE */
 :root {
+  --primary-yellow: #FFD33D;
+  --accent-blue: #3A7CA5;
+  --text-dark: #1F1F1F;
+  --text-light: #FAFAFA;
+  --bg-sand: #F9F5EC;
+  --shadow-card: rgba(0, 0, 0, 0.05);
+  --radius-lg: 12px;
+  --font-main: 'Inter', sans-serif;
+
   --button-outline: rgba(0,0,0, .10);
   --badge-outline: rgba(0,0,0, .05);
 
@@ -174,7 +183,11 @@
   }
 
   body {
-    @apply font-sans antialiased bg-background text-foreground;
+    font-family: var(--font-main);
+    margin: 0;
+    background-color: white;
+    color: var(--text-dark);
+    @apply antialiased;
   }
 }
 
@@ -189,121 +202,155 @@
 
 /* Header Styles */
 .site-header {
-  @apply bg-secondary/10 backdrop-blur-md border-b border-primary/20 sticky top-0 z-50;
-  @apply flex items-center justify-between;
-  @apply px-4 sm:px-6 lg:px-8;
-  @apply h-16;
-  @apply max-w-7xl mx-auto;
-  @apply shadow-sm;
-  background: linear-gradient(to right, hsl(42, 56%, 96%), hsl(42, 56%, 94%));
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  border-bottom: 1px solid #eee;
+  background-color: white;
+  position: sticky;
+  top: 0;
+  z-index: 999;
 }
 
 .logo-area {
-  @apply flex items-center space-x-3;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .logo-icon {
-  @apply w-10 h-10 bg-primary rounded-lg;
-  @apply flex items-center justify-center;
-  @apply text-primary-foreground;
+  height: 32px;
+  width: 32px;
+  background-color: var(--primary-yellow);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-dark);
 }
 
 .brand-name {
-  @apply text-xl font-bold text-foreground;
-  @apply tracking-tight;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--primary-yellow);
 }
 
 .tagline {
-  @apply text-sm text-accent;
-  @apply font-semibold;
+  font-size: 0.9rem;
+  color: var(--accent-blue);
+  margin-left: 0.5rem;
+  font-weight: 500;
 }
 
 .nav-links {
-  @apply hidden sm:flex space-x-4 md:space-x-8;
+  display: flex;
+  gap: 2rem;
 }
 
 .nav-links a {
-  @apply text-muted-foreground hover:text-foreground;
-  @apply transition-colors duration-200;
-  @apply font-medium;
-  @apply py-2 px-1;
-  @apply border-b-2 border-transparent;
-  @apply hover:border-primary/30;
+  margin: 0 1rem;
+  text-decoration: none;
+  color: var(--text-dark);
+  font-weight: 500;
+  transition: color 0.2s ease-in-out;
 }
 
-.nav-links a[href="#premium"] {
-  @apply text-accent hover:text-accent/80;
+.nav-links a:hover {
+  color: var(--accent-blue);
 }
 
 .auth-area {
-  @apply flex items-center space-x-3;
-}
-
-.notif-btn {
-  @apply p-2 rounded-lg;
-  @apply text-muted-foreground hover:text-foreground;
-  @apply hover:bg-muted/50;
-  @apply transition-all duration-200;
-  @apply border border-transparent;
-  @apply hover:border-border;
-}
-
-.sign-in-btn {
-  @apply bg-primary text-primary-foreground;
-  @apply hover:bg-primary/90;
-  @apply px-4 py-2 rounded-lg;
-  @apply font-medium text-sm;
-  @apply transition-all duration-200;
-  @apply border border-primary;
-  @apply hover:shadow-sm;
-  @apply flex items-center space-x-1;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
 }
 
 .user-section {
-  @apply flex items-center space-x-3;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
 }
 
 .welcome-text {
-  @apply text-sm text-muted-foreground;
-  @apply hidden sm:inline;
+  font-size: 0.875rem;
+  color: var(--text-dark);
+  opacity: 0.7;
+}
+
+.notif-btn,
+.sign-in-btn {
+  background: transparent;
+  border: 1px solid #ccc;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-lg);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: var(--text-dark);
+}
+
+.sign-in-btn:hover {
+  background-color: var(--primary-yellow);
+  color: var(--text-dark);
+  border-color: var(--primary-yellow);
+}
+
+.notif-btn {
+  padding: 0.5rem;
+}
+
+.notif-btn:hover {
+  background-color: var(--bg-sand);
+  border-color: var(--accent-blue);
 }
 
 /* Mobile responsive adjustments */
 @media (max-width: 768px) {
   .site-header {
-    @apply px-4 h-14;
-  }
-  
-  .logo-area {
-    @apply space-x-2;
+    padding: 0.75rem 1rem;
   }
   
   .logo-icon {
-    @apply w-8 h-8;
+    height: 28px;
+    width: 28px;
   }
   
   .brand-name {
-    @apply text-lg;
+    font-size: 1.1rem;
   }
   
   .tagline {
-    @apply text-xs;
-  }
-  
-  .auth-area {
-    @apply space-x-2;
-  }
-  
-  .sign-in-btn {
-    @apply px-3 py-1.5 text-xs;
+    font-size: 0.8rem;
+    margin-left: 0.25rem;
   }
   
   .nav-links {
-    @apply space-x-3;
+    display: none;
+  }
+  
+  .sign-in-btn {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.875rem;
+  }
+  
+  .welcome-text {
+    display: none;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 768px) {
+  .nav-links {
+    display: flex;
+    gap: 1rem;
   }
   
   .nav-links a {
-    @apply text-xs px-2 py-1;
+    margin: 0 0.5rem;
+    font-size: 0.875rem;
   }
 }
 
