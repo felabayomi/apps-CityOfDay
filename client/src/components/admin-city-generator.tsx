@@ -68,10 +68,19 @@ export function AdminCityGenerator() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!cityName.trim() || !country.trim()) {
+    if (!cityName.trim()) {
       toast({
         title: "Missing Information",
-        description: "Please enter both city name and country.",
+        description: "Please enter a city name.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    if (!country.trim() && !cityName.includes(',')) {
+      toast({
+        title: "Missing Information",
+        description: "Please enter a country or include state/region in city name (e.g., 'Asheville, North Carolina').",
         variant: "destructive",
       });
       return;
@@ -100,16 +109,17 @@ export function AdminCityGenerator() {
             <Input
               id="cityName"
               type="text"
-              placeholder="Enter city name (e.g., Tokyo, New York)"
+              placeholder="Enter city name (e.g., Tokyo or Asheville, North Carolina)"
               value={cityName}
               onChange={(e) => setCityName(e.target.value)}
               className="bg-background"
               data-testid="input-city-name"
             />
+            <p className="text-xs text-muted-foreground">You can enter just the city name or include state/region</p>
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="country" className="text-foreground">Country</Label>
+            <Label htmlFor="country" className="text-foreground">Country <span className="text-muted-foreground">(optional if city name includes state/region)</span></Label>
             <Input
               id="country"
               type="text"
