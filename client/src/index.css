@@ -206,11 +206,12 @@
   justify-content: space-between;
   align-items: center;
   padding: 1rem 2rem;
-  border-bottom: 1px solid #eee;
-  background-color: white;
+  border-bottom: 1px solid var(--primary-yellow);
+  background: linear-gradient(to right, var(--bg-sand), #f7f3ea);
   position: sticky;
   top: 0;
   z-index: 999;
+  box-shadow: var(--shadow-card);
 }
 
 .logo-area {
