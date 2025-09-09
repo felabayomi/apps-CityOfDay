@@ -87,23 +87,39 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { cityName, country, focus = "balanced", autoPublish = false } = req.body;
       
-      if (!cityName || !country) {
-        return res.status(400).json({ message: "City name and country are required" });
+      if (!cityName) {
+        return res.status(400).json({ message: "City name is required" });
+      }
+      
+      // Handle flexible city name format
+      let finalCityName = cityName.trim();
+      let finalCountry = country?.trim() || "";
+      
+      // If city name contains comma and no country provided, extract country from city name
+      if (cityName.includes(',') && !finalCountry) {
+        const parts = cityName.split(',').map(part => part.trim());
+        finalCityName = parts[0];
+        finalCountry = parts.slice(1).join(', ');
+      }
+      
+      // If still no country, require it
+      if (!finalCountry) {
+        return res.status(400).json({ message: "Country is required (or include state/region in city name)" });
       }
 
       // Check if city already exists
-      const existingCity = await storage.getCityByName(cityName);
+      const existingCity = await storage.getCityByName(finalCityName);
       if (existingCity) {
         return res.status(400).json({ message: "City already exists" });
       }
 
       // Generate content using OpenAI
-      const generatedContent = await generateCityContent(cityName, country, focus);
+      const generatedContent = await generateCityContent(finalCityName, finalCountry, focus);
       
       // Create city record
       const cityData = {
-        name: cityName,
-        country,
+        name: finalCityName,
+        country: finalCountry,
         isPublished: autoPublish,
         publishedDate: autoPublish ? new Date() : null,
       };
