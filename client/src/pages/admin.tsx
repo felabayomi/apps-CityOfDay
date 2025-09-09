@@ -72,6 +72,7 @@ export default function Admin() {
         <nav className="nav-links">
           <a href="/">Home</a>
           <a href="#cities">Cities</a>
+          <a href="#calendar">Calendar</a>
           <a href="#generate">Generate</a>
         </nav>
         <div className="auth-area">
@@ -104,6 +105,98 @@ export default function Admin() {
               onCityChange={setSelectedCity}
             />
           </div>
+        </div>
+
+        {/* Content Calendar */}
+        <div id="calendar" className="mb-12">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center text-foreground">
+                <CalendarIcon className="mr-3 text-accent w-5 h-5" />
+                Content Calendar
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {cities && cities.length > 0 ? (
+                <div>
+                  {/* Scheduled Cities */}
+                  <div className="mb-6">
+                    <h4 className="font-semibold text-foreground mb-4">Scheduled Content</h4>
+                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {cities
+                        .filter((city: any) => city.scheduledDate)
+                        .sort((a: any, b: any) => new Date(a.scheduledDate).getTime() - new Date(b.scheduledDate).getTime())
+                        .map((city: any) => (
+                          <div
+                            key={city.id}
+                            className="p-4 border border-accent/20 rounded-lg bg-accent/5 hover:bg-accent/10 transition-colors"
+                          >
+                            <div className="flex items-center justify-between mb-2">
+                              <h5 className="font-medium text-foreground">{city.name}</h5>
+                              <span className={`text-xs px-2 py-1 rounded-full ${
+                                city.isPublished 
+                                  ? 'bg-green-100 text-green-700' 
+                                  : 'bg-muted text-muted-foreground'
+                              }`}>
+                                {city.isPublished ? 'Live' : 'Draft'}
+                              </span>
+                            </div>
+                            <p className="text-sm text-muted-foreground mb-2">{city.country}</p>
+                            <div className="flex items-center text-xs text-accent">
+                              <CalendarIcon className="w-3 h-3 mr-1" />
+                              {new Date(city.scheduledDate).toLocaleDateString('en-US', { 
+                                weekday: 'short',
+                                month: 'short', 
+                                day: 'numeric',
+                                year: 'numeric'
+                              })}
+                            </div>
+                          </div>
+                        ))}
+                    </div>
+                    {cities.filter((city: any) => city.scheduledDate).length === 0 && (
+                      <div className="text-center py-8 text-muted-foreground">
+                        <CalendarIcon className="w-16 h-16 mx-auto mb-4 opacity-30" />
+                        <p>No content scheduled yet. Use the generator above to schedule content for specific dates!</p>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Unscheduled Content */}
+                  {cities.filter((city: any) => !city.scheduledDate).length > 0 && (
+                    <div>
+                      <h4 className="font-semibold text-foreground mb-4">Unscheduled Content</h4>
+                      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-3">
+                        {cities
+                          .filter((city: any) => !city.scheduledDate)
+                          .map((city: any) => (
+                            <div
+                              key={city.id}
+                              className="p-3 border border-border rounded-lg bg-card hover:bg-muted/30 transition-colors"
+                            >
+                              <h6 className="font-medium text-foreground text-sm">{city.name}</h6>
+                              <p className="text-xs text-muted-foreground">{city.country}</p>
+                              <span className={`inline-block mt-2 text-xs px-2 py-1 rounded-full ${
+                                city.isPublished 
+                                  ? 'bg-green-100 text-green-700' 
+                                  : 'bg-muted text-muted-foreground'
+                              }`}>
+                                {city.isPublished ? 'Published' : 'Draft'}
+                              </span>
+                            </div>
+                          ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="text-center py-8 text-muted-foreground">
+                  <CalendarIcon className="w-16 h-16 mx-auto mb-4 opacity-30" />
+                  <p>No cities created yet. Start by generating your first city!</p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
         </div>
 
         {/* Cities Management */}
