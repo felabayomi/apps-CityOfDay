@@ -88,8 +88,9 @@ export default function Landing() {
             {/* Sample Cards */}
             <Card className="postcard-shadow hover:transform hover:scale-105 transition-all duration-300">
               <div className="relative h-48 overflow-hidden rounded-t-lg">
-                <div className="w-full h-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center">
-                  <Globe className="w-16 h-16" style={{color: 'var(--accent-blue)'}} />
+                <div className="w-full h-full relative">
+                  <img src="https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?w=400&h=300&fit=crop&crop=top" alt="New York City skyline" className="w-full h-full object-cover" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
                 </div>
                 <Badge className="absolute top-4 left-4" style={{backgroundColor: 'var(--primary-yellow)', color: 'var(--text-dark)'}}>
                   Morning
@@ -108,8 +109,9 @@ export default function Landing() {
 
             <Card className="postcard-shadow hover:transform hover:scale-105 transition-all duration-300">
               <div className="relative h-48 overflow-hidden rounded-t-lg">
-                <div className="w-full h-full bg-gradient-to-br from-secondary/20 to-primary/20 flex items-center justify-center">
-                  <Globe className="w-16 h-16" style={{color: 'var(--primary-yellow)'}} />
+                <div className="w-full h-full relative">
+                  <img src="https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=400&h=300&fit=crop&crop=center" alt="San Francisco Golden Gate Bridge" className="w-full h-full object-cover" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
                 </div>
                 <Badge className="absolute top-4 left-4" style={{backgroundColor: 'var(--accent-blue)', color: 'var(--text-light)'}}>
                   Afternoon
@@ -128,8 +130,9 @@ export default function Landing() {
 
             <Card className="postcard-shadow hover:transform hover:scale-105 transition-all duration-300">
               <div className="relative h-48 overflow-hidden rounded-t-lg">
-                <div className="w-full h-full bg-gradient-to-br from-destructive/20 to-secondary/20 flex items-center justify-center">
-                  <Globe className="w-16 h-16" style={{color: 'var(--accent-blue)'}} />
+                <div className="w-full h-full relative">
+                  <img src="https://images.unsplash.com/photo-1477414348463-c0eb7f1359b6?w=400&h=300&fit=crop&crop=center" alt="Chicago skyline at sunset" className="w-full h-full object-cover" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
                 </div>
                 <Badge className="absolute top-4 left-4" style={{backgroundColor: 'var(--primary-yellow)', color: 'var(--text-dark)'}}>
                   Evening
@@ -148,8 +151,9 @@ export default function Landing() {
 
             <Card className="postcard-shadow hover:transform hover:scale-105 transition-all duration-300">
               <div className="relative h-48 overflow-hidden rounded-t-lg">
-                <div className="w-full h-full bg-gradient-to-br from-accent/20 to-primary/20 flex items-center justify-center">
-                  <Globe className="w-16 h-16" style={{color: 'var(--primary-yellow)'}} />
+                <div className="w-full h-full relative">
+                  <img src="https://images.unsplash.com/photo-1534190760961-74e8c1b5c3da?w=400&h=300&fit=crop&crop=center" alt="Los Angeles downtown skyline" className="w-full h-full object-cover" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
                 </div>
                 <Badge className="absolute top-4 left-4" style={{backgroundColor: 'var(--accent-blue)', color: 'var(--text-light)'}}>
                   Fun Fact
@@ -280,7 +284,7 @@ export default function Landing() {
           <div className="w-64 h-96 mx-auto rounded-2xl border-4 border-border bg-card postcard-shadow relative overflow-hidden">
             <div className="absolute inset-0 bg-gradient-travel opacity-10"></div>
             <div className="absolute inset-0 flex items-center justify-center">
-              <Globe className="w-24 h-24 text-primary opacity-30" />
+              <Globe className="w-24 h-24 text-primary opacity-30 globe-animate" />
             </div>
           </div>
           <Button 
