@@ -6,6 +6,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { format } from "date-fns";
+import { CalendarIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { Wand2, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
@@ -16,12 +21,13 @@ export function AdminCityGenerator() {
   const [country, setCountry] = useState("");
   const [focus, setFocus] = useState("balanced");
   const [autoPublish, setAutoPublish] = useState(false);
+  const [scheduledDate, setScheduledDate] = useState<Date | undefined>(undefined);
   
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
   const generateCityMutation = useMutation({
-    mutationFn: async (data: { cityName: string; country: string; focus: string; autoPublish: boolean }) => {
+    mutationFn: async (data: { cityName: string; country: string; focus: string; autoPublish: boolean; scheduledDate?: string }) => {
       const response = await apiRequest("POST", "/api/admin/cities/generate", data);
       return response.json();
     },
@@ -36,6 +42,7 @@ export function AdminCityGenerator() {
       setCountry("");
       setFocus("balanced");
       setAutoPublish(false);
+      setScheduledDate(undefined);
       
       // Refresh cities list
       queryClient.invalidateQueries({ queryKey: ["/api/admin/cities"] });
@@ -91,6 +98,7 @@ export function AdminCityGenerator() {
       country: country.trim(),
       focus,
       autoPublish,
+      scheduledDate: scheduledDate ? format(scheduledDate, 'yyyy-MM-dd') : undefined,
     });
   };
 
@@ -145,6 +153,38 @@ export function AdminCityGenerator() {
                 <SelectItem value="budget">Budget Travel</SelectItem>
               </SelectContent>
             </Select>
+          </div>
+
+          {/* Scheduled Date Picker */}
+          <div className="space-y-2">
+            <Label htmlFor="scheduled-date" className="text-sm font-medium">Scheduled Date (Optional)</Label>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant={"outline"}
+                  className={cn(
+                    "w-full justify-start text-left font-normal",
+                    !scheduledDate && "text-muted-foreground"
+                  )}
+                  data-testid="button-date-picker"
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {scheduledDate ? format(scheduledDate, "PPP") : <span>Pick a date to schedule content</span>}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  mode="single"
+                  selected={scheduledDate}
+                  onSelect={setScheduledDate}
+                  disabled={(date) => date < new Date()}
+                  initialFocus
+                />
+              </PopoverContent>
+            </Popover>
+            <p className="text-sm text-muted-foreground">
+              Choose when this content should appear to users. Leave empty for manual publishing.
+            </p>
           </div>
 
           <div className="flex items-center space-x-2">
