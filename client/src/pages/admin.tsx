@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Globe, Wand2, Edit, Trash2, Plus, Eye } from "lucide-react";
+import { Globe, Wand2, Edit, Trash2, Plus, Eye, MapPin } from "lucide-react";
 import { AdminCityGenerator } from "@/components/admin-city-generator";
 import { ContentEditor } from "@/components/content-editor";
 import { useToast } from "@/hooks/use-toast";
