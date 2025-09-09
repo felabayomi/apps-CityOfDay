@@ -189,11 +189,13 @@
 
 /* Header Styles */
 .site-header {
-  @apply bg-card border-b border-border sticky top-0 z-50;
+  @apply bg-secondary/10 backdrop-blur-md border-b border-primary/20 sticky top-0 z-50;
   @apply flex items-center justify-between;
   @apply px-4 sm:px-6 lg:px-8;
   @apply h-16;
   @apply max-w-7xl mx-auto;
+  @apply shadow-sm;
+  background: linear-gradient(to right, hsl(42, 56%, 96%), hsl(42, 56%, 94%));
 }
 
 .logo-area {
