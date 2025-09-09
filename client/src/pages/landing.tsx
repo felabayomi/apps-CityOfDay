@@ -43,7 +43,7 @@ export default function Landing() {
 
       {/* Hero Section */}
       <section id="discover" className="relative">
-        <div className="h-96 bg-gradient-travel relative overflow-hidden">
+        <div className="h-96 relative overflow-hidden" style={{background: 'linear-gradient(135deg, #3A7CA5, #2A5B7A)'}}>
           <div className="absolute inset-0 flex items-center justify-center text-center">
             <div className="max-w-4xl mx-auto px-4">
               <h2 className="text-4xl md:text-6xl font-bold text-white mb-4">
@@ -64,7 +64,7 @@ export default function Landing() {
                 <Button 
                   size="lg" 
                   variant="outline"
-                  className="border-white text-white hover:bg-white/10"
+                  className="border-white text-white hover:bg-white hover:text-blue-600 border-2"
                   data-testid="button-view-today"
                 >
                   View Today's City
