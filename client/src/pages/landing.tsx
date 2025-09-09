@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Globe, Bell, Download, Wifi, FolderSync } from "lucide-react";
+import { Globe, Bell, Download, Wifi, FolderSync, Compass, MapPin, Map, Navigation, Route, Plane, Camera, Binoculars, Mountains } from "lucide-react";
 import { PricingTier } from "@/components/pricing-tier";
 
 export default function Landing() {
@@ -22,7 +22,7 @@ export default function Landing() {
       <header className="site-header">
         <div className="logo-area">
           <div className="logo-icon">
-            <Globe className="w-6 h-6" />
+            <Plane className="w-6 h-6" />
           </div>
           <span className="brand-name">Daily Felix</span>
           <span className="tagline">City of the Day™</span>
