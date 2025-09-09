@@ -152,7 +152,7 @@ export default function Landing() {
             <Card className="postcard-shadow hover:transform hover:scale-105 transition-all duration-300">
               <div className="relative h-48 overflow-hidden rounded-t-lg">
                 <div className="w-full h-full relative">
-                  <img src="https://images.unsplash.com/photo-1534190760961-74e8c1b5c3da?w=400&h=300&fit=crop&crop=center" alt="Los Angeles downtown skyline" className="w-full h-full object-cover" />
+                  <img src="https://images.unsplash.com/photo-1444927714506-8492d94b5ba0?w=400&h=300&fit=crop&crop=center" alt="Los Angeles downtown skyline" className="w-full h-full object-cover" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
                 </div>
                 <Badge className="absolute top-4 left-4" style={{backgroundColor: 'var(--accent-blue)', color: 'var(--text-light)'}}>
