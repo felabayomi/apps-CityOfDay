@@ -103,7 +103,7 @@ Respond with JSON in this exact format:
         },
       ],
       response_format: { type: "json_object" },
-      temperature: 0.8,
+      // GPT-5 only supports default temperature (1), removed custom temperature
     });
 
     const result = JSON.parse(response.choices[0].message.content!);
