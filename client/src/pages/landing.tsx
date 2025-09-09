@@ -3,10 +3,17 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Globe, Bell, Download, Wifi, FolderSync, Compass, MapPin, Map, Navigation, Route, Plane, Camera, Binoculars, Mountains } from "lucide-react";
 import { PricingTier } from "@/components/pricing-tier";
+import { useLocation } from "wouter";
 
 export default function Landing() {
+  const [, setLocation] = useLocation();
+  
   const handleSignIn = () => {
     window.location.href = "/api/login";
+  };
+  
+  const handleViewTodaysCity = () => {
+    setLocation("/preview");
   };
 
   const handleInstallApp = () => {
@@ -65,6 +72,7 @@ export default function Landing() {
                   size="lg" 
                   variant="outline"
                   className="border-white text-white hover:bg-white hover:text-blue-600 border-2"
+                  onClick={handleViewTodaysCity}
                   data-testid="button-view-today"
                 >
                   View Today's City

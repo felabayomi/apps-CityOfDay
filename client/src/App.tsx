@@ -8,6 +8,7 @@ import Landing from "@/pages/landing";
 import Home from "@/pages/home";
 import Admin from "@/pages/admin";
 import Subscribe from "@/pages/subscribe";
+import Preview from "@/pages/preview";
 import { useAuth } from "@/hooks/useAuth";
 
 function Router() {
@@ -15,6 +16,7 @@ function Router() {
 
   return (
     <Switch>
+      <Route path="/preview" component={Preview} />
       {isLoading || !isAuthenticated ? (
         <Route path="/" component={Landing} />
       ) : (

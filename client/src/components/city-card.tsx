@@ -10,6 +10,7 @@ interface CityCardProps {
   onAddToBucketList?: () => void;
   isCollecting?: boolean;
   isAddingToBucketList?: boolean;
+  isPreview?: boolean;
 }
 
 const cardTypeConfig = {
