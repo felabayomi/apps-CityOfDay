@@ -61,28 +61,25 @@ export default function Admin() {
   return (
     <div className="min-h-screen bg-background">
       {/* Navigation Header */}
-      <header className="bg-card border-b border-border sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-4">
-              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                <Globe className="text-primary-foreground w-4 h-4" />
-              </div>
-              <h1 className="text-xl font-bold text-foreground">Daily Felix Admin</h1>
-            </div>
-            
-            <nav className="hidden md:flex space-x-8">
-              <a href="/" className="text-muted-foreground hover:text-foreground transition-colors">Home</a>
-              <a href="#cities" className="text-muted-foreground hover:text-foreground transition-colors">Cities</a>
-              <a href="#generate" className="text-muted-foreground hover:text-foreground transition-colors">Generate</a>
-            </nav>
-            
-            <div className="flex items-center space-x-4">
-              <span className="text-sm text-muted-foreground">Admin: {user.firstName || 'User'}</span>
-              <Button variant="outline" size="sm" onClick={handleLogout} data-testid="button-admin-logout">
-                Sign Out
-              </Button>
-            </div>
+      <header className="site-header">
+        <div className="logo-area">
+          <div className="logo-icon">
+            <Globe className="w-6 h-6" />
+          </div>
+          <span className="brand-name">Daily Felix</span>
+          <span className="tagline">Admin Panel</span>
+        </div>
+        <nav className="nav-links">
+          <a href="/">Home</a>
+          <a href="#cities">Cities</a>
+          <a href="#generate">Generate</a>
+        </nav>
+        <div className="auth-area">
+          <div className="user-section">
+            <span className="welcome-text">Admin: {user.firstName || 'User'}</span>
+            <button className="sign-in-btn" onClick={handleLogout} data-testid="button-admin-logout">
+              Sign Out
+            </button>
           </div>
         </div>
       </header>

@@ -132,35 +132,29 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-background">
       {/* Navigation Header */}
-      <header className="bg-card border-b border-border sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-4">
-              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                <Globe className="text-primary-foreground w-4 h-4" />
-              </div>
-              <h1 className="text-xl font-bold text-foreground">Daily Felix</h1>
-              <span className="text-sm text-muted-foreground">City of the Day</span>
-            </div>
-            
-            <nav className="hidden md:flex space-x-8">
-              <a href="#discover" className="text-muted-foreground hover:text-foreground transition-colors">Discover</a>
-              <a href="/admin" className="text-muted-foreground hover:text-foreground transition-colors">Admin</a>
-              <a href="/subscribe" className="text-secondary hover:text-secondary/80 font-medium transition-colors">Premium</a>
-            </nav>
-            
-            <div className="flex items-center space-x-4">
-              <Button variant="ghost" size="icon" data-testid="button-notifications">
-                <Bell className="w-5 h-5" />
-              </Button>
-              <div className="flex items-center space-x-2">
-                <span className="text-sm text-muted-foreground">Welcome, {user.firstName || 'Explorer'}</span>
-                <Button variant="outline" size="sm" onClick={handleLogout} data-testid="button-logout">
-                  <LogOut className="w-4 h-4 mr-1" />
-                  Sign Out
-                </Button>
-              </div>
-            </div>
+      <header className="site-header">
+        <div className="logo-area">
+          <div className="logo-icon">
+            <Globe className="w-6 h-6" />
+          </div>
+          <span className="brand-name">Daily Felix</span>
+          <span className="tagline">City of the Day™</span>
+        </div>
+        <nav className="nav-links">
+          <a href="#discover">Discover</a>
+          <a href="/admin">Admin</a>
+          <a href="#premium">Premium</a>
+        </nav>
+        <div className="auth-area">
+          <button className="notif-btn" data-testid="button-notifications">
+            <Bell className="w-5 h-5" />
+          </button>
+          <div className="user-section">
+            <span className="welcome-text">Welcome, {user.firstName || 'Explorer'}</span>
+            <button className="sign-in-btn" onClick={handleLogout} data-testid="button-logout">
+              <LogOut className="w-4 h-4 mr-1" />
+              Sign Out
+            </button>
           </div>
         </div>
       </header>

@@ -187,6 +187,113 @@
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.08); 
 }
 
+/* Header Styles */
+.site-header {
+  @apply bg-card border-b border-border sticky top-0 z-50;
+  @apply flex items-center justify-between;
+  @apply px-4 sm:px-6 lg:px-8;
+  @apply h-16;
+  @apply max-w-7xl mx-auto;
+}
+
+.logo-area {
+  @apply flex items-center space-x-3;
+}
+
+.logo-icon {
+  @apply w-10 h-10 bg-primary rounded-lg;
+  @apply flex items-center justify-center;
+  @apply text-primary-foreground;
+}
+
+.brand-name {
+  @apply text-xl font-bold text-foreground;
+  @apply tracking-tight;
+}
+
+.tagline {
+  @apply text-sm text-muted-foreground;
+  @apply font-medium;
+  @apply hidden sm:inline;
+}
+
+.nav-links {
+  @apply hidden md:flex space-x-8;
+}
+
+.nav-links a {
+  @apply text-muted-foreground hover:text-foreground;
+  @apply transition-colors duration-200;
+  @apply font-medium;
+  @apply py-2 px-1;
+  @apply border-b-2 border-transparent;
+  @apply hover:border-primary/30;
+}
+
+.nav-links a[href="#premium"] {
+  @apply text-accent hover:text-accent/80;
+}
+
+.auth-area {
+  @apply flex items-center space-x-3;
+}
+
+.notif-btn {
+  @apply p-2 rounded-lg;
+  @apply text-muted-foreground hover:text-foreground;
+  @apply hover:bg-muted/50;
+  @apply transition-all duration-200;
+  @apply border border-transparent;
+  @apply hover:border-border;
+}
+
+.sign-in-btn {
+  @apply bg-primary text-primary-foreground;
+  @apply hover:bg-primary/90;
+  @apply px-4 py-2 rounded-lg;
+  @apply font-medium text-sm;
+  @apply transition-all duration-200;
+  @apply border border-primary;
+  @apply hover:shadow-sm;
+  @apply flex items-center space-x-1;
+}
+
+.user-section {
+  @apply flex items-center space-x-3;
+}
+
+.welcome-text {
+  @apply text-sm text-muted-foreground;
+  @apply hidden sm:inline;
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 768px) {
+  .site-header {
+    @apply px-4 h-14;
+  }
+  
+  .logo-area {
+    @apply space-x-2;
+  }
+  
+  .logo-icon {
+    @apply w-8 h-8;
+  }
+  
+  .brand-name {
+    @apply text-lg;
+  }
+  
+  .auth-area {
+    @apply space-x-2;
+  }
+  
+  .sign-in-btn {
+    @apply px-3 py-1.5 text-xs;
+  }
+}
+
 .swipe-indicator {
   background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
   animation: shimmer 2s infinite;
