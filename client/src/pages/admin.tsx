@@ -64,7 +64,7 @@ export default function Admin() {
       <header className="site-header">
         <div className="logo-area">
           <div className="logo-icon">
-            <Globe className="w-6 h-6" />
+            <MapPin className="w-6 h-6" />
           </div>
           <span className="brand-name">Daily Felix</span>
           <span className="tagline">Admin Panel</span>
