@@ -100,7 +100,7 @@ export default function Landing() {
                 <p className="text-muted-foreground text-sm mb-4">
                   Start your day with iconic landmarks and morning inspiration from the City of Light.
                 </p>
-                <Button variant="ghost" size="sm" className="text-primary">
+                <Button variant="ghost" size="sm" className="text-blue-600">
                   Explore Landmark
                 </Button>
               </CardContent>
@@ -160,7 +160,7 @@ export default function Landing() {
                 <p className="text-muted-foreground text-sm mb-4">
                   Fascinating historical facts and cultural insights you won't find in guidebooks.
                 </p>
-                <Button variant="ghost" size="sm" className="text-primary">
+                <Button variant="ghost" size="sm" className="text-blue-600">
                   Learn More
                 </Button>
               </CardContent>
@@ -177,7 +177,7 @@ export default function Landing() {
                 </p>
                 <Button 
                   size="lg"
-                  className="bg-white text-primary hover:bg-gray-100"
+                  className="bg-white text-blue-600 hover:bg-gray-100"
                   onClick={handleSignIn}
                   data-testid="button-join-now"
                 >
