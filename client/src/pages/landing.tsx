@@ -50,7 +50,7 @@ export default function Landing() {
                 Explore the World<br /><span className="text-yellow-300">One City at a Time</span>
               </h2>
               <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
-                Your daily guide to city discovery: curated travel inspiration, cultural insights, and hidden gems.
+                Your daily guide to city discovery.<br />Curated travel inspiration, cultural insights, and hidden gems.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button 
