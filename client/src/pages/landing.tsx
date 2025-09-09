@@ -89,9 +89,9 @@ export default function Landing() {
             <Card className="postcard-shadow hover:transform hover:scale-105 transition-all duration-300">
               <div className="relative h-48 overflow-hidden rounded-t-lg">
                 <div className="w-full h-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center">
-                  <Globe className="w-16 h-16 text-primary opacity-50" />
+                  <Globe className="w-16 h-16" style={{color: 'var(--accent-blue)'}} />
                 </div>
-                <Badge className="absolute top-4 left-4 bg-accent text-accent-foreground">
+                <Badge className="absolute top-4 left-4" style={{backgroundColor: 'var(--primary-yellow)', color: 'var(--text-dark)'}}>
                   Morning
                 </Badge>
               </div>
@@ -109,9 +109,9 @@ export default function Landing() {
             <Card className="postcard-shadow hover:transform hover:scale-105 transition-all duration-300">
               <div className="relative h-48 overflow-hidden rounded-t-lg">
                 <div className="w-full h-full bg-gradient-to-br from-secondary/20 to-primary/20 flex items-center justify-center">
-                  <Globe className="w-16 h-16 text-secondary opacity-50" />
+                  <Globe className="w-16 h-16" style={{color: 'var(--primary-yellow)'}} />
                 </div>
-                <Badge className="absolute top-4 left-4 bg-secondary text-secondary-foreground">
+                <Badge className="absolute top-4 left-4" style={{backgroundColor: 'var(--accent-blue)', color: 'var(--text-light)'}}>
                   Afternoon
                 </Badge>
               </div>
@@ -129,9 +129,9 @@ export default function Landing() {
             <Card className="postcard-shadow hover:transform hover:scale-105 transition-all duration-300">
               <div className="relative h-48 overflow-hidden rounded-t-lg">
                 <div className="w-full h-full bg-gradient-to-br from-destructive/20 to-secondary/20 flex items-center justify-center">
-                  <Globe className="w-16 h-16 text-destructive opacity-50" />
+                  <Globe className="w-16 h-16" style={{color: 'var(--accent-blue)'}} />
                 </div>
-                <Badge className="absolute top-4 left-4 bg-destructive text-destructive-foreground">
+                <Badge className="absolute top-4 left-4" style={{backgroundColor: 'var(--primary-yellow)', color: 'var(--text-dark)'}}>
                   Evening
                 </Badge>
               </div>
@@ -140,7 +140,7 @@ export default function Landing() {
                 <p className="text-muted-foreground text-sm mb-4">
                   Learn insider secrets to save money while experiencing the best each city offers.
                 </p>
-                <Button variant="ghost" size="sm" className="text-destructive">
+                <Button variant="ghost" size="sm" className="text-blue-600">
                   Save Money
                 </Button>
               </CardContent>
@@ -149,9 +149,9 @@ export default function Landing() {
             <Card className="postcard-shadow hover:transform hover:scale-105 transition-all duration-300">
               <div className="relative h-48 overflow-hidden rounded-t-lg">
                 <div className="w-full h-full bg-gradient-to-br from-accent/20 to-primary/20 flex items-center justify-center">
-                  <Globe className="w-16 h-16 text-accent opacity-50" />
+                  <Globe className="w-16 h-16" style={{color: 'var(--primary-yellow)'}} />
                 </div>
-                <Badge className="absolute top-4 left-4 bg-primary text-primary-foreground">
+                <Badge className="absolute top-4 left-4" style={{backgroundColor: 'var(--accent-blue)', color: 'var(--text-light)'}}>
                   Fun Fact
                 </Badge>
               </div>
