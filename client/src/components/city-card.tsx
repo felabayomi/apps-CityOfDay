@@ -49,7 +49,8 @@ export function CityCard({
   onCollect, 
   onAddToBucketList, 
   isCollecting = false,
-  isAddingToBucketList = false 
+  isAddingToBucketList = false,
+  isPreview = false 
 }: CityCardProps) {
   const config = cardTypeConfig[content.cardType as keyof typeof cardTypeConfig];
   if (!config) return null;
