@@ -162,7 +162,7 @@ export default function Home() {
       {/* Hero Section with Today's City */}
       {todaysCity && (
         <section id="discover" className="relative">
-          <div className="h-64 bg-gradient-travel relative overflow-hidden">
+          <div className="h-64 relative overflow-hidden" style={{background: 'linear-gradient(135deg, #3A7CA5, #2A5B7A)'}}>
             <div className="absolute inset-0 flex items-center justify-center text-center">
               <div className="max-w-4xl mx-auto px-4">
                 <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
@@ -199,7 +199,7 @@ export default function Home() {
       )}
 
       {/* User Stats */}
-      <section className="py-8 bg-muted/30">
+      <section className="py-8" style={{backgroundColor: '#F9F5EC'}}>
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-3 gap-6">
             <UserStats
@@ -226,12 +226,12 @@ export default function Home() {
 
       {/* Today's Content Cards */}
       {todaysContent.length > 0 && (
-        <section className="py-16 bg-background">
+        <section className="py-16" style={{backgroundColor: '#ffffff'}}>
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12">
-              <h3 className="text-3xl font-bold text-foreground mb-4">Today's Discovery Cards</h3>
-              <p className="text-xl text-muted-foreground">Your daily dose of travel inspiration</p>
-              <div className="w-24 h-1 bg-gradient-travel mx-auto rounded-full mt-4"></div>
+              <h3 className="text-3xl font-bold mb-4" style={{color: 'var(--text-dark)'}}>Today's Discovery Cards</h3>
+              <p className="text-xl mb-4" style={{color: '#666'}}>Your daily dose of travel inspiration</p>
+              <div className="w-24 h-1 mx-auto rounded-full mt-4" style={{background: 'linear-gradient(135deg, #3A7CA5, #2A5B7A)'}}></div>
             </div>
 
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -254,7 +254,7 @@ export default function Home() {
 
             {/* Affiliate CTA */}
             <div className="mt-12 text-center">
-              <Card className="bg-gradient-travel text-white border-none">
+              <Card className="text-white border-none" style={{background: 'linear-gradient(135deg, #3A7CA5, #2A5B7A)'}}>
                 <CardContent className="p-8">
                   <h4 className="text-2xl font-bold mb-4">Ready to Visit {todaysCity?.name}?</h4>
                   <p className="text-white/90 mb-6 max-w-2xl mx-auto">
@@ -280,9 +280,9 @@ export default function Home() {
 
       {/* Digital Postcards Collection */}
       {!loadingCollected && collectedCities && collectedCities.length > 0 && (
-        <section className="py-16 bg-muted/30">
+        <section className="py-16" style={{backgroundColor: '#F9F5EC'}}>
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h4 className="text-xl font-semibold text-foreground mb-6 flex items-center">
+            <h4 className="text-xl font-semibold mb-6 flex items-center" style={{color: 'var(--text-dark)'}}>
               <MapPin className="mr-3 text-primary w-5 h-5" />
               Your Digital Postcards
             </h4>
@@ -318,14 +318,14 @@ export default function Home() {
 
       {/* Premium Upgrade Prompt */}
       {user.subscriptionTier === 'free' && (
-        <section className="py-12 bg-background">
+        <section className="py-12" style={{backgroundColor: '#ffffff'}}>
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <Card className="border-primary/20 bg-primary/5">
               <CardHeader>
-                <CardTitle className="text-foreground">Unlock Premium Features</CardTitle>
+                <CardTitle style={{color: 'var(--text-dark)'}}>Unlock Premium Features</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-muted-foreground mb-6">
+                <p className="mb-6" style={{color: '#666'}}>
                   Get access to city archives, detailed itineraries, exclusive deals, and more.
                 </p>
                 <Button asChild data-testid="button-upgrade-premium">

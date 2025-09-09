@@ -134,7 +134,7 @@ export default function Admin() {
                         <div className="flex items-center space-x-4 mt-2">
                           <span className={`text-xs px-2 py-1 rounded-full ${
                             city.isPublished 
-                              ? 'bg-accent/10 text-accent' 
+                              ? 'bg-green-100 text-green-700 border border-green-200' 
                               : 'bg-muted text-muted-foreground'
                           }`}>
                             {city.isPublished ? 'Published' : 'Draft'}
