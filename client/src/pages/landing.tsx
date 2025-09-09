@@ -198,7 +198,7 @@ export default function Landing() {
             <div className="w-24 h-1 bg-gradient-travel mx-auto rounded-full mt-4"></div>
           </div>
 
-          <div className="grid lg:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-3 gap-8">
             <PricingTier
               title="Explorer"
               price="$0"
