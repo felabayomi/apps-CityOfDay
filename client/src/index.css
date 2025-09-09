@@ -214,8 +214,8 @@
 }
 
 .tagline {
-  @apply text-sm text-muted-foreground;
-  @apply font-medium;
+  @apply text-sm text-accent;
+  @apply font-semibold;
 }
 
 .nav-links {
