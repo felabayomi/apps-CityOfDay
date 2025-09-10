@@ -96,10 +96,10 @@ export function ShareButton({ city, content }: ShareButtonProps) {
   };
 
   const shareToFacebook = () => {
-    const text = generateContent('facebook');
+    // Facebook deprecated the quote parameter - only URL is supported now
     const shareUrl = `https://daily.citydiscoverer.guide`;
-    const url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(text)}`;
-    window.open(url, '_blank');
+    const url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`;
+    window.open(url, '_blank', 'width=600,height=400,scrollbars=yes,resizable=yes');
   };
 
   const shareToBluesky = () => {
@@ -112,30 +112,54 @@ export function ShareButton({ city, content }: ShareButtonProps) {
     const imageUrl = getShareImage();
     const text = generateContent('instagram');
     
+    // Always copy text to clipboard first
+    copyToClipboard(text);
+    
     if (imageUrl) {
-      // Instagram doesn't have a direct URL scheme for posting with image and text
-      // Best we can do is open Instagram app/web and copy text to clipboard
-      copyToClipboard(text);
       toast({
-        title: "Text Copied!",
-        description: "Instagram caption copied to clipboard. Open Instagram to post with your image!",
+        title: "Content Ready for Instagram! 📱",
+        description: "Caption copied! Right-click the image below to save it, then post both to Instagram.",
       });
       
-      // Try to open Instagram app (works on mobile)
-      const userAgent = navigator.userAgent || navigator.vendor;
-      if (/android/i.test(userAgent)) {
-        window.location.href = 'intent://instagram.com/#Intent;package=com.instagram.android;scheme=https;end';
-      } else if (/iPad|iPhone|iPod/.test(userAgent)) {
-        window.location.href = 'instagram://';
-      } else {
-        window.open('https://www.instagram.com/', '_blank');
-      }
+      // Create a more helpful sharing experience
+      setTimeout(() => {
+        // Try to open Instagram on mobile, or Instagram web on desktop
+        const userAgent = navigator.userAgent || navigator.vendor;
+        const isMobile = /android|ipad|iphone|ipod/i.test(userAgent);
+        
+        if (isMobile) {
+          // On mobile, try Instagram app first, then web as fallback
+          try {
+            window.location.href = 'instagram://camera';
+          } catch (e) {
+            window.open('https://www.instagram.com/', '_blank');
+          }
+        } else {
+          // On desktop, open Instagram web
+          window.open('https://www.instagram.com/accounts/login/', '_blank');
+        }
+      }, 1000);
     } else {
       toast({
-        title: "No Image Available",
-        description: "This city doesn't have an image to share to Instagram yet.",
-        variant: "destructive",
+        title: "Caption Copied! 📝",
+        description: "Instagram caption is ready. Add your own photo when posting!",
       });
+      
+      // Still open Instagram even without image
+      setTimeout(() => {
+        const userAgent = navigator.userAgent || navigator.vendor;
+        const isMobile = /android|ipad|iphone|ipod/i.test(userAgent);
+        
+        if (isMobile) {
+          try {
+            window.location.href = 'instagram://camera';
+          } catch (e) {
+            window.open('https://www.instagram.com/', '_blank');
+          }
+        } else {
+          window.open('https://www.instagram.com/accounts/login/', '_blank');
+        }
+      }, 1000);
     }
   };
 
@@ -254,12 +278,25 @@ export function ShareButton({ city, content }: ShareButtonProps) {
 
           {getShareImage() && (
             <div className="text-center">
-              <p className="text-xs text-muted-foreground mb-2">Share Image:</p>
-              <img 
-                src={getShareImage()!} 
-                alt={`${city.name} share image`}
-                className="w-20 h-12 object-cover rounded mx-auto"
-              />
+              <p className="text-xs text-muted-foreground mb-2">📱 For Instagram: Right-click to save image</p>
+              <div className="relative inline-block">
+                <img 
+                  src={getShareImage()!} 
+                  alt={`${city.name} share image`}
+                  className="w-32 h-20 object-cover rounded mx-auto cursor-pointer border-2 border-dashed border-gray-300 hover:border-blue-500 transition-colors"
+                  title="Right-click to save for Instagram"
+                  onContextMenu={(e) => {
+                    // Let the right-click happen naturally for saving
+                    toast({
+                      title: "Save Image 💾",
+                      description: "Right-click completed! Now save the image and paste your caption in Instagram.",
+                    });
+                  }}
+                />
+                <div className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 hover:opacity-100 transition-opacity rounded text-white text-xs font-medium">
+                  Right-click to save
+                </div>
+              </div>
             </div>
           )}
         </div>
