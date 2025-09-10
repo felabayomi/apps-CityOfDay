@@ -20,28 +20,28 @@ const cardTypeConfig = {
     badge: "Morning",
     color: "bg-accent text-accent-foreground",
     buttonText: "Explore Landmark",
-    buttonColor: "text-accent",
+    buttonColor: "text-amber-600 hover:text-amber-700",
   },
   afternoon: {
     icon: Utensils,
     badge: "Afternoon", 
     color: "bg-secondary text-secondary-foreground",
     buttonText: "Find Cafés",
-    buttonColor: "text-secondary",
+    buttonColor: "text-orange-600 hover:text-orange-700",
   },
   evening: {
     icon: Moon,
     badge: "Evening",
     color: "bg-destructive text-destructive-foreground",
     buttonText: "Save Money", 
-    buttonColor: "text-destructive",
+    buttonColor: "text-green-600 hover:text-green-700",
   },
   bonus: {
     icon: Lightbulb,
     badge: "Fun Fact",
     color: "bg-primary text-primary-foreground",
     buttonText: "Learn More",
-    buttonColor: "text-primary",
+    buttonColor: "text-purple-600 hover:text-purple-700",
   },
 };
 
@@ -102,7 +102,7 @@ export function CityCard({
               variant="ghost"
               size="sm"
               onClick={() => setIsExpanded(!isExpanded)}
-              className="mt-2 p-0 h-auto text-xs text-foreground/70 hover:text-foreground font-medium"
+              className="mt-2 p-0 h-auto text-xs text-blue-600 hover:text-blue-700 font-medium"
               data-testid={`button-read-more-${content.cardType}`}
             >
               {isExpanded ? (
@@ -124,7 +124,7 @@ export function CityCard({
           <Button 
             variant="ghost" 
             size="sm" 
-            className="text-foreground/70 hover:text-foreground hover:bg-accent/10 font-medium"
+            className={`${buttonColor} hover:bg-accent/10 font-medium`}
             data-testid={`button-${content.cardType}-action`}
           >
             <MapPin className="w-4 h-4 mr-2" />
