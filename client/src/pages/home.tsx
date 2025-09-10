@@ -270,8 +270,7 @@ export default function Home() {
       </section>
 
       {/* Time-Based Content Display */}
-      {todaysCity && (
-        <section className="py-16" style={{backgroundColor: '#ffffff'}}>
+      <section className="py-16" style={{backgroundColor: '#ffffff'}}>
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <div className="flex items-center justify-center gap-4 mb-6">
@@ -385,7 +384,6 @@ export default function Home() {
             </div>
           </div>
         </section>
-      )}
 
       {/* Digital Postcards Collection */}
       {!loadingCollected && collectedCities && collectedCities.length > 0 && (
