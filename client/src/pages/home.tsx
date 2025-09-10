@@ -86,8 +86,8 @@ export default function Home() {
           <span className="tagline">City of the Day™</span>
         </div>
         <div className="auth-area">
+          <a href="/" className="home-link">Home</a>
           <a href="/library" className="library-link">Library</a>
-          <a href="/admin" className="admin-link">Admin</a>
         </div>
       </header>
 

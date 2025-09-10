@@ -54,7 +54,7 @@ export default function Landing() {
           <span className="tagline">City of the Day™</span>
         </div>
         <div className="auth-area">
-          <a href="/admin" className="admin-link">Admin</a>
+          <a href="/library" className="library-link">Library</a>
         </div>
       </header>
 
