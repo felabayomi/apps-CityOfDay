@@ -3,10 +3,16 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Bell, Compass, MapPin, Route, Binoculars, Mountain } from "lucide-react";
 import { useLocation } from "wouter";
+import { useQuery } from "@tanstack/react-query";
 import Footer from "@/components/Footer";
 
 export default function Landing() {
   const [, setLocation] = useLocation();
+  
+  const { data: todaysCityData, isLoading } = useQuery({
+    queryKey: ['/api/cities/today'],
+    retry: false,
+  });
   
   const handleSignIn = () => {
     window.location.href = "/api/login";
@@ -15,6 +21,10 @@ export default function Landing() {
   const handleViewTodaysCity = () => {
     setLocation("/preview");
   };
+
+  // Get the morning content for preview
+  const morningContent = todaysCityData?.content?.find((c: any) => c.timeOfDay === 'morning');
+  const city = todaysCityData?.city;
 
 
   return (
@@ -79,29 +89,51 @@ export default function Landing() {
       {/* Preview Section */}
       <section className="py-16 bg-background">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-gradient-to-br from-blue-600 via-blue-500 to-yellow-400 rounded-2xl p-8 text-center text-white shadow-2xl">
-            <p className="text-sm uppercase tracking-wide mb-6 text-white/80">
-              WEDNESDAY, SEPTEMBER 11, 2025
-            </p>
-            
-            <div className="bg-white/20 backdrop-blur-sm rounded-full inline-block px-8 py-3 mb-8">
-              <h3 className="text-2xl font-bold">Asheville</h3>
+          {isLoading ? (
+            <div className="bg-gradient-to-br from-blue-600 via-blue-500 to-yellow-400 rounded-2xl p-8 text-center text-white shadow-2xl">
+              <div className="animate-pulse">
+                <div className="h-4 bg-white/20 rounded w-48 mx-auto mb-6"></div>
+                <div className="h-8 bg-white/20 rounded-full w-32 mx-auto mb-8"></div>
+                <div className="h-6 bg-white/20 rounded w-3/4 mx-auto mb-2"></div>
+                <div className="h-6 bg-white/20 rounded w-2/3 mx-auto mb-6"></div>
+                <div className="h-4 bg-white/20 rounded w-40 mx-auto mb-8"></div>
+                <div className="h-12 bg-white/20 rounded w-48 mx-auto"></div>
+              </div>
             </div>
-            
-            <blockquote className="text-lg italic mb-6 max-w-2xl mx-auto leading-relaxed">
-              "Sunrise spills across the Blue Ridge as you step onto the esplanade of the Biltmore Estate, Asheville's crown jewel. The limestone façade warms to peach, and cool air carries the scent of roses and herbs."
-            </blockquote>
-            <p className="text-sm text-white/70 mb-8">—Your Morning in Asheville</p>
-            
-            <Button 
-              size="lg" 
-              className="bg-white/20 hover:bg-white/30 border border-white/30 text-white backdrop-blur-sm"
-              onClick={handleViewTodaysCity}
-              data-testid="button-read-full-guide"
-            >
-              Read Full City Guide →
-            </Button>
-          </div>
+          ) : city && morningContent ? (
+            <div className="bg-gradient-to-br from-blue-600 via-blue-500 to-yellow-400 rounded-2xl p-8 text-center text-white shadow-2xl">
+              <p className="text-sm uppercase tracking-wide mb-6 text-white/80">
+                {new Date().toLocaleDateString('en-US', { 
+                  weekday: 'long', 
+                  year: 'numeric', 
+                  month: 'long', 
+                  day: 'numeric' 
+                }).toUpperCase()}
+              </p>
+              
+              <div className="bg-white/20 backdrop-blur-sm rounded-full inline-block px-8 py-3 mb-8">
+                <h3 className="text-2xl font-bold">{city.name}, {city.country}</h3>
+              </div>
+              
+              <blockquote className="text-lg italic mb-6 max-w-2xl mx-auto leading-relaxed">
+                "{morningContent.description}"
+              </blockquote>
+              <p className="text-sm text-white/70 mb-8">—Your Morning in {city.name}</p>
+              
+              <Button 
+                size="lg" 
+                className="bg-white/20 hover:bg-white/30 border border-white/30 text-white backdrop-blur-sm"
+                onClick={handleViewTodaysCity}
+                data-testid="button-read-full-guide"
+              >
+                Read Full City Guide →
+              </Button>
+            </div>
+          ) : (
+            <div className="bg-gradient-to-br from-blue-600 via-blue-500 to-yellow-400 rounded-2xl p-8 text-center text-white shadow-2xl">
+              <p className="text-lg">No city available for today</p>
+            </div>
+          )}
         </div>
       </section>
 
