@@ -22,7 +22,7 @@ const cardTypeConfig = {
   morning: {
     icon: Sun,
     label: "Morning",
-    color: "bg-accent/10 text-accent",
+    color: "bg-orange-100 text-orange-700",
     placeholder: "Morning inspiration and landmark content..."
   },
   afternoon: {
@@ -250,7 +250,7 @@ export function ContentEditor({ selectedCityId, onCityChange }: ContentEditorPro
             <Edit className="mr-3 text-secondary w-5 h-5" />
             Content Editor
             {selectedCityId && (
-              <Badge className="ml-3 bg-accent/10 text-accent">
+              <Badge className="ml-3 bg-blue-100 text-blue-700">
                 Editing Mode Active
               </Badge>
             )}
@@ -285,7 +285,7 @@ export function ContentEditor({ selectedCityId, onCityChange }: ContentEditorPro
             <div>
               <h4 className="font-semibold text-foreground">{city.name}, {city.country}</h4>
               <div className="flex items-center space-x-2 mt-1">
-                <Badge className={city.isPublished ? "bg-accent/10 text-accent" : "bg-muted text-muted-foreground"}>
+                <Badge className={city.isPublished ? "bg-green-100 text-green-700" : "bg-muted text-muted-foreground"}>
                   {city.isPublished ? "Published" : "Draft"}
                 </Badge>
                 {city.isPinned && (
