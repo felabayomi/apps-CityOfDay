@@ -5,7 +5,7 @@ import { Bell, Compass, MapPin, Route, Binoculars, Mountain } from "lucide-react
 import { useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import Footer from "@/components/Footer";
-import { getCurrentCardType, formatTimeUntilNext } from "@/lib/timeBasedContent";
+import { getCurrentCardType, getNextCardType, formatTimeUntilNext } from "@/lib/timeBasedContent";
 
 export default function Landing() {
   const [, setLocation] = useLocation();
@@ -17,6 +17,7 @@ export default function Landing() {
 
   // Get current time-based content info
   const currentCardInfo = getCurrentCardType();
+  const nextCardInfo = getNextCardType();
   const timeUntilNext = formatTimeUntilNext();
   
   // Get the current content based on time
@@ -113,13 +114,6 @@ export default function Landing() {
                 }).toUpperCase()}
               </p>
               
-              {/* Current time badge */}
-              <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-2 mb-6">
-                <span className="text-sm font-medium">{currentCardInfo.label}</span>
-                <Badge className="bg-white/20 text-white border-white/30 text-xs">
-                  {timeUntilNext}
-                </Badge>
-              </div>
               
               <div className="bg-white/20 backdrop-blur-sm rounded-full inline-block px-8 py-3 mb-8">
                 <h3 className="text-2xl font-bold">{city.name}, {city.country}</h3>
@@ -316,6 +310,14 @@ export default function Landing() {
 
 
       <Footer />
+      
+      {/* Floating Time Indicator - Bottom Right */}
+      <div className="fixed bottom-4 right-4 z-50">
+        <div className="bg-white/95 backdrop-blur-sm border border-gray-200 rounded-lg shadow-lg px-3 py-2">
+          <div className="text-xs text-gray-600 font-medium">{nextCardInfo.label}</div>
+          <div className="text-sm font-bold text-primary">{timeUntilNext}</div>
+        </div>
+      </div>
     </div>
   );
 }

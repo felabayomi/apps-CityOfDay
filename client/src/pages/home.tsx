@@ -13,7 +13,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { CameraCapture } from "@/components/camera-capture";
 import Footer from "@/components/Footer";
 import { ShareButton } from "@/components/ShareButton";
-import { getCurrentCardType, formatTimeUntilNext, type CardDisplayType } from "@/lib/timeBasedContent";
+import { getCurrentCardType, getNextCardType, formatTimeUntilNext, type CardDisplayType } from "@/lib/timeBasedContent";
 
 export default function Home() {
   const { user, isLoading, isAuthenticated } = useAuth();
@@ -23,12 +23,14 @@ export default function Home() {
   
   // Time-based content state
   const [currentCardInfo, setCurrentCardInfo] = useState(getCurrentCardType());
+  const [nextCardInfo, setNextCardInfo] = useState(getNextCardType());
   const [timeUntilNext, setTimeUntilNext] = useState(formatTimeUntilNext());
 
   // Time-based content update timer
   useEffect(() => {
     const updateCardInfo = () => {
       setCurrentCardInfo(getCurrentCardType());
+      setNextCardInfo(getNextCardType());
       setTimeUntilNext(formatTimeUntilNext());
     };
 
@@ -279,12 +281,6 @@ export default function Home() {
               <h3 className="text-3xl font-bold" style={{color: 'var(--text-dark)'}}>
                 {currentCardInfo.label}
               </h3>
-              <Badge 
-                variant="secondary" 
-                className="text-sm font-medium bg-primary/10 text-primary border-primary/20"
-              >
-                {timeUntilNext}
-              </Badge>
             </div>
             
             
@@ -472,6 +468,14 @@ export default function Home() {
       />
 
       <Footer />
+      
+      {/* Floating Time Indicator - Bottom Right */}
+      <div className="fixed bottom-4 right-4 z-50">
+        <div className="bg-white/95 backdrop-blur-sm border border-gray-200 rounded-lg shadow-lg px-3 py-2">
+          <div className="text-xs text-gray-600 font-medium">{nextCardInfo.label}</div>
+          <div className="text-sm font-bold text-primary">{timeUntilNext}</div>
+        </div>
+      </div>
     </div>
   );
 }

@@ -103,6 +103,48 @@ export function getTimeUntilNextChange(): { hours: number; minutes: number } {
 }
 
 /**
+ * Get the next card type (what's coming next)
+ */
+export function getNextCardType(): TimeBasedCard {
+  const now = new Date();
+  const hour = now.getHours();
+  const minutes = now.getMinutes();
+  
+  // Convert time to minutes for easier comparison
+  const currentTimeInMinutes = hour * 60 + minutes;
+  
+  // Define time ranges and what comes next
+  const timeRanges = [
+    { start: 0, end: 420, nextType: 'morning' as CardDisplayType, nextLabel: 'Morning Discovery' }, // Preview -> Morning
+    { start: 420, end: 660, nextType: 'afternoon' as CardDisplayType, nextLabel: 'Afternoon Culture' }, // Morning -> Afternoon
+    { start: 660, end: 900, nextType: 'evening' as CardDisplayType, nextLabel: 'Evening Budget Tips' }, // Afternoon -> Evening
+    { start: 900, end: 1140, nextType: 'bonus' as CardDisplayType, nextLabel: 'Did You Know?' }, // Evening -> Bonus
+    { start: 1140, end: 1380, nextType: 'preview' as CardDisplayType, nextLabel: 'City Preview' }, // Bonus -> Preview
+    { start: 1380, end: 1440, nextType: 'morning' as CardDisplayType, nextLabel: 'Morning Discovery' }, // Preview -> Morning (next day)
+  ];
+  
+  // Find the current time range and return what's next
+  for (const range of timeRanges) {
+    if (currentTimeInMinutes >= range.start && currentTimeInMinutes < range.end) {
+      return {
+        type: range.nextType,
+        label: range.nextLabel,
+        timeRange: '', // Not needed for next card display
+        nextChangeTime: '' // Not needed for next card display
+      };
+    }
+  }
+  
+  // Fallback to morning if no match found
+  return {
+    type: 'morning',
+    label: 'Morning Discovery',
+    timeRange: '',
+    nextChangeTime: ''
+  };
+}
+
+/**
  * Format time until next change for display
  */
 export function formatTimeUntilNext(): string {
