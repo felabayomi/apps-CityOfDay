@@ -291,22 +291,24 @@ export default function Home() {
           </div>
 
           {/* Display current content */}
-          {currentContent ? (
-            /* Current Time Card Display */
-            <div className="max-w-2xl mx-auto">
-              <CityCard
-                content={currentContent}
-                city={todaysCity}
-                nextCardTitle={nextCardInfo.label}
-                timeUntilNext={timeUntilNext}
-              />
-            </div>
-          ) : (
-            /* Loading or No Content */
-            <div className="text-center py-12">
-              <p className="text-muted-foreground">Loading today's {currentCardInfo.label.toLowerCase()}...</p>
-            </div>
-          )}
+          <div className="max-w-2xl mx-auto">
+            <CityCard
+              content={{
+                id: "test-123",
+                cardType: "morning",
+                title: "Test Card Title",
+                content: "This is test content to see if the component renders",
+                imageUrl: null,
+                affiliateLinks: null,
+                createdAt: null,
+                updatedAt: null,
+                cityId: null
+              }}
+              city={todaysCity || { name: "Test City" }}
+              nextCardTitle={nextCardInfo.label}
+              timeUntilNext={timeUntilNext}
+            />
+          </div>
 
             {/* Affiliate CTA */}
             <div className="mt-12 text-center">
