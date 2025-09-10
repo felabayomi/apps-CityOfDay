@@ -209,7 +209,7 @@ export default function Landing() {
             <p className="text-white font-semibold">
               We link directly to official sources so you always get the most accurate info.
             </p>
-            <p className="text-lg text-primary font-semibold">
+            <p className="text-lg text-blue-900 font-semibold">
               Stay in touch for exclusive partner deals
             </p>
           </div>
