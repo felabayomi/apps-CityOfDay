@@ -114,17 +114,6 @@ export default function Landing() {
                 }).toUpperCase()}
               </p>
               
-              {/* Time Indicator - Responsive positioning */}
-              <div className="absolute top-4 right-4 md:bottom-4 md:top-auto bg-gray-900/90 backdrop-blur-sm text-white rounded-lg shadow-xl px-3 py-2 md:px-4 md:py-3 border-2 border-white/50">
-                <div className="flex items-center gap-1 md:gap-2">
-                  <div className="text-xs md:text-sm font-bold">
-                    <div className="text-yellow-300 text-xs font-semibold">{nextCardInfo.label}</div>
-                    <div className="text-white font-bold text-sm md:text-base">{timeUntilNext}</div>
-                  </div>
-                </div>
-              </div>
-              
-              
               <div className="bg-white/20 backdrop-blur-sm rounded-full inline-block px-8 py-3 mb-8">
                 <h3 className="text-2xl font-bold">{city.name}, {city.country}</h3>
               </div>
@@ -146,12 +135,22 @@ export default function Landing() {
               
               <Button 
                 size="lg" 
-                className="bg-white/20 hover:bg-white/30 border border-white/30 text-white backdrop-blur-sm"
+                className="bg-white/20 hover:bg-white/30 border border-white/30 text-white backdrop-blur-sm mb-4"
                 onClick={handleViewTodaysCity}
                 data-testid="button-visit-city"
               >
                 {currentCardInfo.type === 'preview' ? 'Discover' : 'Explore'} {city.name}
               </Button>
+              
+              {/* Time Indicator - Below button */}
+              <div className="bg-gray-900/90 backdrop-blur-sm text-white rounded-lg shadow-xl px-4 py-3 border-2 border-white/50 inline-block">
+                <div className="flex items-center gap-2">
+                  <div className="text-sm font-bold text-center">
+                    <div className="text-yellow-300 text-xs font-semibold">{nextCardInfo.label}</div>
+                    <div className="text-white font-bold text-base">{timeUntilNext}</div>
+                  </div>
+                </div>
+              </div>
             </div>
           ) : (
             <div className="bg-gradient-to-br from-blue-600 via-blue-500 to-yellow-400 rounded-2xl p-8 text-center text-white shadow-2xl">
