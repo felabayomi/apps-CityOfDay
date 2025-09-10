@@ -13,6 +13,7 @@ import { ContentEditor } from "@/components/content-editor";
 import { useToast } from "@/hooks/use-toast";
 import { isUnauthorizedError } from "@/lib/authUtils";
 import { useEffect } from "react";
+import Footer from "@/components/Footer";
 
 export default function Admin() {
   const { user, isLoading, isAuthenticated } = useAuth();
@@ -327,6 +328,8 @@ export default function Admin() {
           </Card>
         </div>
       </div>
+
+      <Footer />
     </div>
   );
 }

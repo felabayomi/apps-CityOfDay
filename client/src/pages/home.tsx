@@ -11,6 +11,7 @@ import { isUnauthorizedError } from "@/lib/authUtils";
 import { useEffect, useState } from "react";
 import { apiRequest } from "@/lib/queryClient";
 import { CameraCapture } from "@/components/camera-capture";
+import Footer from "@/components/Footer";
 
 export default function Home() {
   const { user, isLoading, isAuthenticated } = useAuth();
@@ -407,6 +408,8 @@ export default function Home() {
         onClose={() => setIsCameraOpen(false)}
         currentCity={todaysCity}
       />
+
+      <Footer />
     </div>
   );
 }

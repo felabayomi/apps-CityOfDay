@@ -3,6 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Globe, Bell, Download, Wifi, FolderSync, Compass, MapPin, Map, Navigation, Route, Plane, Camera, Binoculars, Mountain } from "lucide-react";
 import { useLocation } from "wouter";
+import Footer from "@/components/Footer";
 
 export default function Landing() {
   const [, setLocation] = useLocation();
@@ -245,42 +246,7 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer>
-        <div className="column">
-          <h4>Daily Felix</h4>
-          <p>Your daily guide to city discovery</p>
-        </div>
-        
-        <div className="column">
-          <h4>Product</h4>
-          <ul>
-            <li><a href="#discover">Features</a></li>
-            <li><a href="#">Mobile App</a></li>
-          </ul>
-        </div>
-        
-        <div className="column">
-          <h4>Company</h4>
-          <ul>
-            <li><a href="#">About</a></li>
-            <li><a href="#">Blog</a></li>
-            <li><a href="#">Contact</a></li>
-          </ul>
-        </div>
-        
-        <div className="column">
-          <h4>Legal</h4>
-          <ul>
-            <li><a href="#">Privacy Policy</a></li>
-            <li><a href="#">Terms of Service</a></li>
-          </ul>
-        </div>
-        
-        <div className="column">
-          <p>© 2024 Daily Felix. All rights reserved.</p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

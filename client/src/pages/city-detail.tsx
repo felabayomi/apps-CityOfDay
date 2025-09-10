@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { MapPin, ArrowLeft } from "lucide-react";
 import { Link } from "wouter";
 import { CityCard } from "@/components/city-card";
+import Footer from "@/components/Footer";
 
 export default function CityDetail() {
   const { id } = useParams<{ id: string }>();
@@ -99,6 +100,8 @@ export default function CityDetail() {
           </div>
         )}
       </div>
+
+      <Footer />
     </div>
   );
 }

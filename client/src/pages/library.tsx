@@ -11,6 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import { isUnauthorizedError } from "@/lib/authUtils";
 import { useEffect, useState } from "react";
 import { Link } from "wouter";
+import Footer from "@/components/Footer";
 
 export default function LibraryPage() {
   const { user, isLoading, isAuthenticated } = useAuth();
@@ -302,6 +303,8 @@ export default function LibraryPage() {
           )}
         </div>
       </section>
+
+      <Footer />
     </div>
   );
 }

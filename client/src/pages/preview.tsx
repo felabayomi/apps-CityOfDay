@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Globe, Bell, Heart, Flame, MapPin, LogIn } from "lucide-react";
 import { CityCard } from "@/components/city-card";
+import Footer from "@/components/Footer";
 
 export default function Preview() {
   const handleSignIn = () => {
@@ -166,6 +167,8 @@ export default function Preview() {
           </CardContent>
         </Card>
       </main>
+
+      <Footer />
     </div>
   );
 }
