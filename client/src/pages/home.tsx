@@ -12,6 +12,7 @@ import { useEffect, useState } from "react";
 import { apiRequest } from "@/lib/queryClient";
 import { CameraCapture } from "@/components/camera-capture";
 import Footer from "@/components/Footer";
+import { ShareButton } from "@/components/ShareButton";
 
 export default function Home() {
   const { user, isLoading, isAuthenticated } = useAuth();
@@ -174,7 +175,7 @@ export default function Home() {
                 <h3 className="text-4xl md:text-6xl font-bold text-yellow-300 mb-4">
                   {todaysCity.name}, {todaysCity.country}
                 </h3>
-                <div className="flex justify-center space-x-4">
+                <div className="flex flex-wrap justify-center gap-4">
                   <Button 
                     className="bg-white text-primary hover:bg-gray-100"
                     onClick={() => setIsCameraOpen(true)}
@@ -193,6 +194,17 @@ export default function Home() {
                     <Heart className="w-4 h-4 mr-2" />
                     Add to Bucket List
                   </Button>
+                  <div className="flex">
+                    <ShareButton 
+                      city={{ name: todaysCity.name, country: todaysCity.country }}
+                      content={todaysContent.map((c: any) => ({
+                        title: c.title,
+                        content: c.content,
+                        card_type: c.cardType,
+                        image_url: c.imageUrl
+                      }))}
+                    />
+                  </div>
                 </div>
               </div>
             </div>
