@@ -1,9 +1,10 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Heart, Sun, Utensils, Moon, Lightbulb, Globe, ChevronDown, ChevronUp } from "lucide-react";
+import { MapPin, Heart, Sun, Utensils, Moon, Lightbulb, Globe, ChevronDown, ChevronUp, Clock } from "lucide-react";
 import type { CityContent } from "@shared/schema";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { getNextCardType, formatTimeUntilNext } from "@/lib/timeBasedContent";
 
 interface CityCardProps {
   content: CityContent;
@@ -56,8 +57,25 @@ export function CityCard({
   isPreview = false 
 }: CityCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [timeUntilNext, setTimeUntilNext] = useState("");
+  
   const config = cardTypeConfig[content.cardType as keyof typeof cardTypeConfig];
   if (!config) return null;
+
+  // Get next card info for time indicator
+  const nextCardInfo = getNextCardType();
+
+  // Update countdown every minute
+  useEffect(() => {
+    const updateTime = () => {
+      setTimeUntilNext(formatTimeUntilNext());
+    };
+    
+    updateTime();
+    const interval = setInterval(updateTime, 60000); // Update every minute
+    
+    return () => clearInterval(interval);
+  }, []);
 
   const { icon: IconComponent, badge, color, buttonText, buttonColor } = config;
   
@@ -66,7 +84,7 @@ export function CityCard({
   const shouldShowReadMore = contentLength > 200; // Show "Read More" if content is longer than 200 chars
 
   return (
-    <Card className="postcard-shadow hover:transform hover:scale-105 transition-all duration-300">
+    <Card className="postcard-shadow hover:transform hover:scale-105 transition-all duration-300 relative">
       <div className="relative aspect-[16/9] overflow-hidden rounded-t-lg">
         {content.imageUrl ? (
           <img 
@@ -187,7 +205,7 @@ export function CityCard({
         {content.affiliateLinks && Array.isArray(content.affiliateLinks) && content.affiliateLinks.length > 0 && (
           <div className="mt-4 pt-4 border-t border-border">
             <div className="flex flex-wrap gap-2">
-              {content.affiliateLinks.map((link: any, index: number) => (
+              {content.affiliateLinks.map((link: { url: string; text: string }, index: number) => (
                 <Button
                   key={index}
                   variant="outline"
@@ -203,6 +221,19 @@ export function CityCard({
           </div>
         )}
       </CardContent>
+      
+      {/* Time Indicator - Bottom Right Corner */}
+      {!isPreview && (
+        <div className="absolute bottom-3 right-3 bg-white/95 backdrop-blur-sm border border-gray-200 rounded-lg shadow-md px-2 py-1">
+          <div className="flex items-center gap-1">
+            <Clock className="w-3 h-3 text-gray-500" />
+            <div className="text-xs">
+              <div className="text-gray-600 font-medium leading-tight">{nextCardInfo.label}</div>
+              <div className="text-primary font-bold leading-tight">{timeUntilNext}</div>
+            </div>
+          </div>
+        </div>
+      )}
     </Card>
   );
 }
