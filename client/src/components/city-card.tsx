@@ -94,7 +94,7 @@ export function CityCard({
           {content.title}
         </h4>
         <div className="mb-4">
-          <p className={`text-muted-foreground text-sm ${!isExpanded && shouldShowReadMore ? 'line-clamp-3' : ''}`} data-testid={`content-${content.cardType}`}>
+          <p className={`text-foreground/80 text-sm ${!isExpanded && shouldShowReadMore ? 'line-clamp-3' : ''}`} data-testid={`content-${content.cardType}`}>
             {content.content}
           </p>
           {shouldShowReadMore && (
@@ -102,7 +102,7 @@ export function CityCard({
               variant="ghost"
               size="sm"
               onClick={() => setIsExpanded(!isExpanded)}
-              className="mt-2 p-0 h-auto text-xs text-accent hover:text-accent/80"
+              className="mt-2 p-0 h-auto text-xs text-foreground/70 hover:text-foreground font-medium"
               data-testid={`button-read-more-${content.cardType}`}
             >
               {isExpanded ? (
@@ -124,7 +124,7 @@ export function CityCard({
           <Button 
             variant="ghost" 
             size="sm" 
-            className={`${buttonColor} hover:bg-transparent`}
+            className="text-foreground/70 hover:text-foreground hover:bg-accent/10 font-medium"
             data-testid={`button-${content.cardType}-action`}
           >
             <MapPin className="w-4 h-4 mr-2" />
