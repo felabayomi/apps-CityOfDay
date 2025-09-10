@@ -16,9 +16,18 @@ export default function Footer() {
             We link to official sources for accuracy, but for <strong className="text-foreground">best rates & curated packages, contact us directly.</strong>
           </p>
           
-          <div className="flex items-center justify-center gap-2 text-primary">
+          <div className="flex items-center justify-center gap-2 text-primary mb-6">
             <span>Your next adventure could start here.</span>
             <Plane className="w-5 h-5" />
+          </div>
+
+          <div className="border-t border-muted pt-6 text-center">
+            <p className="text-sm text-muted-foreground">
+              © 2025 City Discoverer, An Expedition America LLC Co.
+            </p>
+            <p className="text-xs text-muted-foreground mt-1">
+              50 Stately, St Wiley Ford WV, 26767
+            </p>
           </div>
         </div>
       </div>
