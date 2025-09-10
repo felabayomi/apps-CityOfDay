@@ -17,7 +17,7 @@ import {
   type InsertUserTravelPhoto,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc, and, gte, lt, lte, asc, isNull, isNotNull, sql } from "drizzle-orm";
+import { eq, desc, and, or, gte, lt, lte, asc, isNull, isNotNull, sql } from "drizzle-orm";
 
 export interface IStorage {
   // User operations (required for Replit Auth)
@@ -165,37 +165,37 @@ export class DatabaseStorage implements IStorage {
     const startOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate());
     const endOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1);
     
-    // First, try to find a city scheduled for today
-    const [scheduledCity] = await db
+    // Single optimized query: prioritize scheduled city for today, fallback to most recent published
+    const result = await db
       .select()
       .from(cities)
       .where(
         and(
           eq(cities.isPublished, true),
-          gte(cities.scheduledDate, startOfDay),
-          lt(cities.scheduledDate, endOfDay)
+          or(
+            // Priority 1: Scheduled for today
+            and(
+              gte(cities.scheduledDate, startOfDay),
+              lt(cities.scheduledDate, endOfDay)
+            ),
+            // Priority 2: Published today or earlier (fallback)
+            lte(cities.publishedDate, today)
+          )
         )
+      )
+      .orderBy(
+        // Order by: scheduled for today first, then by most recent published date
+        desc(
+          sql`CASE 
+            WHEN scheduled_date >= ${startOfDay} AND scheduled_date < ${endOfDay} THEN 1 
+            ELSE 0 
+          END`
+        ),
+        desc(cities.publishedDate)
       )
       .limit(1);
     
-    if (scheduledCity) {
-      return scheduledCity;
-    }
-    
-    // Fallback: get the most recently published city (published today or in the past)
-    const [fallbackCity] = await db
-      .select()
-      .from(cities)
-      .where(
-        and(
-          eq(cities.isPublished, true),
-          lte(cities.publishedDate, today)
-        )
-      )
-      .orderBy(desc(cities.publishedDate))
-      .limit(1);
-    
-    return fallbackCity;
+    return result[0];
   }
 
   async getScheduledCities(): Promise<City[]> {
