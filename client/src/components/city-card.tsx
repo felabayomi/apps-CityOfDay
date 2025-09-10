@@ -210,13 +210,13 @@ export function CityCard({
         ) : null}
       </CardContent>
       
-      {/* Time Indicator - Bottom Right Corner */}
-      <div className="absolute bottom-4 right-4 bg-black text-white border-2 border-white rounded-lg shadow-xl px-3 py-2 z-30">
+      {/* Time Indicator - TOP LEFT CORNER FOR TESTING */}
+      <div className="absolute top-4 left-4 bg-red-600 text-white border-4 border-yellow-400 rounded-xl shadow-2xl px-4 py-3 z-50">
         <div className="flex items-center gap-2">
-          <Clock className="w-4 h-4 text-yellow-400" />
-          <div className="text-sm">
-            <div className="text-white font-medium">{nextCardTitle || "Morning Discovery"}</div>
-            <div className="text-yellow-400 font-bold">{timeUntilNext || "4h 38m"}</div>
+          <Clock className="w-6 h-6 text-yellow-300" />
+          <div className="text-base font-bold">
+            <div className="text-white">⏰ {nextCardTitle || "Morning Discovery"}</div>
+            <div className="text-yellow-300 text-lg">⏱️ {timeUntilNext || "4h 38m"}</div>
           </div>
         </div>
       </div>
