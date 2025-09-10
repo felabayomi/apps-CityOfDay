@@ -22,7 +22,8 @@ export default function Landing() {
   // Get the current content based on time
   const getCurrentContent = () => {
     if (currentCardInfo.type === 'preview') {
-      return null; // Show city preview during night hours
+      // During preview mode, show morning content as preview
+      return (todaysCityData as any)?.content?.find((c: any) => c.cardType === 'morning');
     }
     return (todaysCityData as any)?.content?.find((c: any) => c.cardType === currentCardInfo.type);
   };
@@ -124,15 +125,7 @@ export default function Landing() {
                 <h3 className="text-2xl font-bold">{city.name}, {city.country}</h3>
               </div>
               
-              {currentCardInfo.type === 'preview' ? (
-                /* City Preview Mode */
-                <>
-                  <p className="text-lg mb-6 max-w-2xl mx-auto leading-relaxed">
-                    Get ready to discover amazing landmarks, local culture, and hidden gems. 
-                    Your {currentContent ? 'morning' : 'next'} discovery begins at 7:00 AM!
-                  </p>
-                </>
-              ) : currentContent ? (
+              {currentContent ? (
                 /* Current Time Content */
                 <>
                   <blockquote className="text-lg italic mb-6 max-w-2xl mx-auto leading-relaxed">

@@ -154,7 +154,8 @@ export default function Home() {
   // Get current card content based on time
   const getCurrentContent = () => {
     if (currentCardInfo.type === 'preview') {
-      return null; // Show city preview instead of content cards
+      // During preview mode, show morning content as preview
+      return todaysContent.find((content: any) => content.cardType === 'morning');
     }
     
     return todaysContent.find((content: any) => content.cardType === currentCardInfo.type);
@@ -296,44 +297,8 @@ export default function Home() {
             <div className="w-24 h-1 mx-auto rounded-full mt-4" style={{background: 'linear-gradient(135deg, #3A7CA5, #2A5B7A)'}}></div>
           </div>
 
-          {/* Display current content or city preview */}
-          {currentCardInfo.type === 'preview' ? (
-            /* City Preview Mode */
-            <div className="max-w-2xl mx-auto">
-              <Card className="text-center border-2 border-primary/20 shadow-lg">
-                <CardContent className="p-8">
-                  <h4 className="text-2xl font-bold mb-4" style={{color: 'var(--text-dark)'}}>
-                    Tomorrow's Featured Destination
-                  </h4>
-                  <div className="text-4xl font-bold text-primary mb-6">
-                    {todaysCity?.name}, {todaysCity?.country}
-                  </div>
-                  <p className="text-lg text-muted-foreground mb-6">
-                    Get ready to discover amazing landmarks, local culture, and hidden gems. 
-                    Your morning discovery begins at 7:00 AM!
-                  </p>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
-                    <div className="text-center p-3 bg-primary/5 rounded-lg">
-                      <p className="text-sm text-muted-foreground">7:00 AM</p>
-                      <p className="font-semibold text-primary">Morning</p>
-                    </div>
-                    <div className="text-center p-3 bg-accent/5 rounded-lg">
-                      <p className="text-sm text-muted-foreground">11:00 AM</p>
-                      <p className="font-semibold text-accent">Afternoon</p>
-                    </div>
-                    <div className="text-center p-3 bg-secondary/5 rounded-lg">
-                      <p className="text-sm text-muted-foreground">3:00 PM</p>
-                      <p className="font-semibold text-secondary">Evening</p>
-                    </div>
-                    <div className="text-center p-3 bg-primary/5 rounded-lg">
-                      <p className="text-sm text-muted-foreground">7:00 PM</p>
-                      <p className="font-semibold text-primary">Bonus</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          ) : currentContent ? (
+          {/* Display current content */}
+          {currentContent ? (
             /* Current Time Card Display */
             <div className="max-w-2xl mx-auto">
               <CityCard
