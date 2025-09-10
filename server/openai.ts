@@ -35,7 +35,9 @@ export async function generateCityContent(cityName: string, country: string, foc
       cultural: "focusing heavily on cultural heritage, traditions, and history",
       food: "emphasizing local cuisine, restaurants, and culinary experiences",
       architecture: "highlighting architectural marvels, buildings, and design",
-      budget: "prioritizing budget-friendly activities and money-saving tips"
+      budget: "prioritizing budget-friendly activities and money-saving tips",
+      luxury: "emphasizing high-end experiences, luxury hotels, fine dining, and premium activities",
+      nature: "focusing on natural attractions, wildlife encounters, outdoor adventures, and eco-experiences"
     };
 
     const focusDescription = focusPrompts[focus as keyof typeof focusPrompts] || focusPrompts.balanced;
@@ -64,7 +66,7 @@ Create exactly 4 content cards in JSON format:
    - Make it memorable and conversation-worthy
    - Should make people want to share it
 
-Each card should be engaging, informative, and inspire wanderlust. Keep content between 80-120 words per card. Use conversational, enthusiastic tone.
+Write in a friendly, upbeat tone with a hint of wanderlust. Use concise, vivid language that evokes sensory detail (sights, tastes, sounds). Aim for modern and approachable — like a travel-savvy friend sharing a great find. Keep it light, not too literary or academic. Avoid clichés and generic praise. Assume the reader is curious, not committed — spark their imagination in 100 words or less. Think curated Instagram caption meets travel-savvy friend, not Lonely Planet chapter.
 
 Respond with JSON in this exact format:
 {
@@ -95,7 +97,7 @@ Respond with JSON in this exact format:
       messages: [
         {
           role: "system",
-          content: "You are a travel content expert who creates engaging, inspiring daily city content for travelers. Always respond with valid JSON."
+          content: "You are a travel-savvy friend who creates casual, wanderlust-sparking city content. Write like curated Instagram captions — vivid, sensory, modern, and approachable. Avoid literary or academic tone. Spark curiosity with light, friendly language. Always respond with valid JSON."
         },
         {
           role: "user",

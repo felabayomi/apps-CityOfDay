@@ -151,6 +151,8 @@ export function AdminCityGenerator() {
                 <SelectItem value="food">Food & Cuisine</SelectItem>
                 <SelectItem value="architecture">Architecture & Landmarks</SelectItem>
                 <SelectItem value="budget">Budget Travel</SelectItem>
+                <SelectItem value="luxury">Luxury Travel</SelectItem>
+                <SelectItem value="nature">Nature & Wildlife</SelectItem>
               </SelectContent>
             </Select>
           </div>
