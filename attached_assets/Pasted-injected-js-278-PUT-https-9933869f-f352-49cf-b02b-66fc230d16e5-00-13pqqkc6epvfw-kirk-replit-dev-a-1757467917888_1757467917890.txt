@@ -1,0 +1,57 @@
+injected.js:278  PUT https://9933869f-f352-49cf-b02b-66fc230d16e5-00-13pqqkc6epvfw.kirk.replit.dev/api/admin/cities/67bf6667-cd49-4aa0-a2d2-b5814646c586 500 (Internal Server Error)
+window.fetch @ Network.js:219
+apply @ injected.js:278
+apiRequest @ queryClient.ts:15
+mutationFn @ content-editor.tsx:205
+fn @ @tanstack_react-query.js?v=c07c9d11:1189
+run @ @tanstack_react-query.js?v=c07c9d11:494
+start @ @tanstack_react-query.js?v=c07c9d11:536
+execute @ @tanstack_react-query.js?v=c07c9d11:1225
+await in execute
+mutate @ @tanstack_react-query.js?v=c07c9d11:2630
+(anonymous) @ @tanstack_react-query.js?v=c07c9d11:3295
+onClick @ content-editor.tsx:304
+callCallback2 @ chunk-RPCDYKBN.js?v=c07c9d11:3674
+invokeGuardedCallbackDev @ chunk-RPCDYKBN.js?v=c07c9d11:3699
+invokeGuardedCallback @ chunk-RPCDYKBN.js?v=c07c9d11:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-RPCDYKBN.js?v=c07c9d11:3736
+executeDispatch @ chunk-RPCDYKBN.js?v=c07c9d11:7014
+processDispatchQueueItemsInOrder @ chunk-RPCDYKBN.js?v=c07c9d11:7034
+processDispatchQueue @ chunk-RPCDYKBN.js?v=c07c9d11:7043
+dispatchEventsForPlugins @ chunk-RPCDYKBN.js?v=c07c9d11:7051
+(anonymous) @ chunk-RPCDYKBN.js?v=c07c9d11:7174
+batchedUpdates$1 @ chunk-RPCDYKBN.js?v=c07c9d11:18913
+batchedUpdates @ chunk-RPCDYKBN.js?v=c07c9d11:3579
+dispatchEventForPluginEventSystem @ chunk-RPCDYKBN.js?v=c07c9d11:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-RPCDYKBN.js?v=c07c9d11:5478
+dispatchEvent @ chunk-RPCDYKBN.js?v=c07c9d11:5472
+dispatchDiscreteEvent @ chunk-RPCDYKBN.js?v=c07c9d11:5449Understand this error
+injected.js:278  PUT https://9933869f-f352-49cf-b02b-66fc230d16e5-00-13pqqkc6epvfw.kirk.replit.dev/api/admin/cities/67bf6667-cd49-4aa0-a2d2-b5814646c586 500 (Internal Server Error)
+window.fetch @ Network.js:219
+apply @ injected.js:278
+apiRequest @ queryClient.ts:15
+mutationFn @ content-editor.tsx:205
+fn @ @tanstack_react-query.js?v=c07c9d11:1189
+run @ @tanstack_react-query.js?v=c07c9d11:494
+start @ @tanstack_react-query.js?v=c07c9d11:536
+execute @ @tanstack_react-query.js?v=c07c9d11:1225
+await in execute
+mutate @ @tanstack_react-query.js?v=c07c9d11:2630
+(anonymous) @ @tanstack_react-query.js?v=c07c9d11:3295
+onClick @ content-editor.tsx:304
+callCallback2 @ chunk-RPCDYKBN.js?v=c07c9d11:3674
+invokeGuardedCallbackDev @ chunk-RPCDYKBN.js?v=c07c9d11:3699
+invokeGuardedCallback @ chunk-RPCDYKBN.js?v=c07c9d11:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-RPCDYKBN.js?v=c07c9d11:3736
+executeDispatch @ chunk-RPCDYKBN.js?v=c07c9d11:7014
+processDispatchQueueItemsInOrder @ chunk-RPCDYKBN.js?v=c07c9d11:7034
+processDispatchQueue @ chunk-RPCDYKBN.js?v=c07c9d11:7043
+dispatchEventsForPlugins @ chunk-RPCDYKBN.js?v=c07c9d11:7051
+(anonymous) @ chunk-RPCDYKBN.js?v=c07c9d11:7174
+batchedUpdates$1 @ chunk-RPCDYKBN.js?v=c07c9d11:18913
+batchedUpdates @ chunk-RPCDYKBN.js?v=c07c9d11:3579
+dispatchEventForPluginEventSystem @ chunk-RPCDYKBN.js?v=c07c9d11:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-RPCDYKBN.js?v=c07c9d11:5478
+dispatchEvent @ chunk-RPCDYKBN.js?v=c07c9d11:5472
+dispatchDiscreteEvent @ chunk-RPCDYKBN.js?v=c07c9d11:5449Understand this error
+injected.js:278  PUT https://9933869f-f352-49cf-b02b-66fc230d16e5-00-13pqqkc6epvfw.kirk.replit.dev/api/admin/cities/67bf6667-cd49-4aa0-a2d2-b5814646c586 500 (Internal Server Error)

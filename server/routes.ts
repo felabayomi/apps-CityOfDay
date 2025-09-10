@@ -194,33 +194,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.put("/api/admin/cities/:id", isAuthenticated, async (req, res) => {
     try {
-      const updateData = { ...req.body };
+      // Only allow specific fields to be updated to avoid timestamp field conflicts
+      const allowedFields = ['name', 'country', 'isPublished', 'isPinned', 'publishedDate', 'scheduledDate'];
+      const updateData: any = {};
+      
+      // Only copy allowed fields
+      for (const field of allowedFields) {
+        if (req.body[field] !== undefined) {
+          updateData[field] = req.body[field];
+        }
+      }
       
       // Handle date conversions - only convert valid date strings
-      if (updateData.publishedDate) {
-        if (typeof updateData.publishedDate === 'string') {
-          // Convert to EST time and create proper Date object
-          const date = new Date(updateData.publishedDate);
-          if (!isNaN(date.getTime())) {
-            updateData.publishedDate = date;
-          } else {
-            delete updateData.publishedDate; // Remove invalid date
-          }
+      if (updateData.publishedDate && typeof updateData.publishedDate === 'string') {
+        const date = new Date(updateData.publishedDate);
+        if (!isNaN(date.getTime())) {
+          updateData.publishedDate = date;
+        } else {
+          delete updateData.publishedDate; // Remove invalid date
         }
       }
       
-      if (updateData.scheduledDate) {
-        if (typeof updateData.scheduledDate === 'string') {
-          const date = new Date(updateData.scheduledDate);
-          if (!isNaN(date.getTime())) {
-            updateData.scheduledDate = date;
-          } else {
-            delete updateData.scheduledDate; // Remove invalid date
-          }
+      if (updateData.scheduledDate && typeof updateData.scheduledDate === 'string') {
+        const date = new Date(updateData.scheduledDate);
+        if (!isNaN(date.getTime())) {
+          updateData.scheduledDate = date;
+        } else {
+          delete updateData.scheduledDate; // Remove invalid date
         }
       }
       
-      console.log('Update data before storage:', updateData);
+      console.log('Filtered update data:', updateData);
       const city = await storage.updateCity(req.params.id, updateData);
       res.json(city);
     } catch (error) {
