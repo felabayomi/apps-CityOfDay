@@ -1,8 +1,9 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Heart, Sun, Utensils, Moon, Lightbulb, Globe } from "lucide-react";
+import { MapPin, Heart, Sun, Utensils, Moon, Lightbulb, Globe, ChevronDown, ChevronUp } from "lucide-react";
 import type { CityContent } from "@shared/schema";
+import { useState } from "react";
 
 interface CityCardProps {
   content: CityContent;
@@ -52,10 +53,15 @@ export function CityCard({
   isAddingToBucketList = false,
   isPreview = false 
 }: CityCardProps) {
+  const [isExpanded, setIsExpanded] = useState(false);
   const config = cardTypeConfig[content.cardType as keyof typeof cardTypeConfig];
   if (!config) return null;
 
   const { icon: IconComponent, badge, color, buttonText, buttonColor } = config;
+  
+  // Check if content is long enough to need truncation
+  const contentLength = content.content.length;
+  const shouldShowReadMore = contentLength > 200; // Show "Read More" if content is longer than 200 chars
 
   return (
     <Card className="postcard-shadow hover:transform hover:scale-105 transition-all duration-300">
@@ -87,9 +93,32 @@ export function CityCard({
         <h4 className="text-lg font-semibold text-foreground mb-2" data-testid={`title-${content.cardType}`}>
           {content.title}
         </h4>
-        <p className="text-muted-foreground text-sm mb-4 line-clamp-3" data-testid={`content-${content.cardType}`}>
-          {content.content}
-        </p>
+        <div className="mb-4">
+          <p className={`text-muted-foreground text-sm ${!isExpanded && shouldShowReadMore ? 'line-clamp-3' : ''}`} data-testid={`content-${content.cardType}`}>
+            {content.content}
+          </p>
+          {shouldShowReadMore && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setIsExpanded(!isExpanded)}
+              className="mt-2 p-0 h-auto text-xs text-accent hover:text-accent/80"
+              data-testid={`button-read-more-${content.cardType}`}
+            >
+              {isExpanded ? (
+                <>
+                  <ChevronUp className="w-3 h-3 mr-1" />
+                  Read Less
+                </>
+              ) : (
+                <>
+                  <ChevronDown className="w-3 h-3 mr-1" />
+                  Read More
+                </>
+              )}
+            </Button>
+          )}
+        </div>
         
         <div className="flex items-center justify-between">
           <Button 
