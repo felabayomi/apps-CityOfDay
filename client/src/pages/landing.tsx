@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Globe, Bell, Download, Wifi, FolderSync, Compass, MapPin, Map, Navigation, Route, Plane, Camera, Binoculars, Mountain } from "lucide-react";
+import { Bell, Compass, MapPin, Route, Binoculars, Mountain } from "lucide-react";
 import { useLocation } from "wouter";
 import Footer from "@/components/Footer";
 
@@ -16,12 +16,6 @@ export default function Landing() {
     setLocation("/preview");
   };
 
-  const handleInstallApp = () => {
-    // PWA install functionality
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js');
-    }
-  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -190,48 +184,6 @@ export default function Landing() {
       {/* Premium Features Section */}
       {/* Premium section removed - app is now completely free */}
 
-      {/* PWA Features Section */}
-      <section className="pwa-section">
-        <div>
-          <h2>Install & Take Anywhere</h2>
-          <p style={{color: '#666', marginBottom: '2rem'}}>Works offline, installs like a native app</p>
-          <ul>
-            <li style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
-              <Download className="w-5 h-5" style={{color: 'var(--accent-blue)'}} />
-              Install on Any Device - Add to home screen and use like a native app
-            </li>
-            <li style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
-              <Wifi className="w-5 h-5" style={{color: 'var(--accent-blue)'}} />
-              Works Offline - Access your collected cities without internet
-            </li>
-            <li style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
-              <Bell className="w-5 h-5" style={{color: 'var(--accent-blue)'}} />
-              Smart Notifications - Get reminders for daily discoveries
-            </li>
-            <li style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
-              <FolderSync className="w-5 h-5" style={{color: 'var(--accent-blue)'}} />
-              Background Sync - Auto-updates when connection returns
-            </li>
-          </ul>
-        </div>
-
-        <div className="text-center">
-          <div className="w-64 h-96 mx-auto rounded-2xl border-4 border-border bg-card postcard-shadow relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-travel opacity-10"></div>
-            <div className="absolute inset-0 flex items-center justify-center">
-              <Globe className="w-24 h-24 text-primary opacity-30 globe-animate" />
-            </div>
-          </div>
-          <Button 
-            className="mt-6" 
-            onClick={handleInstallApp}
-            data-testid="button-install-app"
-          >
-            <Download className="w-4 h-4 mr-2" />
-            Install App
-          </Button>
-        </div>
-      </section>
 
       <Footer />
     </div>

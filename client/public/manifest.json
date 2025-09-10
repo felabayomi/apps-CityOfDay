@@ -1,6 +1,6 @@
 {
-  "name": "Daily Felix - City of the Day",
-  "short_name": "Daily Felix",
+  "name": "City Discoverer - City of the Day",
+  "short_name": "City Discoverer",
   "description": "Your daily window into the world. AI-curated travel inspiration delivered fresh every morning.",
   "start_url": "/",
   "display": "standalone",

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'daily-felix-v1';
+const CACHE_NAME = 'city-discoverer-v1';
 const urlsToCache = [
   '/',
   '/static/css/index.css',
