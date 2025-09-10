@@ -181,8 +181,45 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Premium Features Section */}
-      {/* Premium section removed - app is now completely free */}
+      {/* Partnership Section */}
+      <section className="py-16 bg-background">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <div className="mb-8">
+            <MapPin className="w-12 h-12 mx-auto text-primary mb-4" />
+            <h3 className="text-2xl font-bold text-foreground mb-4">Trusted Travel Partnerships</h3>
+            <div className="w-16 h-1 bg-gradient-travel mx-auto rounded-full mb-6"></div>
+          </div>
+          
+          <div className="space-y-6">
+            <p className="text-lg text-foreground font-medium">
+              City Discoverer builds partnerships with trusted travel providers.
+            </p>
+            <p className="text-muted-foreground">
+              We link directly to official sources so you always get the most accurate info.
+            </p>
+            <p className="text-lg text-primary font-semibold">
+              Stay in touch for exclusive partner deals
+            </p>
+          </div>
+
+          <div className="mt-8 pt-6 border-t border-muted">
+            <div className="flex flex-wrap justify-center items-center gap-8 text-muted-foreground text-sm">
+              <span className="flex items-center gap-2">
+                <Bell className="w-4 h-4" />
+                Authentic Experiences
+              </span>
+              <span className="flex items-center gap-2">
+                <Compass className="w-4 h-4" />
+                Verified Information
+              </span>
+              <span className="flex items-center gap-2">
+                <Route className="w-4 h-4" />
+                Exclusive Access
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
 
 
       <Footer />
