@@ -241,15 +241,22 @@ export function ContentEditor({ selectedCityId, onCityChange }: ContentEditorPro
     updateContentMutation.mutate({ id, data });
   };
 
-  const city = cityData?.city;
-  const content = cityData?.content || [];
+  const city = (cityData as any)?.city;
+  const content = (cityData as any)?.content || [];
 
   return (
-    <Card className="postcard-shadow">
+    <Card className={`postcard-shadow ${selectedCityId ? 'ring-2 ring-accent/50' : ''}`} data-testid="content-editor-card">
       <CardHeader>
-        <CardTitle className="flex items-center text-foreground">
-          <Edit className="mr-3 text-secondary w-5 h-5" />
-          Content Editor
+        <CardTitle className="flex items-center justify-between text-foreground">
+          <div className="flex items-center">
+            <Edit className="mr-3 text-secondary w-5 h-5" />
+            Content Editor
+            {selectedCityId && (
+              <Badge className="ml-3 bg-accent/10 text-accent">
+                Editing Mode Active
+              </Badge>
+            )}
+          </div>
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -264,7 +271,7 @@ export function ContentEditor({ selectedCityId, onCityChange }: ContentEditorPro
               <SelectValue placeholder="Choose a city to edit..." />
             </SelectTrigger>
             <SelectContent>
-              {cities?.map((city: any) => (
+              {(cities as any)?.map((city: any) => (
                 <SelectItem key={city.id} value={city.id}>
                   {city.name}, {city.country} 
                   {city.isPublished ? " (Published)" : " (Draft)"}
@@ -310,11 +317,11 @@ export function ContentEditor({ selectedCityId, onCityChange }: ContentEditorPro
         ) : content.length > 0 ? (
           <div className="space-y-4">
             {content
-              .sort((a, b) => {
+              .sort((a: any, b: any) => {
                 const order = { morning: 0, afternoon: 1, evening: 2, bonus: 3 };
                 return order[a.cardType as keyof typeof order] - order[b.cardType as keyof typeof order];
               })
-              .map((item) => (
+              .map((item: any) => (
                 <ContentCardEditor
                   key={item.id}
                   content={item}

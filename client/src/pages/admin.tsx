@@ -77,7 +77,7 @@ export default function Admin() {
         </nav>
         <div className="auth-area">
           <div className="user-section">
-            <span className="welcome-text">Admin: {user.firstName || 'User'}</span>
+            <span className="welcome-text">Admin: {(user as any).firstName || 'User'}</span>
             <button className="sign-in-btn" onClick={handleLogout} data-testid="button-admin-logout">
               Sign Out
             </button>
@@ -252,7 +252,16 @@ export default function Admin() {
                         <Button 
                           variant="ghost" 
                           size="sm"
-                          onClick={() => setSelectedCity(city.id)}
+                          onClick={() => {
+                            setSelectedCity(city.id);
+                            // Scroll to the content editor
+                            setTimeout(() => {
+                              const editorElement = document.querySelector('[data-testid="content-editor-card"]');
+                              if (editorElement) {
+                                editorElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                              }
+                            }, 100);
+                          }}
                           data-testid={`button-edit-${city.name.toLowerCase().replace(/\s+/g, '-')}`}
                         >
                           <Edit className="w-4 h-4" />
