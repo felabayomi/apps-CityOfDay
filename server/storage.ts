@@ -14,7 +14,7 @@ import {
   type InsertUserBucketList,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc, and, gte, lt, asc, isNull, isNotNull } from "drizzle-orm";
+import { eq, desc, and, gte, lt, asc, isNull, isNotNull, sql } from "drizzle-orm";
 
 export interface IStorage {
   // User operations (required for Replit Auth)
