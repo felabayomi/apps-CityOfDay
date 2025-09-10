@@ -115,11 +115,11 @@ export default function Landing() {
               </p>
               
               {/* Time Indicator - Bottom Right Corner */}
-              <div className="absolute bottom-4 right-4 bg-white/20 backdrop-blur-sm text-white rounded-lg shadow-lg px-3 py-2 border border-white/30">
+              <div className="absolute bottom-4 right-4 bg-gray-900/90 backdrop-blur-sm text-white rounded-lg shadow-xl px-4 py-3 border-2 border-white/50">
                 <div className="flex items-center gap-2">
-                  <div className="text-sm font-medium">
-                    <div className="text-white/90 text-xs">{nextCardInfo.label}</div>
-                    <div className="text-white font-semibold">{timeUntilNext}</div>
+                  <div className="text-sm font-bold">
+                    <div className="text-yellow-300 text-xs font-semibold">{nextCardInfo.label}</div>
+                    <div className="text-white font-bold text-base">{timeUntilNext}</div>
                   </div>
                 </div>
               </div>
