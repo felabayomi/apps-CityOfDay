@@ -188,7 +188,13 @@ export default function Landing() {
       </section>
 
       {/* Partnership Section */}
-      <section className="py-12 bg-background">
+      <section className="py-12 relative overflow-hidden"
+        style={{
+          backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.4)), url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1200&h=800&fit=crop&crop=center')`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat'
+        }}>
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="mb-8">
             <MapPin className="w-12 h-12 mx-auto text-primary mb-4" />
