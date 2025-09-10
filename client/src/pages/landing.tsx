@@ -13,18 +13,20 @@ export default function Landing() {
     queryKey: ['/api/cities/today'],
     retry: false,
   });
+
+  // Get the morning content for preview
+  const morningContent = todaysCityData?.content?.find((c: any) => c.timeOfDay === 'morning');
+  const city = todaysCityData?.city;
   
   const handleSignIn = () => {
     window.location.href = "/api/login";
   };
   
   const handleViewTodaysCity = () => {
-    setLocation("/preview");
+    if (city?.id) {
+      setLocation(`/cities/${city.id}`);
+    }
   };
-
-  // Get the morning content for preview
-  const morningContent = todaysCityData?.content?.find((c: any) => c.timeOfDay === 'morning');
-  const city = todaysCityData?.city;
 
 
   return (
