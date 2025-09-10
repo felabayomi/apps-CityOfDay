@@ -8,13 +8,15 @@ import { CityCard } from "@/components/city-card";
 import { UserStats } from "@/components/user-stats";
 import { useToast } from "@/hooks/use-toast";
 import { isUnauthorizedError } from "@/lib/authUtils";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { apiRequest } from "@/lib/queryClient";
+import { CameraCapture } from "@/components/camera-capture";
 
 export default function Home() {
   const { user, isLoading, isAuthenticated } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [isCameraOpen, setIsCameraOpen] = useState(false);
 
   // Redirect to login if not authenticated
   useEffect(() => {
@@ -174,8 +176,7 @@ export default function Home() {
                 <div className="flex justify-center space-x-4">
                   <Button 
                     className="bg-white text-primary hover:bg-gray-100"
-                    onClick={() => collectCityMutation.mutate(todaysCity.id)}
-                    disabled={collectCityMutation.isPending}
+                    onClick={() => setIsCameraOpen(true)}
                     data-testid="button-collect-city"
                   >
                     <MapPin className="w-4 h-4 mr-2" />
@@ -378,7 +379,11 @@ export default function Home() {
               ))}
               
               {collectedCities.length < 12 && (
-                <div className="aspect-square rounded-xl border-2 border-dashed border-primary/30 bg-gradient-to-br from-primary/5 to-accent/5 flex items-center justify-center cursor-pointer hover:bg-primary/10 transition-all group hover:border-primary/50">
+                <div 
+                  className="aspect-square rounded-xl border-2 border-dashed border-primary/30 bg-gradient-to-br from-primary/5 to-accent/5 flex items-center justify-center cursor-pointer hover:bg-primary/10 transition-all group hover:border-primary/50"
+                  onClick={() => setIsCameraOpen(true)}
+                  data-testid="button-collect-more"
+                >
                   <div className="text-center">
                     <MapPin className="w-8 h-8 text-primary mb-2 group-hover:scale-110 transition-transform mx-auto" />
                     <p className="text-sm font-medium text-primary">Collect More</p>
@@ -411,6 +416,13 @@ export default function Home() {
           </div>
         </section>
       )}
+
+      {/* Camera Capture Modal */}
+      <CameraCapture
+        isOpen={isCameraOpen}
+        onClose={() => setIsCameraOpen(false)}
+        currentCity={todaysCity}
+      />
     </div>
   );
 }
