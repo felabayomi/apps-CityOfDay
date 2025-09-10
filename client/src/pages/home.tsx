@@ -305,6 +305,13 @@ export default function Home() {
                           >
                             Smart Travel Companion
                           </Button>
+                          <Button 
+                            className="bg-white text-primary hover:bg-gray-100" 
+                            data-testid="button-itinerary-planner"
+                            onClick={() => window.open('https://plan.citydiscoverer.ai/', '_blank')}
+                          >
+                            Itinerary Planner
+                          </Button>
                         </>
                       )
                     }
