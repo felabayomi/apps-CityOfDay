@@ -211,12 +211,12 @@ export function CityCard({
       </CardContent>
       
       {/* Time Indicator - Bottom Right Corner */}
-      <div className="absolute bottom-4 right-4 bg-white border border-gray-300 rounded-lg shadow-lg px-3 py-2 z-20">
+      <div className="absolute bottom-4 right-4 bg-black text-white border-2 border-white rounded-lg shadow-xl px-3 py-2 z-30">
         <div className="flex items-center gap-2">
-          <Clock className="w-4 h-4 text-blue-600" />
+          <Clock className="w-4 h-4 text-yellow-400" />
           <div className="text-sm">
-            <div className="text-gray-700 font-medium">{nextCardTitle || "Morning Discovery"}</div>
-            <div className="text-blue-600 font-bold">{timeUntilNext || "4h 38m"}</div>
+            <div className="text-white font-medium">{nextCardTitle || "Morning Discovery"}</div>
+            <div className="text-yellow-400 font-bold">{timeUntilNext || "4h 38m"}</div>
           </div>
         </div>
       </div>
