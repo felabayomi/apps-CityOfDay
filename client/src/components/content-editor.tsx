@@ -243,7 +243,8 @@ export function ContentEditor({ selectedCityId, onCityChange }: ContentEditorPro
   const content = (cityData as any)?.content || [];
 
   return (
-    <Card className={`postcard-shadow ${selectedCityId ? 'ring-2 ring-accent/50' : ''}`} data-testid="content-editor-card">
+    <div className="w-full space-y-6" id="content-editor">
+      <Card className={`postcard-shadow ${selectedCityId ? 'ring-2 ring-accent/50' : ''}`} data-testid="content-editor-card">
       <CardHeader>
         <CardTitle className="flex items-center justify-between text-foreground">
           <div className="flex items-center">
@@ -342,5 +343,102 @@ export function ContentEditor({ selectedCityId, onCityChange }: ContentEditorPro
         )}
       </CardContent>
     </Card>
+
+    {/* City CTA Panel */}
+    {city && (
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center text-foreground">
+            <Globe className="mr-3 text-primary w-5 h-5" />
+            City CTA Buttons - {city.name}
+          </CardTitle>
+          <p className="text-muted-foreground text-sm">
+            Customize the main action buttons that appear for this city (Book Hotels, Find Tours, etc.)
+          </p>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-3">
+            {city.cityCtaLinks && Array.isArray(city.cityCtaLinks) ? 
+              city.cityCtaLinks.map((link: any, index: number) => (
+                <div key={index} className="grid grid-cols-1 md:grid-cols-3 gap-3 p-3 border rounded-lg">
+                  <div>
+                    <Label htmlFor={`cta-text-${index}`}>Button Text</Label>
+                    <Input
+                      id={`cta-text-${index}`}
+                      value={link.text || ""}
+                      onChange={(e) => {
+                        const newLinks = [...(city.cityCtaLinks || [])];
+                        newLinks[index] = { ...newLinks[index], text: e.target.value };
+                        // Update local state for real-time editing
+                      }}
+                      placeholder={`e.g., Book ${city.name} Hotels`}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor={`cta-url-${index}`}>URL</Label>
+                    <Input
+                      id={`cta-url-${index}`}
+                      value={link.url || ""}
+                      onChange={(e) => {
+                        const newLinks = [...(city.cityCtaLinks || [])];
+                        newLinks[index] = { ...newLinks[index], url: e.target.value };
+                        // Update local state for real-time editing
+                      }}
+                      placeholder={`https://booking.com/${city.name.toLowerCase()}`}
+                    />
+                  </div>
+                  <div className="flex items-end">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        const newLinks = (city.cityCtaLinks || []).filter((_: any, i: number) => i !== index);
+                        updateCityMutation.mutate({ 
+                          id: city.id, 
+                          cityCtaLinks: newLinks 
+                        });
+                      }}
+                      className="text-destructive hover:text-destructive-foreground hover:bg-destructive"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </div>
+              )) : null
+            }
+            
+            <Button
+              variant="outline"
+              onClick={() => {
+                const newLinks = [...(city.cityCtaLinks || []), { 
+                  text: `Book ${city.name} Hotels`, 
+                  url: `https://booking.com/${city.name.toLowerCase()}`, 
+                  type: "booking" 
+                }];
+                updateCityMutation.mutate({ 
+                  id: city.id, 
+                  cityCtaLinks: newLinks 
+                });
+              }}
+              className="w-full"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Add CTA Button
+            </Button>
+          </div>
+          
+          {city.cityCtaLinks && city.cityCtaLinks.length > 0 && (
+            <div className="pt-4 border-t">
+              <div className="bg-muted/30 rounded-lg p-3 mb-3">
+                <p className="text-sm text-muted-foreground">
+                  <strong>Preview:</strong> These buttons will appear in the "Ready to Visit {city.name}?" section
+                </p>
+              </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    )}
+    </div>
   );
 }
