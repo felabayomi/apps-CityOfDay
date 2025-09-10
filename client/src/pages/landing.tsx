@@ -38,7 +38,7 @@ export default function Landing() {
   
   const handleViewTodaysCity = () => {
     // Go directly to the public city view - no authentication needed
-    window.location.href = "/home";
+    setLocation("/home");
   };
 
 

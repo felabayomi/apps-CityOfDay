@@ -165,39 +165,7 @@ export default function Home() {
                 <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
                   Turn today's inspiration into tomorrow's adventure. Book your experience now.
                 </p>
-
-                {/* Travel Agent Support Notice */}
-                <div className="mt-6 p-4 bg-blue-500/20 rounded-lg border border-blue-300 max-w-4xl mx-auto">
-                  <p className="text-base font-medium">
-                    <strong>Travel Agent Support:</strong> After booking through any of our partner links below, please send your booking confirmation to us so we can track your reservation and provide full travel agent support throughout your journey.
-                  </p>
-                </div>
               </div>
-
-              {/* Custom City CTAs - Show first if they exist */}
-              {todaysCity?.cityCtaLinks && Array.isArray(todaysCity.cityCtaLinks) && todaysCity.cityCtaLinks.length > 0 && (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8 max-w-6xl mx-auto">
-                  {todaysCity.cityCtaLinks.map((link: any, index: number) => (
-                    <Card key={`custom-${index}`} className="hover:shadow-lg transition-shadow">
-                      <CardContent className="p-6">
-                        <h5 className="text-lg font-semibold mb-4">{link.text}</h5>
-                        <div className="mb-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
-                          <p className="text-sm text-blue-700">
-                            <strong>Agent Support:</strong> Send us your booking confirmation for tracking and assistance.
-                          </p>
-                        </div>
-                        <Button 
-                          className="w-full bg-primary hover:bg-primary/90" 
-                          onClick={() => window.open(link.url, '_blank')}
-                          data-testid={`button-city-cta-${index}`}
-                        >
-                          {link.text}
-                        </Button>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              )}
               
               {/* Travel Services Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
@@ -207,11 +175,6 @@ export default function Home() {
                   <CardContent className="p-6">
                     <h5 className="text-lg font-semibold mb-4">Book Hotels</h5>
                     <p className="text-sm text-muted-foreground mb-4">Find and book accommodations worldwide with competitive rates and exclusive deals.</p>
-                    <div className="mb-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
-                      <p className="text-sm text-blue-700">
-                        <strong>Agent Support:</strong> Send us your booking confirmation for tracking and assistance.
-                      </p>
-                    </div>
                     <Button 
                       className="w-full bg-primary hover:bg-primary/90" 
                       data-testid="button-book-hotels"
@@ -227,11 +190,6 @@ export default function Home() {
                   <CardContent className="p-6">
                     <h5 className="text-lg font-semibold mb-4">Find Tours</h5>
                     <p className="text-sm text-muted-foreground mb-4">Discover amazing experiences and guided tours to make the most of your destination.</p>
-                    <div className="mb-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
-                      <p className="text-sm text-blue-700">
-                        <strong>Agent Support:</strong> Send us your booking confirmation for tracking and assistance.
-                      </p>
-                    </div>
                     <Button 
                       className="w-full bg-primary hover:bg-primary/90" 
                       data-testid="button-find-tours"
@@ -247,11 +205,6 @@ export default function Home() {
                   <CardContent className="p-6">
                     <h5 className="text-lg font-semibold mb-4">Search Flights</h5>
                     <p className="text-sm text-muted-foreground mb-4">Compare and book flights from multiple airlines to get the best deals for your trip.</p>
-                    <div className="mb-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
-                      <p className="text-sm text-blue-700">
-                        <strong>Agent Support:</strong> Send us your booking confirmation for tracking and assistance.
-                      </p>
-                    </div>
                     <Button 
                       className="w-full bg-primary hover:bg-primary/90" 
                       data-testid="button-search-flights"
@@ -267,11 +220,6 @@ export default function Home() {
                   <CardContent className="p-6">
                     <h5 className="text-lg font-semibold mb-4">Car Rental</h5>
                     <p className="text-sm text-muted-foreground mb-4">Rent a car for ultimate freedom and flexibility during your travels.</p>
-                    <div className="mb-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
-                      <p className="text-sm text-blue-700">
-                        <strong>Agent Support:</strong> Send us your booking confirmation for tracking and assistance.
-                      </p>
-                    </div>
                     <Button 
                       className="w-full bg-primary hover:bg-primary/90" 
                       data-testid="button-car-rental"
@@ -287,11 +235,6 @@ export default function Home() {
                   <CardContent className="p-6">
                     <h5 className="text-lg font-semibold mb-4">Smart Travel Companion</h5>
                     <p className="text-sm text-muted-foreground mb-4">Get AI-powered travel insights and recommendations tailored to your preferences.</p>
-                    <div className="mb-4 p-3 bg-orange-50 rounded-lg border border-orange-200">
-                      <p className="text-sm text-orange-700">
-                        <strong>Agent Support:</strong> Send us your booking confirmation for tracking and assistance.
-                      </p>
-                    </div>
                     <Button 
                       className="w-full bg-primary hover:bg-primary/90" 
                       data-testid="button-travel-companion"
@@ -307,11 +250,6 @@ export default function Home() {
                   <CardContent className="p-6">
                     <h5 className="text-lg font-semibold mb-4">Itinerary Planner</h5>
                     <p className="text-sm text-muted-foreground mb-4">Plan your perfect trip with our intelligent itinerary planning tools.</p>
-                    <div className="mb-4 p-3 bg-green-50 rounded-lg border border-green-200">
-                      <p className="text-sm text-green-700">
-                        <strong>Agent Support:</strong> Send us your booking confirmation for tracking and assistance.
-                      </p>
-                    </div>
                     <Button 
                       className="w-full bg-primary hover:bg-primary/90" 
                       data-testid="button-itinerary-planner"
@@ -323,6 +261,23 @@ export default function Home() {
                 </Card>
 
               </div>
+
+              {/* Custom City CTAs - Show after main services */}
+              {todaysCity?.cityCtaLinks && Array.isArray(todaysCity.cityCtaLinks) && todaysCity.cityCtaLinks.length > 0 && (
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 max-w-3xl mx-auto mt-8">
+                  {todaysCity.cityCtaLinks.map((link: any, index: number) => (
+                    <Button 
+                      key={`custom-${index}`}
+                      className="bg-white text-primary hover:bg-gray-100 border-2 border-primary/20 text-xs md:text-sm px-2 md:px-4 py-2 md:py-2 h-auto min-h-[44px] whitespace-normal leading-tight"
+                      onClick={() => window.open(link.url, '_blank')}
+                      data-testid={`button-city-cta-${index}`}
+                    >
+                      {link.text}
+                    </Button>
+                  ))}
+                </div>
+              )}
+
             </div>
           </div>
         </section>
