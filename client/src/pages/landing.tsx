@@ -206,7 +206,7 @@ export default function Landing() {
             <p className="text-lg text-foreground font-medium">
               City Discoverer builds partnerships with trusted travel providers.
             </p>
-            <p className="text-muted-foreground">
+            <p className="text-yellow-600 font-medium">
               We link directly to official sources so you always get the most accurate info.
             </p>
             <p className="text-lg text-primary font-semibold">
