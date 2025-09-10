@@ -65,7 +65,7 @@ export function CityCard({
 
   return (
     <Card className="postcard-shadow hover:transform hover:scale-105 transition-all duration-300">
-      <div className="relative h-48 overflow-hidden rounded-t-lg">
+      <div className="relative aspect-[16/9] overflow-hidden rounded-t-lg">
         {content.imageUrl ? (
           <img 
             src={content.imageUrl} 
