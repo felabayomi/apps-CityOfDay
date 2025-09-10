@@ -104,7 +104,7 @@ export default function Landing() {
               </div>
             </div>
           ) : city ? (
-            <div className="bg-gradient-to-br from-blue-600 via-blue-500 to-yellow-400 rounded-2xl p-8 text-center text-white shadow-2xl">
+            <div className="bg-gradient-to-br from-blue-600 via-blue-500 to-yellow-400 rounded-2xl p-8 text-center text-white shadow-2xl relative">
               <p className="text-sm uppercase tracking-wide mb-4 text-white/80">
                 {new Date().toLocaleDateString('en-US', { 
                   weekday: 'long', 
@@ -113,6 +113,16 @@ export default function Landing() {
                   day: 'numeric' 
                 }).toUpperCase()}
               </p>
+              
+              {/* Time Indicator - Bottom Right Corner */}
+              <div className="absolute bottom-4 right-4 bg-white/20 backdrop-blur-sm text-white rounded-lg shadow-lg px-3 py-2 border border-white/30">
+                <div className="flex items-center gap-2">
+                  <div className="text-sm font-medium">
+                    <div className="text-white/90 text-xs">{nextCardInfo.label}</div>
+                    <div className="text-white font-semibold">{timeUntilNext}</div>
+                  </div>
+                </div>
+              </div>
               
               
               <div className="bg-white/20 backdrop-blur-sm rounded-full inline-block px-8 py-3 mb-8">
