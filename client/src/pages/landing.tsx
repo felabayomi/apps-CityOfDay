@@ -15,7 +15,7 @@ export default function Landing() {
   });
 
   // Get the morning content for preview
-  const morningContent = todaysCityData?.content?.find((c: any) => c.timeOfDay === 'morning');
+  const morningContent = todaysCityData?.content?.find((c: any) => c.cardType === 'morning');
   const city = todaysCityData?.city;
   
   const handleSignIn = () => {
