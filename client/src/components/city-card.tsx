@@ -101,6 +101,9 @@ export function CityCard({
         <h4 className="text-lg font-semibold text-foreground mb-2" data-testid={`title-${content.cardType}`}>
           {content.title}
         </h4>
+        <div className="bg-red-500 text-white p-4 text-center font-bold text-xl mb-4">
+          🚨 TEST: CityCard is rendering! 🚨
+        </div>
         <div className="mb-4">
           <p className={`text-foreground/80 text-sm ${!isExpanded && shouldShowReadMore ? 'line-clamp-3' : ''}`} data-testid={`content-${content.cardType}`}>
             {content.content}
