@@ -24,6 +24,7 @@ function Router() {
       
       {/* Protected routes that handle their own auth */}
       <Route path="/admin" component={Admin} />
+      <Route path="/admin/felixdgreat" component={Admin} />
       
       <Route component={NotFound} />
     </Switch>
