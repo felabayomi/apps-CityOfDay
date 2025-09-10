@@ -78,8 +78,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Library routes - for Evergreen Library feature
   app.get("/api/cities/library", isAuthenticated, async (req, res) => {
     try {
-      const cities = await storage.getPublishedCities();
-      res.json(cities);
+      // Get all published cities except today's city
+      const allPublishedCities = await storage.getPublishedCities();
+      const todaysCity = await storage.getTodaysCity();
+      
+      // Filter out today's city from the library
+      const libraryCities = allPublishedCities.filter(city => 
+        !todaysCity || city.id !== todaysCity.id
+      );
+      
+      res.json(libraryCities);
     } catch (error) {
       console.error("Error fetching library cities:", error);
       res.status(500).json({ message: "Failed to fetch library cities" });
@@ -88,9 +96,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/cities/all-content", isAuthenticated, async (req, res) => {
     try {
-      const allCities = await storage.getPublishedCities();
+      // Get all published cities except today's city  
+      const allPublishedCities = await storage.getPublishedCities();
+      const todaysCity = await storage.getTodaysCity();
+      
+      // Filter out today's city from the library
+      const libraryCities = allPublishedCities.filter(city => 
+        !todaysCity || city.id !== todaysCity.id
+      );
+      
       const citiesWithContent = await Promise.all(
-        allCities.map(async (city) => {
+        libraryCities.map(async (city) => {
           const content = await storage.getCityContent(city.id);
           return { city, content };
         })
