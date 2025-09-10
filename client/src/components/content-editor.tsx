@@ -199,9 +199,15 @@ export function ContentEditor({ selectedCityId, onCityChange }: ContentEditorPro
   // Publish city mutation
   const publishCityMutation = useMutation({
     mutationFn: async (cityId: string) => {
+      // Get current time in EST timezone
+      const estDate = new Date().toLocaleString("en-US", {
+        timeZone: "America/New_York"
+      });
+      const publishedDate = new Date(estDate).toISOString();
+      
       await apiRequest("PUT", `/api/admin/cities/${cityId}`, {
         isPublished: true,
-        publishedDate: new Date().toISOString(),
+        publishedDate: publishedDate,
       });
     },
     onSuccess: () => {
