@@ -257,15 +257,31 @@ export default function Home() {
                     Turn today's inspiration into tomorrow's adventure. Book your experience now.
                   </p>
                   <div className="flex flex-wrap justify-center gap-4">
-                    <Button className="bg-white text-primary hover:bg-gray-100" data-testid="button-book-hotels">
-                      Book Hotels
-                    </Button>
-                    <Button className="bg-white text-primary hover:bg-gray-100" data-testid="button-find-tours">
-                      Find Tours
-                    </Button>
-                    <Button className="bg-white text-primary hover:bg-gray-100" data-testid="button-search-flights">
-                      Search Flights
-                    </Button>
+                    {todaysCity?.cityCtaLinks && Array.isArray(todaysCity.cityCtaLinks) ? 
+                      todaysCity.cityCtaLinks.map((link: any, index: number) => (
+                        <Button 
+                          key={index}
+                          className="bg-white text-primary hover:bg-gray-100" 
+                          onClick={() => window.open(link.url, '_blank')}
+                          data-testid={`button-city-cta-${index}`}
+                        >
+                          {link.text}
+                        </Button>
+                      )) : (
+                        // Fallback buttons if no custom CTAs are set
+                        <>
+                          <Button className="bg-white text-primary hover:bg-gray-100" data-testid="button-book-hotels">
+                            Book Hotels
+                          </Button>
+                          <Button className="bg-white text-primary hover:bg-gray-100" data-testid="button-find-tours">
+                            Find Tours
+                          </Button>
+                          <Button className="bg-white text-primary hover:bg-gray-100" data-testid="button-search-flights">
+                            Search Flights
+                          </Button>
+                        </>
+                      )
+                    }
                   </div>
                 </CardContent>
               </Card>

@@ -51,6 +51,7 @@ export const cities = pgTable("cities", {
   publishedDate: timestamp("published_date"), // When admin published it
   isPublished: boolean("is_published").default(false),
   isPinned: boolean("is_pinned").default(false),
+  cityCtaLinks: jsonb("city_cta_links"), // array of {text, url, type} for main city CTAs
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
