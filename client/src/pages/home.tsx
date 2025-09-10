@@ -131,16 +131,13 @@ export default function Home() {
           <div className="text-center mb-12">
             <div className="flex items-center justify-center gap-4 mb-6">
               <h3 className="text-3xl font-bold" style={{color: 'var(--text-dark)'}}>
-                {currentCardInfo.label}
+                Today's Discovery Cards
               </h3>
             </div>
             
             
             <p className="text-xl mb-4" style={{color: '#666'}}>
-              {currentCardInfo.type === 'preview' 
-                ? 'Preview tomorrow\'s discovery destination' 
-                : 'Your current discovery moment'
-              }
+              Explore Morning Discovery, Afternoon Culture, Evening Experiences, and Did You Know? — all at once
             </p>
             <div className="w-24 h-1 mx-auto rounded-full mt-4" style={{background: 'linear-gradient(135deg, #3A7CA5, #2A5B7A)'}}></div>
           </div>

@@ -117,7 +117,7 @@ export function getNextCardType(): TimeBasedCard {
   const timeRanges = [
     { start: 0, end: 420, nextType: 'morning' as CardDisplayType, nextLabel: 'Morning Discovery' }, // Preview -> Morning
     { start: 420, end: 660, nextType: 'afternoon' as CardDisplayType, nextLabel: 'Afternoon Culture' }, // Morning -> Afternoon
-    { start: 660, end: 900, nextType: 'evening' as CardDisplayType, nextLabel: 'Evening Budget Tips' }, // Afternoon -> Evening
+    { start: 660, end: 900, nextType: 'evening' as CardDisplayType, nextLabel: 'Evening Experiences' }, // Afternoon -> Evening
     { start: 900, end: 1140, nextType: 'bonus' as CardDisplayType, nextLabel: 'Did You Know?' }, // Evening -> Bonus
     { start: 1140, end: 1380, nextType: 'preview' as CardDisplayType, nextLabel: 'City Preview' }, // Bonus -> Preview
     { start: 1380, end: 1440, nextType: 'morning' as CardDisplayType, nextLabel: 'Morning Discovery' }, // Preview -> Morning (next day)
