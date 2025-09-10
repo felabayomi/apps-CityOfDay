@@ -5,6 +5,7 @@ import { Bell, Compass, MapPin, Route, Binoculars, Mountain } from "lucide-react
 import { useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import Footer from "@/components/Footer";
+import { getCurrentCardType, formatTimeUntilNext } from "@/lib/timeBasedContent";
 
 export default function Landing() {
   const [, setLocation] = useLocation();
@@ -14,8 +15,19 @@ export default function Landing() {
     retry: false,
   });
 
-  // Get the morning content for preview
-  const morningContent = (todaysCityData as any)?.content?.find((c: any) => c.cardType === 'morning');
+  // Get current time-based content info
+  const currentCardInfo = getCurrentCardType();
+  const timeUntilNext = formatTimeUntilNext();
+  
+  // Get the current content based on time
+  const getCurrentContent = () => {
+    if (currentCardInfo.type === 'preview') {
+      return null; // Show city preview during night hours
+    }
+    return (todaysCityData as any)?.content?.find((c: any) => c.cardType === currentCardInfo.type);
+  };
+  
+  const currentContent = getCurrentContent();
   const city = (todaysCityData as any)?.city;
   
   const handleSignIn = () => {
@@ -89,9 +101,9 @@ export default function Landing() {
                 <div className="h-12 bg-white/20 rounded w-48 mx-auto"></div>
               </div>
             </div>
-          ) : city && morningContent ? (
+          ) : city ? (
             <div className="bg-gradient-to-br from-blue-600 via-blue-500 to-yellow-400 rounded-2xl p-8 text-center text-white shadow-2xl">
-              <p className="text-sm uppercase tracking-wide mb-6 text-white/80">
+              <p className="text-sm uppercase tracking-wide mb-4 text-white/80">
                 {new Date().toLocaleDateString('en-US', { 
                   weekday: 'long', 
                   year: 'numeric', 
@@ -100,14 +112,46 @@ export default function Landing() {
                 }).toUpperCase()}
               </p>
               
+              {/* Current time badge */}
+              <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-2 mb-6">
+                <span className="text-sm font-medium">{currentCardInfo.label}</span>
+                <Badge className="bg-white/20 text-white border-white/30 text-xs">
+                  {currentCardInfo.timeRange}
+                </Badge>
+              </div>
+              
               <div className="bg-white/20 backdrop-blur-sm rounded-full inline-block px-8 py-3 mb-8">
                 <h3 className="text-2xl font-bold">{city.name}, {city.country}</h3>
               </div>
               
-              <blockquote className="text-lg italic mb-6 max-w-2xl mx-auto leading-relaxed">
-                "{morningContent.content}"
-              </blockquote>
-              <p className="text-sm text-white/70 mb-8">—Your Morning in {city.name}</p>
+              {currentCardInfo.type === 'preview' ? (
+                /* City Preview Mode */
+                <>
+                  <p className="text-lg mb-6 max-w-2xl mx-auto leading-relaxed">
+                    Get ready to discover amazing landmarks, local culture, and hidden gems. 
+                    Your {currentContent ? 'morning' : 'next'} discovery begins at 7:00 AM!
+                  </p>
+                  <div className="text-sm text-white/70 mb-6">
+                    Next content change in: <span className="font-semibold">{timeUntilNext}</span>
+                  </div>
+                </>
+              ) : currentContent ? (
+                /* Current Time Content */
+                <>
+                  <blockquote className="text-lg italic mb-6 max-w-2xl mx-auto leading-relaxed">
+                    "{currentContent.content}"
+                  </blockquote>
+                  <p className="text-sm text-white/70 mb-6">
+                    —Your {currentCardInfo.label} in {city.name}
+                  </p>
+                  <div className="text-sm text-white/70 mb-6">
+                    Next content change in: <span className="font-semibold">{timeUntilNext}</span>
+                  </div>
+                </>
+              ) : (
+                /* Loading current content */
+                <p className="text-lg mb-6">Loading today's {currentCardInfo.label.toLowerCase()}...</p>
+              )}
               
               <Button 
                 size="lg" 
@@ -115,7 +159,7 @@ export default function Landing() {
                 onClick={handleViewTodaysCity}
                 data-testid="button-visit-city"
               >
-                Visit {city.name}
+                {currentCardInfo.type === 'preview' ? 'Discover' : 'Explore'} {city.name}
               </Button>
             </div>
           ) : (
