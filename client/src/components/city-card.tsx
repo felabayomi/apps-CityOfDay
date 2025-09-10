@@ -16,6 +16,7 @@ interface CityCardProps {
   isPreview?: boolean;
   nextCardTitle?: string;
   timeUntilNext?: string;
+  isCurrent?: boolean;
 }
 
 const cardTypeConfig = {
@@ -58,7 +59,8 @@ export function CityCard({
   isAddingToBucketList = false,
   isPreview = false,
   nextCardTitle,
-  timeUntilNext
+  timeUntilNext,
+  isCurrent = false
 }: CityCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   
@@ -72,7 +74,15 @@ export function CityCard({
   const shouldShowReadMore = contentLength > 200; // Show "Read More" if content is longer than 200 chars
 
   return (
-    <Card className="postcard-shadow hover:transform hover:scale-105 transition-all duration-300 relative">
+    <Card className={`postcard-shadow hover:transform hover:scale-105 transition-all duration-300 relative ${isCurrent ? 'ring-2 ring-primary ring-offset-2' : ''}`}>
+      {isCurrent && (
+        <div className="absolute top-2 right-2 z-10">
+          <Badge className="bg-primary text-primary-foreground animate-pulse" data-testid={`badge-current-${content.cardType}`}>
+            <Clock className="w-3 h-3 mr-1" />
+            Current
+          </Badge>
+        </div>
+      )}
       <div className="relative aspect-[16/9] overflow-hidden rounded-t-lg">
         {content.imageUrl ? (
           <img 

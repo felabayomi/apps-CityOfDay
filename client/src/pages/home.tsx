@@ -54,17 +54,25 @@ export default function Home() {
   const todaysCity = todaysCityData?.city;
   const todaysContent = todaysCityData?.content || [];
 
-  // Get current card content based on time
-  const getCurrentContent = () => {
-    if (currentCardInfo.type === 'preview') {
-      // During preview mode, show morning content as preview
-      return todaysContent.find((content: any) => content.cardType === 'morning');
-    }
-    
-    return todaysContent.find((content: any) => content.cardType === currentCardInfo.type);
-  };
-
-  const currentContent = getCurrentContent();
+  // Organize content by card type for display
+  const organizedContent = ['morning', 'afternoon', 'evening', 'bonus'].map(cardType => {
+    const content = todaysContent.find((content: any) => content.cardType === cardType);
+    return {
+      cardType,
+      content: content || {
+        id: `fallback-${cardType}`,
+        cardType,
+        title: `${cardType.charAt(0).toUpperCase() + cardType.slice(1)} Discovery`,
+        content: `Discover amazing ${cardType} activities in ${todaysCity?.name || 'this city'}.`,
+        imageUrl: null,
+        affiliateLinks: null,
+        createdAt: null,
+        updatedAt: null,
+        cityId: null
+      },
+      isCurrent: currentCardInfo.type === cardType
+    };
+  });
 
   return (
     <div className="min-h-screen bg-background">
@@ -137,24 +145,20 @@ export default function Home() {
             <div className="w-24 h-1 mx-auto rounded-full mt-4" style={{background: 'linear-gradient(135deg, #3A7CA5, #2A5B7A)'}}></div>
           </div>
 
-          {/* Display current content */}
-          <div className="max-w-2xl mx-auto">
-            <CityCard
-              content={currentContent || {
-                id: "fallback",
-                cardType: "morning",
-                title: todaysCity?.name ? `Discover ${todaysCity.name}` : "City Discovery",
-                content: "Connect to see today's discovery content for this amazing destination.",
-                imageUrl: null,
-                affiliateLinks: null,
-                createdAt: null,
-                updatedAt: null,
-                cityId: null
-              }}
-              city={todaysCity || { name: "Your City" }}
-              nextCardTitle={nextCardInfo.label}
-              timeUntilNext={timeUntilNext}
-            />
+          {/* Display all content cards */}
+          <div className="max-w-4xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {organizedContent.map((item) => (
+                <CityCard
+                  key={item.cardType}
+                  content={item.content}
+                  city={todaysCity || { name: "Your City" }}
+                  nextCardTitle={item.isCurrent ? nextCardInfo.label : undefined}
+                  timeUntilNext={item.isCurrent ? timeUntilNext : undefined}
+                  isCurrent={item.isCurrent}
+                />
+              ))}
+            </div>
           </div>
 
             {/* Affiliate CTA */}
