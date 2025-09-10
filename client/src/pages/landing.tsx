@@ -310,14 +310,6 @@ export default function Landing() {
 
 
       <Footer />
-      
-      {/* Floating Time Indicator - Bottom Right */}
-      <div className="fixed bottom-4 right-4 z-50">
-        <div className="bg-white/95 backdrop-blur-sm border border-gray-200 rounded-lg shadow-lg px-3 py-2">
-          <div className="text-xs text-gray-600 font-medium">{nextCardInfo.label}</div>
-          <div className="text-sm font-bold text-primary">{timeUntilNext}</div>
-        </div>
-      </div>
     </div>
   );
 }
