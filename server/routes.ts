@@ -143,7 +143,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // If city name contains comma and no country provided, extract country from city name
       if (cityName.includes(',') && !finalCountry) {
-        const parts = cityName.split(',').map(part => part.trim());
+        const parts = cityName.split(',').map((part: string) => part.trim());
         finalCityName = parts[0];
         finalCountry = parts.slice(1).join(', ');
       }
