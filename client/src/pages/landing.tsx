@@ -87,7 +87,7 @@ export default function Landing() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h3 className="text-3xl font-bold text-foreground mb-4">How Daily Discovery Works</h3>
-            <p className="text-xl text-muted-foreground">Four curated moments throughout your day</p>
+            <p className="text-xl text-white">Four curated moments throughout your day</p>
             <div className="w-24 h-1 bg-gradient-travel mx-auto rounded-full mt-4"></div>
           </div>
 
