@@ -80,19 +80,7 @@ export class DatabaseStorage implements IStorage {
     return user;
   }
 
-  async updateUserStripeInfo(userId: string, customerId: string, subscriptionId: string): Promise<User> {
-    const [user] = await db
-      .update(users)
-      .set({
-        stripeCustomerId: customerId,
-        stripeSubscriptionId: subscriptionId,
-        subscriptionTier: "premium",
-        updatedAt: new Date(),
-      })
-      .where(eq(users.id, userId))
-      .returning();
-    return user;
-  }
+  // updateUserStripeInfo method removed - app is now completely free
 
   async updateUserStats(userId: string, stats: { discoveredCities?: number; bucketListCities?: number; currentStreak?: number }): Promise<User> {
     const [user] = await db

@@ -427,58 +427,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Stripe subscription routes
-  if (stripe) {
-    app.post('/api/get-or-create-subscription', isAuthenticated, async (req: any, res) => {
-      try {
-        const userId = req.user.claims.sub;
-        const user = await storage.getUser(userId);
-        
-        if (!user) {
-          return res.status(404).json({ message: "User not found" });
-        }
-
-        if (user.stripeSubscriptionId) {
-          const subscription = await stripe.subscriptions.retrieve(user.stripeSubscriptionId);
-          const invoice = await stripe.invoices.retrieve(subscription.latest_invoice as string);
-          
-          res.json({
-            subscriptionId: subscription.id,
-            clientSecret: (invoice as any)?.payment_intent?.client_secret,
-          });
-          return;
-        }
-        
-        if (!user.email) {
-          throw new Error('No user email on file');
-        }
-
-        const customer = await stripe.customers.create({
-          email: user.email,
-          name: `${user.firstName || ''} ${user.lastName || ''}`.trim(),
-        });
-
-        const subscription = await stripe.subscriptions.create({
-          customer: customer.id,
-          items: [{
-            price: process.env.STRIPE_PRICE_ID || 'price_default',
-          }],
-          payment_behavior: 'default_incomplete',
-          expand: ['latest_invoice.payment_intent'],
-        });
-
-        await storage.updateUserStripeInfo(userId, customer.id, subscription.id);
-    
-        res.json({
-          subscriptionId: subscription.id,
-          clientSecret: (subscription.latest_invoice as any)?.payment_intent?.client_secret,
-        });
-      } catch (error: any) {
-        console.error("Subscription error:", error);
-        return res.status(400).json({ error: { message: error.message } });
-      }
-    });
-  }
+  // Subscription routes removed - app is now completely free
 
   const httpServer = createServer(app);
   return httpServer;

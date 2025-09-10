@@ -2,7 +2,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Globe, Bell, Download, Wifi, FolderSync, Compass, MapPin, Map, Navigation, Route, Plane, Camera, Binoculars, Mountains } from "lucide-react";
-import { PricingTier } from "@/components/pricing-tier";
 import { useLocation } from "wouter";
 
 export default function Landing() {
@@ -36,7 +35,6 @@ export default function Landing() {
         </div>
         <nav className="nav-links">
           <a href="#discover">Discover</a>
-          <a href="#premium">Premium</a>
         </nav>
         <div className="auth-area">
           <button className="notif-btn">
@@ -202,66 +200,7 @@ export default function Landing() {
       </section>
 
       {/* Premium Features Section */}
-      <section id="premium" className="py-16 bg-muted/20">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h3 className="text-3xl font-bold text-foreground mb-4">Choose Your Travel Experience</h3>
-            <p className="text-xl text-muted-foreground">From daily inspiration to premium adventures</p>
-            <div className="w-24 h-1 bg-gradient-travel mx-auto rounded-full mt-4"></div>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            <PricingTier
-              title="Explorer"
-              price="$0"
-              description="Perfect for daily inspiration"
-              features={[
-                "Daily city discovery",
-                "4 content cards per day", 
-                "Basic travel tips",
-                "Community access"
-              ]}
-              limitations={["City archive access", "Detailed itineraries", "Exclusive deals"]}
-              buttonText="Current Plan"
-              buttonVariant="secondary"
-            />
-
-            <PricingTier
-              title="Wanderer"
-              price="$7"
-              description="For serious travelers"
-              features={[
-                "Everything in Explorer",
-                "Complete city archive",
-                "Detailed itineraries",
-                "Exclusive travel deals",
-                "Download city guides",
-                "Priority support"
-              ]}
-              popular
-              buttonText="Start Free Trial"
-              buttonAction={() => handleSignIn()}
-              data-testid="button-premium-signup"
-            />
-
-            <PricingTier
-              title="Globe Trotter"
-              price="$15"
-              description="For travel professionals"
-              features={[
-                "Everything in Wanderer",
-                "White-label options",
-                "API access",
-                "Analytics dashboard",
-                "Custom content",
-                "Dedicated support"
-              ]}
-              buttonText="Contact Sales"
-              buttonVariant="outline"
-            />
-          </div>
-        </div>
-      </section>
+      {/* Premium section removed - app is now completely free */}
 
       {/* PWA Features Section */}
       <section className="pwa-section">

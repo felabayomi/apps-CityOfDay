@@ -31,9 +31,7 @@ export const users = pgTable("users", {
   firstName: varchar("first_name"),
   lastName: varchar("last_name"),
   profileImageUrl: varchar("profile_image_url"),
-  stripeCustomerId: varchar("stripe_customer_id"),
-  stripeSubscriptionId: varchar("stripe_subscription_id"),
-  subscriptionTier: varchar("subscription_tier").default("free"), // free, premium, enterprise
+  // Subscription fields removed - app is now completely free
   discoveredCities: integer("discovered_cities").default(0),
   bucketListCities: integer("bucket_list_cities").default(0),
   currentStreak: integer("current_streak").default(0),
