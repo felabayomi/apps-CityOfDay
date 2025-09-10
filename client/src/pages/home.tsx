@@ -244,10 +244,6 @@ export default function Home() {
                   <CityCard
                     key={content.id}
                     content={content}
-                    onCollect={() => collectCityMutation.mutate(todaysCity!.id)}
-                    onAddToBucketList={() => addToBucketListMutation.mutate(todaysCity!.id)}
-                    isCollecting={collectCityMutation.isPending}
-                    isAddingToBucketList={addToBucketListMutation.isPending}
                   />
                 ))}
             </div>
