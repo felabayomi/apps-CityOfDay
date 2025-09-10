@@ -196,6 +196,43 @@ export function ContentEditor({ selectedCityId, onCityChange }: ContentEditorPro
     },
   });
 
+  // Update city mutation (for CTA links and city data)
+  const updateCityMutation = useMutation({
+    mutationFn: async ({ id, ...data }: { id: string; [key: string]: any }) => {
+      await apiRequest("PUT", `/api/admin/cities/${id}`, data);
+    },
+    onSuccess: () => {
+      toast({
+        title: "City Updated",
+        description: "City CTA buttons saved successfully.",
+      });
+      
+      // Refresh the city data
+      if (selectedCityId) {
+        queryClient.invalidateQueries({ queryKey: ["/api/cities", selectedCityId] });
+      }
+    },
+    onError: (error) => {
+      if (isUnauthorizedError(error)) {
+        toast({
+          title: "Unauthorized",
+          description: "You are logged out. Logging in again...",
+          variant: "destructive",
+        });
+        setTimeout(() => {
+          window.location.href = "/api/login";
+        }, 500);
+        return;
+      }
+      
+      toast({
+        title: "Update Failed",
+        description: "Failed to save CTA buttons. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
   // Publish city mutation
   const publishCityMutation = useMutation({
     mutationFn: async (cityId: string) => {
