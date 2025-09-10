@@ -199,15 +199,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       console.log('Publishing city:', req.params.id);
       
-      // Direct database update for publish action only
-      const [city] = await db
-        .update(cities)
-        .set({ 
-          isPublished: true, 
-          publishedDate: new Date() // Always use current server time
-        })
-        .where(eq(cities.id, req.params.id))
-        .returning();
+      // Use storage layer but with minimal data to avoid timestamp conflicts
+      const city = await storage.updateCity(req.params.id, {
+        isPublished: true,
+        publishedDate: new Date() // Always use current server time
+      });
       
       if (!city) {
         return res.status(404).json({ message: "City not found" });
