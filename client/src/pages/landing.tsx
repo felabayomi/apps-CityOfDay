@@ -31,7 +31,7 @@ export default function Landing() {
           <div className="logo-icon">
             <MapPin className="w-6 h-6" />
           </div>
-          <span className="brand-name">Daily Felix</span>
+          <span className="brand-name">City Discoverer</span>
           <span className="tagline">City of the Day™</span>
         </div>
         <nav className="nav-links">
@@ -82,98 +82,85 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Sample City Cards Section */}
+      {/* Features Section */}
       <section className="py-16 bg-muted/30">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h3 className="text-3xl font-bold text-foreground mb-4">Experience Daily Discovery</h3>
-            <p className="text-xl text-muted-foreground">Get inspired by cities around the world</p>
+            <h3 className="text-3xl font-bold text-foreground mb-4">How Daily Discovery Works</h3>
+            <p className="text-xl text-muted-foreground">Four curated moments throughout your day</p>
             <div className="w-24 h-1 bg-gradient-travel mx-auto rounded-full mt-4"></div>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {/* Sample Cards */}
-            <Card className="postcard-shadow hover:transform hover:scale-105 transition-all duration-300">
-              <div className="relative h-48 overflow-hidden rounded-t-lg">
-                <div className="w-full h-full relative">
-                  <img src="https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?w=400&h=300&fit=crop&crop=top" alt="New York City skyline" className="w-full h-full object-cover" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
+            {/* Morning Feature */}
+            <Card className="postcard-shadow hover:transform hover:scale-105 transition-all duration-300 text-center">
+              <CardContent className="p-8">
+                <div className="mb-6">
+                  <div className="w-20 h-20 mx-auto bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center mb-4">
+                    <Mountain className="w-10 h-10 text-white" />
+                  </div>
+                  <Badge style={{backgroundColor: 'var(--primary-yellow)', color: 'var(--text-dark)'}}>
+                    Morning
+                  </Badge>
                 </div>
-                <Badge className="absolute top-4 left-4" style={{backgroundColor: 'var(--primary-yellow)', color: 'var(--text-dark)'}}>
-                  Morning
-                </Badge>
-              </div>
-              <CardContent className="p-6">
-                <h4 className="text-lg font-semibold text-foreground mb-2">Wake Up in Paris</h4>
-                <p className="text-muted-foreground text-sm mb-4">
-                  Start your day with iconic landmarks and morning inspiration from the City of Light.
+                <h4 className="text-lg font-semibold text-foreground mb-3">Wake Up With Cities</h4>
+                <p className="text-muted-foreground text-sm">
+                  Start each day exploring iconic landmarks and cultural moments from a new destination around the world.
                 </p>
-                <Button variant="ghost" size="sm" className="text-blue-600">
-                  Explore Landmark
-                </Button>
               </CardContent>
             </Card>
 
-            <Card className="postcard-shadow hover:transform hover:scale-105 transition-all duration-300">
-              <div className="relative h-48 overflow-hidden rounded-t-lg">
-                <div className="w-full h-full relative">
-                  <img src="https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=400&h=300&fit=crop&crop=center" alt="San Francisco Golden Gate Bridge" className="w-full h-full object-cover" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
+            {/* Afternoon Feature */}
+            <Card className="postcard-shadow hover:transform hover:scale-105 transition-all duration-300 text-center">
+              <CardContent className="p-8">
+                <div className="mb-6">
+                  <div className="w-20 h-20 mx-auto bg-gradient-to-br from-blue-500 to-blue-700 rounded-full flex items-center justify-center mb-4">
+                    <Compass className="w-10 h-10 text-white" />
+                  </div>
+                  <Badge style={{backgroundColor: 'var(--accent-blue)', color: 'var(--text-light)'}}>
+                    Afternoon
+                  </Badge>
                 </div>
-                <Badge className="absolute top-4 left-4" style={{backgroundColor: 'var(--accent-blue)', color: 'var(--text-light)'}}>
-                  Afternoon
-                </Badge>
-              </div>
-              <CardContent className="p-6">
-                <h4 className="text-lg font-semibold text-foreground mb-2">Taste Local Culture</h4>
-                <p className="text-muted-foreground text-sm mb-4">
-                  Discover authentic local cuisine and cultural experiences that define each destination.
+                <h4 className="text-lg font-semibold text-foreground mb-3">Taste Local Culture</h4>
+                <p className="text-muted-foreground text-sm">
+                  Discover authentic cuisine, local traditions, and cultural experiences unique to each featured city.
                 </p>
-                <Button variant="ghost" size="sm" className="text-blue-600">
-                  Find Cafés
-                </Button>
               </CardContent>
             </Card>
 
-            <Card className="postcard-shadow hover:transform hover:scale-105 transition-all duration-300">
-              <div className="relative h-48 overflow-hidden rounded-t-lg">
-                <div className="w-full h-full relative">
-                  <img src="https://images.unsplash.com/photo-1477414348463-c0eb7f1359b6?w=400&h=300&fit=crop&crop=center" alt="Chicago skyline at sunset" className="w-full h-full object-cover" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
+            {/* Evening Feature */}
+            <Card className="postcard-shadow hover:transform hover:scale-105 transition-all duration-300 text-center">
+              <CardContent className="p-8">
+                <div className="mb-6">
+                  <div className="w-20 h-20 mx-auto bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center mb-4">
+                    <Route className="w-10 h-10 text-white" />
+                  </div>
+                  <Badge style={{backgroundColor: 'var(--primary-yellow)', color: 'var(--text-dark)'}}>
+                    Evening
+                  </Badge>
                 </div>
-                <Badge className="absolute top-4 left-4" style={{backgroundColor: 'var(--primary-yellow)', color: 'var(--text-dark)'}}>
-                  Evening
-                </Badge>
-              </div>
-              <CardContent className="p-6">
-                <h4 className="text-lg font-semibold text-foreground mb-2">Budget Smart Tips</h4>
-                <p className="text-muted-foreground text-sm mb-4">
-                  Learn insider secrets to save money while experiencing the best each city offers.
+                <h4 className="text-lg font-semibold text-foreground mb-3">Budget Smart Tips</h4>
+                <p className="text-muted-foreground text-sm">
+                  Learn insider secrets and money-saving strategies to experience the best each city offers affordably.
                 </p>
-                <Button variant="ghost" size="sm" className="text-blue-600">
-                  Save Money
-                </Button>
               </CardContent>
             </Card>
 
-            <Card className="postcard-shadow hover:transform hover:scale-105 transition-all duration-300">
-              <div className="relative h-48 overflow-hidden rounded-t-lg">
-                <div className="w-full h-full relative">
-                  <img src="https://images.unsplash.com/photo-1518155317743-a8ff43ea6a5f?w=400&h=300&fit=crop&crop=center" alt="Los Angeles downtown skyline" className="w-full h-full object-cover" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
+            {/* Bonus Feature */}
+            <Card className="postcard-shadow hover:transform hover:scale-105 transition-all duration-300 text-center">
+              <CardContent className="p-8">
+                <div className="mb-6">
+                  <div className="w-20 h-20 mx-auto bg-gradient-to-br from-blue-500 to-blue-700 rounded-full flex items-center justify-center mb-4">
+                    <Binoculars className="w-10 h-10 text-white" />
+                  </div>
+                  <Badge style={{backgroundColor: 'var(--accent-blue)', color: 'var(--text-light)'}}>
+                    Bonus
+                  </Badge>
                 </div>
-                <Badge className="absolute top-4 left-4" style={{backgroundColor: 'var(--accent-blue)', color: 'var(--text-light)'}}>
-                  Fun Fact
-                </Badge>
-              </div>
-              <CardContent className="p-6">
-                <h4 className="text-lg font-semibold text-foreground mb-2">Did You Know?</h4>
-                <p className="text-muted-foreground text-sm mb-4">
-                  Fascinating historical facts and cultural insights you won't find in guidebooks.
+                <h4 className="text-lg font-semibold text-foreground mb-3">Hidden Insights</h4>
+                <p className="text-muted-foreground text-sm">
+                  Uncover fascinating historical facts and cultural insights you won't find in typical guidebooks.
                 </p>
-                <Button variant="ghost" size="sm" className="text-blue-600">
-                  Learn More
-                </Button>
               </CardContent>
             </Card>
           </div>
@@ -192,7 +179,7 @@ export default function Landing() {
                   onClick={handleSignIn}
                   data-testid="button-join-now"
                 >
-                  Join Daily Felix
+                  Join City Discoverer
                 </Button>
               </CardContent>
             </Card>
