@@ -202,7 +202,7 @@ export function CityCard({
         </div>
 
         {/* Affiliate links if present */}
-        {content.affiliateLinks && Array.isArray(content.affiliateLinks) && content.affiliateLinks.length > 0 && (
+        {content.affiliateLinks && Array.isArray(content.affiliateLinks) && content.affiliateLinks.length > 0 ? (
           <div className="mt-4 pt-4 border-t border-border">
             <div className="flex flex-wrap gap-2">
               {content.affiliateLinks.map((link: { url: string; text: string }, index: number) => (
@@ -214,12 +214,12 @@ export function CityCard({
                   onClick={() => window.open(link.url, '_blank')}
                   data-testid={`affiliate-link-${index}`}
                 >
-                  {String(link.text)}
+                  {link.text as string}
                 </Button>
               ))}
             </div>
           </div>
-        )}
+        ) : null}
       </CardContent>
       
       {/* Time Indicator - Bottom Right Corner */}
