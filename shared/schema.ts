@@ -90,16 +90,34 @@ export const userBucketList = pgTable("user_bucket_list", {
   addedAt: timestamp("added_at").defaultNow(),
 });
 
+// User travel photos with city tagging
+export const userTravelPhotos = pgTable("user_travel_photos", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").references(() => users.id, { onDelete: "cascade" }),
+  cityId: varchar("city_id").references(() => cities.id, { onDelete: "set null" }),
+  photoUrl: varchar("photo_url").notNull(), // Object storage URL
+  cityName: varchar("city_name").notNull(), // User-tagged city name
+  stateName: varchar("state_name"), // User-tagged state name
+  caption: text("caption"), // Optional user caption
+  fileSize: integer("file_size"), // Optimized file size in bytes
+  originalFileName: varchar("original_file_name"),
+  isPublic: boolean("is_public").default(false), // Future feature for sharing
+  takenAt: timestamp("taken_at").defaultNow(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // Relations
 export const usersRelations = relations(users, ({ many }) => ({
   collectedCities: many(userCollectedCities),
   bucketList: many(userBucketList),
+  travelPhotos: many(userTravelPhotos),
 }));
 
 export const citiesRelations = relations(cities, ({ many }) => ({
   content: many(cityContent),
   collectors: many(userCollectedCities),
   bucketListUsers: many(userBucketList),
+  userPhotos: many(userTravelPhotos),
 }));
 
 export const cityContentRelations = relations(cityContent, ({ one }) => ({
@@ -127,6 +145,17 @@ export const userBucketListRelations = relations(userBucketList, ({ one }) => ({
   }),
   city: one(cities, {
     fields: [userBucketList.cityId],
+    references: [cities.id],
+  }),
+}));
+
+export const userTravelPhotosRelations = relations(userTravelPhotos, ({ one }) => ({
+  user: one(users, {
+    fields: [userTravelPhotos.userId],
+    references: [users.id],
+  }),
+  city: one(cities, {
+    fields: [userTravelPhotos.cityId],
     references: [cities.id],
   }),
 }));
@@ -160,6 +189,12 @@ export const insertUserBucketListSchema = createInsertSchema(userBucketList).omi
   addedAt: true,
 });
 
+export const insertUserTravelPhotoSchema = createInsertSchema(userTravelPhotos).omit({
+  id: true,
+  takenAt: true,
+  createdAt: true,
+});
+
 // Types
 export type UpsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
@@ -167,7 +202,9 @@ export type City = typeof cities.$inferSelect;
 export type CityContent = typeof cityContent.$inferSelect;
 export type UserCollectedCity = typeof userCollectedCities.$inferSelect;
 export type UserBucketList = typeof userBucketList.$inferSelect;
+export type UserTravelPhoto = typeof userTravelPhotos.$inferSelect;
 export type InsertCity = z.infer<typeof insertCitySchema>;
 export type InsertCityContent = z.infer<typeof insertCityContentSchema>;
 export type InsertUserCollectedCity = z.infer<typeof insertUserCollectedCitySchema>;
 export type InsertUserBucketList = z.infer<typeof insertUserBucketListSchema>;
+export type InsertUserTravelPhoto = z.infer<typeof insertUserTravelPhotoSchema>;
