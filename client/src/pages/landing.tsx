@@ -76,6 +76,35 @@ export default function Landing() {
         </div>
       </section>
 
+      {/* Preview Section */}
+      <section className="py-16 bg-background">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="bg-gradient-to-br from-blue-600 via-blue-500 to-yellow-400 rounded-2xl p-8 text-center text-white shadow-2xl">
+            <p className="text-sm uppercase tracking-wide mb-6 text-white/80">
+              WEDNESDAY, SEPTEMBER 11, 2025
+            </p>
+            
+            <div className="bg-white/20 backdrop-blur-sm rounded-full inline-block px-8 py-3 mb-8">
+              <h3 className="text-2xl font-bold">Asheville</h3>
+            </div>
+            
+            <blockquote className="text-lg italic mb-6 max-w-2xl mx-auto leading-relaxed">
+              "Sunrise spills across the Blue Ridge as you step onto the esplanade of the Biltmore Estate, Asheville's crown jewel. The limestone façade warms to peach, and cool air carries the scent of roses and herbs."
+            </blockquote>
+            <p className="text-sm text-white/70 mb-8">—Your Morning in Asheville</p>
+            
+            <Button 
+              size="lg" 
+              className="bg-white/20 hover:bg-white/30 border border-white/30 text-white backdrop-blur-sm"
+              onClick={handleViewTodaysCity}
+              data-testid="button-read-full-guide"
+            >
+              Read Full City Guide →
+            </Button>
+          </div>
+        </div>
+      </section>
+
       {/* Features Section */}
       <section className="py-16 relative overflow-hidden" 
         style={{
