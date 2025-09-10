@@ -23,7 +23,6 @@ export interface IStorage {
   // User operations (required for Replit Auth)
   getUser(id: string): Promise<User | undefined>;
   upsertUser(user: UpsertUser): Promise<User>;
-  updateUserStripeInfo(userId: string, customerId: string, subscriptionId: string): Promise<User>;
   updateUserStats(userId: string, stats: { discoveredCities?: number; bucketListCities?: number; currentStreak?: number }): Promise<User>;
 
   // City operations
@@ -80,15 +79,6 @@ export class DatabaseStorage implements IStorage {
     return user;
   }
 
-  async updateUserStripeInfo(userId: string, customerId: string, subscriptionId: string): Promise<User> {
-    // Note: App is now completely free, this method exists for interface compatibility
-    const [user] = await db
-      .update(users)
-      .set({ updatedAt: new Date() })
-      .where(eq(users.id, userId))
-      .returning();
-    return user;
-  }
 
   async updateUserStats(userId: string, stats: { discoveredCities?: number; bucketListCities?: number; currentStreak?: number }): Promise<User> {
     const [user] = await db

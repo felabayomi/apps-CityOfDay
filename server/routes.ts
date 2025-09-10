@@ -1,6 +1,5 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
-import Stripe from "stripe";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
 import { generateCityContent, generateCityImageSuggestions } from "./openai";
@@ -9,11 +8,6 @@ import { z } from "zod";
 import { eq } from "drizzle-orm";
 import { db } from "./db";
 import { ObjectStorageService } from "./objectStorage";
-
-// Initialize Stripe
-const stripe = process.env.STRIPE_SECRET_KEY ? new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: "2025-08-27.basil",
-}) : null;
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Auth middleware
