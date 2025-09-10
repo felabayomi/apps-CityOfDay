@@ -214,8 +214,8 @@ export default function Landing() {
             </p>
           </div>
 
-          <div className="mt-8 pt-6 border-t border-muted">
-            <div className="flex flex-wrap justify-center items-center gap-8 text-muted-foreground text-sm">
+          <div className="mt-8 pt-6 border-t border-white/30">
+            <div className="flex flex-wrap justify-center items-center gap-8 text-white text-sm">
               <span className="flex items-center gap-2">
                 <Bell className="w-4 h-4" />
                 Authentic Experiences
