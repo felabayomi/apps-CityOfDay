@@ -4,10 +4,11 @@ import Stripe from "stripe";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
 import { generateCityContent, generateCityImageSuggestions } from "./openai";
-import { insertCitySchema, insertCityContentSchema, cities } from "@shared/schema";
+import { insertCitySchema, insertCityContentSchema, insertUserTravelPhotoSchema, cities } from "@shared/schema";
 import { z } from "zod";
 import { eq } from "drizzle-orm";
 import { db } from "./db";
+import { ObjectStorageService } from "./objectStorage";
 
 // Initialize Stripe
 const stripe = process.env.STRIPE_SECRET_KEY ? new Stripe(process.env.STRIPE_SECRET_KEY, {
@@ -369,6 +370,48 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching bucket list:", error);
       res.status(500).json({ message: "Failed to fetch bucket list" });
+    }
+  });
+
+  // Travel photo routes
+  app.post("/api/photos/upload", isAuthenticated, async (req: any, res) => {
+    try {
+      const objectStorageService = new ObjectStorageService();
+      const uploadURL = await objectStorageService.getTravelPhotoUploadURL();
+      res.json({ uploadURL });
+    } catch (error) {
+      console.error("Error getting photo upload URL:", error);
+      res.status(500).json({ message: "Failed to get upload URL" });
+    }
+  });
+
+  app.post("/api/photos", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const photoData = insertUserTravelPhotoSchema.parse({
+        ...req.body,
+        userId,
+      });
+      
+      const photo = await storage.createTravelPhoto(photoData);
+      res.json(photo);
+    } catch (error) {
+      console.error("Error saving travel photo:", error);
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid photo data", errors: error.errors });
+      }
+      res.status(500).json({ message: "Failed to save photo" });
+    }
+  });
+
+  app.get("/api/photos", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const photos = await storage.getUserTravelPhotos(userId);
+      res.json(photos);
+    } catch (error) {
+      console.error("Error fetching user photos:", error);
+      res.status(500).json({ message: "Failed to fetch photos" });
     }
   });
 

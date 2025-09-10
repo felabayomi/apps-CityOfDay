@@ -4,14 +4,17 @@ import {
   cityContent,
   userCollectedCities,
   userBucketList,
+  userTravelPhotos,
   type User,
   type UpsertUser,
   type City,
   type CityContent,
+  type UserTravelPhoto,
   type InsertCity,
   type InsertCityContent,
   type InsertUserCollectedCity,
   type InsertUserBucketList,
+  type InsertUserTravelPhoto,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, and, gte, lt, asc, isNull, isNotNull, sql } from "drizzle-orm";
@@ -48,6 +51,11 @@ export interface IStorage {
   removeCityFromBucketList(userId: string, cityId: string): Promise<void>;
   getUserCollectedCities(userId: string): Promise<City[]>;
   getUserBucketList(userId: string): Promise<City[]>;
+
+  // Travel photo operations
+  createTravelPhoto(photo: InsertUserTravelPhoto): Promise<UserTravelPhoto>;
+  getUserTravelPhotos(userId: string): Promise<UserTravelPhoto[]>;
+  deleteTravelPhoto(id: string): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -293,6 +301,27 @@ export class DatabaseStorage implements IStorage {
       .where(eq(userBucketList.userId, userId));
     
     return result.map(r => r.city);
+  }
+
+  // Travel photo operations
+  async createTravelPhoto(photo: InsertUserTravelPhoto): Promise<UserTravelPhoto> {
+    const [newPhoto] = await db
+      .insert(userTravelPhotos)
+      .values(photo)
+      .returning();
+    return newPhoto;
+  }
+
+  async getUserTravelPhotos(userId: string): Promise<UserTravelPhoto[]> {
+    return await db
+      .select()
+      .from(userTravelPhotos)
+      .where(eq(userTravelPhotos.userId, userId))
+      .orderBy(desc(userTravelPhotos.takenAt));
+  }
+
+  async deleteTravelPhoto(id: string): Promise<void> {
+    await db.delete(userTravelPhotos).where(eq(userTravelPhotos.id, id));
   }
 }
 
