@@ -60,6 +60,46 @@ export default function Admin() {
     window.location.href = "/api/logout";
   };
 
+  // Delete city mutation
+  const deleteCityMutation = useMutation({
+    mutationFn: async (cityId: string) => {
+      await fetch(`/api/admin/cities/${cityId}`, {
+        method: 'DELETE',
+        credentials: 'include',
+      });
+    },
+    onSuccess: () => {
+      toast({
+        title: "City Deleted",
+        description: "City and all its content have been deleted successfully.",
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/cities"] });
+      // Clear selected city if it was the deleted one
+      if (selectedCity) {
+        setSelectedCity("");
+      }
+    },
+    onError: (error) => {
+      if (isUnauthorizedError(error)) {
+        toast({
+          title: "Unauthorized",
+          description: "You are logged out. Logging in again...",
+          variant: "destructive",
+        });
+        setTimeout(() => {
+          window.location.href = "/api/login";
+        }, 500);
+        return;
+      }
+      
+      toast({
+        title: "Delete Failed",
+        description: "Failed to delete city. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
@@ -287,6 +327,20 @@ export default function Admin() {
                           data-testid={`button-view-${city.name.toLowerCase().replace(/\s+/g, '-')}`}
                         >
                           <Eye className="w-4 h-4" />
+                        </Button>
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          onClick={() => {
+                            if (window.confirm(`Are you sure you want to delete "${city.name}, ${city.country}"? This action cannot be undone and will delete all content cards.`)) {
+                              deleteCityMutation.mutate(city.id);
+                            }
+                          }}
+                          data-testid={`button-delete-${city.name.toLowerCase().replace(/\s+/g, '-')}`}
+                          disabled={deleteCityMutation.isPending}
+                          className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                        >
+                          <Trash2 className="w-4 h-4" />
                         </Button>
                       </div>
                     </div>
