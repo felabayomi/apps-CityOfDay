@@ -9,6 +9,30 @@ import { eq } from "drizzle-orm";
 import { db } from "./db";
 import { ObjectStorageService } from "./objectStorage";
 
+// Simple in-memory cache for daily city content
+const todaysCityCache = {
+  data: null as any,
+  timestamp: 0,
+  ttl: 15 * 60 * 1000, // 15 minutes in milliseconds
+  
+  get() {
+    if (Date.now() - this.timestamp > this.ttl) {
+      return null; // Cache expired
+    }
+    return this.data;
+  },
+  
+  set(data: any) {
+    this.data = data;
+    this.timestamp = Date.now();
+  },
+  
+  clear() {
+    this.data = null;
+    this.timestamp = 0;
+  }
+};
+
 export async function registerRoutes(app: Express): Promise<Server> {
   // Auth middleware
   await setupAuth(app);
@@ -31,13 +55,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Public city routes
   app.get("/api/cities/today", async (req, res) => {
     try {
+      // Check cache first
+      const cachedData = todaysCityCache.get();
+      if (cachedData) {
+        return res.json(cachedData);
+      }
+      
+      // Cache miss - fetch from database
       const todaysCity = await storage.getTodaysCity();
       if (!todaysCity) {
         return res.status(404).json({ message: "No city published for today" });
       }
       
       const content = await storage.getCityContent(todaysCity.id);
-      res.json({ city: todaysCity, content });
+      const responseData = { city: todaysCity, content };
+      
+      // Cache the result
+      todaysCityCache.set(responseData);
+      
+      res.json(responseData);
     } catch (error) {
       console.error("Error fetching today's city:", error);
       res.status(500).json({ message: "Failed to fetch today's city" });
@@ -192,6 +228,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const city = await storage.createCity(cityData);
 
+      // Clear cache when new city is created with autoPublish
+      if (autoPublish) {
+        todaysCityCache.clear();
+      }
+
       // Create content cards
       const contentCards = [
         {
@@ -259,6 +300,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         isPublished: true,
         publishedDate: new Date() // Always use current server time
       });
+      
+      // Clear cache when city is published
+      todaysCityCache.clear();
       
       if (!city) {
         return res.status(404).json({ message: "City not found" });
