@@ -1,10 +1,11 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Heart, Sun, Utensils, Moon, Lightbulb, Globe, ChevronDown, ChevronUp, Clock } from "lucide-react";
+import { MapPin, Heart, Sun, Utensils, Moon, Lightbulb, Globe, ChevronDown, ChevronUp, Clock, Share2 } from "lucide-react";
 import type { CityContent } from "@shared/schema";
 import { useState, useEffect } from "react";
 import { getNextCardType, formatTimeUntilNext } from "@/lib/timeBasedContent";
+import { ShareButton } from "@/components/ShareButton";
 
 interface CityCardProps {
   content: CityContent;
@@ -105,6 +106,21 @@ export function CityCard({
           <IconComponent className="w-3 h-3 mr-1" />
           {badge}
         </Badge>
+        
+        {/* Individual Share Button for this card */}
+        {city && (
+          <div className="absolute top-4 right-4">
+            <ShareButton 
+              city={{ name: city.name, country: city.country }}
+              content={[{
+                title: content.title,
+                content: content.content,
+                card_type: content.cardType,
+                image_url: content.imageUrl || undefined
+              }]}
+            />
+          </div>
+        )}
       </div>
       
       <CardContent className="p-6">
