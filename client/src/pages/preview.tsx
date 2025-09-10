@@ -153,7 +153,7 @@ export default function Preview() {
                 onClick={handleSignIn}
                 data-testid="button-start-journey-preview"
               >
-                Start Your Daily Journey
+                Start Your Daily Discovery
               </Button>
               <Button 
                 size="lg"

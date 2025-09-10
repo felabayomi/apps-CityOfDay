@@ -59,7 +59,7 @@ export default function Landing() {
                   onClick={handleSignIn}
                   data-testid="button-start-journey"
                 >
-                  Start Daily Journey
+                  Start Daily Discovery
                 </Button>
                 <Button 
                   size="lg" 
