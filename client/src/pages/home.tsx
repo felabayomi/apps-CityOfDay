@@ -147,7 +147,7 @@ export default function Home() {
         <nav className="nav-links">
           <a href="#discover">Discover</a>
           <a href="/library">Library</a>
-          {(user as any)?.email === import.meta.env.VITE_ADMIN_EMAIL && (
+          {(user as any)?.email === import.meta.env.VITE_ADMIN_EMAIL && user && (
             <a href="/admin">Admin</a>
           )}
         </nav>

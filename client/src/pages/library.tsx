@@ -102,7 +102,7 @@ export default function LibraryPage() {
           <Link href="/library">
             <a href="/library">Library</a>
           </Link>
-          {(user as any)?.email === import.meta.env.VITE_ADMIN_EMAIL && (
+          {(user as any)?.email === import.meta.env.VITE_ADMIN_EMAIL && user && (
             <Link href="/admin">
               <a href="/admin">Admin</a>
             </Link>
