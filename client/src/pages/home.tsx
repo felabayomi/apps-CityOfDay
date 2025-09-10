@@ -141,13 +141,15 @@ export default function Home() {
           <div className="logo-icon">
             <MapPin className="w-6 h-6" />
           </div>
-          <span className="brand-name">Daily Felix</span>
+          <span className="brand-name">City Discoverer</span>
           <span className="tagline">City of the Day™</span>
         </div>
         <nav className="nav-links">
           <a href="#discover">Discover</a>
           <a href="/library">Library</a>
-          <a href="/admin">Admin</a>
+          {(user as any)?.email === import.meta.env.VITE_ADMIN_EMAIL && (
+            <a href="/admin">Admin</a>
+          )}
         </nav>
         <div className="auth-area">
           <button className="notif-btn" data-testid="button-notifications">

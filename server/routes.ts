@@ -118,8 +118,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Admin check middleware
+  const isAdmin = (req: any, res: any, next: any) => {
+    const userEmail = req.user?.claims?.email;
+    const adminEmail = process.env.ADMIN_EMAIL;
+    
+    if (!adminEmail) {
+      console.error("ADMIN_EMAIL environment variable not set");
+      return res.status(500).json({ message: "Admin configuration error" });
+    }
+    
+    if (userEmail !== adminEmail) {
+      return res.status(403).json({ message: "Admin access required" });
+    }
+    
+    next();
+  };
+
   // Admin routes (protected)
-  app.get("/api/admin/cities", isAuthenticated, async (req, res) => {
+  app.get("/api/admin/cities", isAuthenticated, isAdmin, async (req, res) => {
     try {
       const cities = await storage.getAllCities();
       res.json(cities);
@@ -129,7 +146,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/admin/cities/generate", isAuthenticated, async (req, res) => {
+  app.post("/api/admin/cities/generate", isAuthenticated, isAdmin, async (req, res) => {
     try {
       const { cityName, country, focus = "balanced", autoPublish = false, scheduledDate } = req.body;
       
@@ -224,7 +241,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/admin/cities", isAuthenticated, async (req, res) => {
+  app.post("/api/admin/cities", isAuthenticated, isAdmin, async (req, res) => {
     try {
       const validatedData = insertCitySchema.parse(req.body);
       const city = await storage.createCity(validatedData);
@@ -239,7 +256,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Specific publish route to avoid timestamp conflicts
-  app.put("/api/admin/cities/:id/publish", isAuthenticated, async (req, res) => {
+  app.put("/api/admin/cities/:id/publish", isAuthenticated, isAdmin, async (req, res) => {
     try {
       console.log('Publishing city:', req.params.id);
       
@@ -260,7 +277,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/admin/cities/:id", isAuthenticated, async (req, res) => {
+  app.put("/api/admin/cities/:id", isAuthenticated, isAdmin, async (req, res) => {
     try {
       // Only allow specific fields to be updated to avoid timestamp field conflicts
       const allowedFields = ['name', 'country', 'isPublished', 'isPinned', 'publishedDate', 'scheduledDate', 'cityCtaLinks', 'morningCtaLink', 'afternoonCtaLink', 'eveningCtaLink', 'bonusCtaLink'];
@@ -304,7 +321,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/admin/cities/:id", isAuthenticated, async (req, res) => {
+  app.delete("/api/admin/cities/:id", isAuthenticated, isAdmin, async (req, res) => {
     try {
       await storage.deleteCity(req.params.id);
       res.json({ message: "City deleted successfully" });
@@ -315,7 +332,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Content management routes
-  app.post("/api/admin/content", isAuthenticated, async (req, res) => {
+  app.post("/api/admin/content", isAuthenticated, isAdmin, async (req, res) => {
     try {
       const validatedData = insertCityContentSchema.parse(req.body);
       const content = await storage.createCityContent(validatedData);
@@ -329,7 +346,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/admin/content/:id", isAuthenticated, async (req, res) => {
+  app.put("/api/admin/content/:id", isAuthenticated, isAdmin, async (req, res) => {
     try {
       const content = await storage.updateCityContent(req.params.id, req.body);
       res.json(content);
@@ -339,7 +356,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/admin/content/:id", isAuthenticated, async (req, res) => {
+  app.delete("/api/admin/content/:id", isAuthenticated, isAdmin, async (req, res) => {
     try {
       await storage.deleteCityContent(req.params.id);
       res.json({ message: "Content deleted successfully" });
@@ -459,7 +476,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Image suggestion route
-  app.post("/api/admin/image-suggestions", isAuthenticated, async (req, res) => {
+  app.post("/api/admin/image-suggestions", isAuthenticated, isAdmin, async (req, res) => {
     try {
       const { cityName, cardType } = req.body;
       const suggestions = await generateCityImageSuggestions(cityName, cardType);

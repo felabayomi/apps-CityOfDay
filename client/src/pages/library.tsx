@@ -92,7 +92,7 @@ export default function LibraryPage() {
           <div className="logo-icon">
             <MapPin className="w-6 h-6" />
           </div>
-          <span className="brand-name">Daily Felix</span>
+          <span className="brand-name">City Discoverer</span>
           <span className="tagline">City of the Day™</span>
         </div>
         <nav className="nav-links">
@@ -102,9 +102,11 @@ export default function LibraryPage() {
           <Link href="/library">
             <a href="/library">Library</a>
           </Link>
-          <Link href="/admin">
-            <a href="/admin">Admin</a>
-          </Link>
+          {(user as any)?.email === import.meta.env.VITE_ADMIN_EMAIL && (
+            <Link href="/admin">
+              <a href="/admin">Admin</a>
+            </Link>
+          )}
         </nav>
         <div className="auth-area">
           <div className="user-section">

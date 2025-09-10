@@ -21,7 +21,7 @@ export default function Admin() {
   const queryClient = useQueryClient();
   const [selectedCity, setSelectedCity] = useState<string>("");
 
-  // Redirect to login if not authenticated
+  // Redirect to login if not authenticated or check admin access
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
       toast({
@@ -34,7 +34,20 @@ export default function Admin() {
       }, 500);
       return;
     }
-  }, [isAuthenticated, isLoading, toast]);
+    
+    // Check admin access
+    if (user && (user as any)?.email !== import.meta.env.VITE_ADMIN_EMAIL) {
+      toast({
+        title: "Access Denied",
+        description: "Admin access required.",
+        variant: "destructive",
+      });
+      setTimeout(() => {
+        window.location.href = "/";
+      }, 500);
+      return;
+    }
+  }, [isAuthenticated, isLoading, user, toast]);
 
   // Fetch all cities for admin
   const { data: cities, isLoading: loadingCities } = useQuery<any[]>({
