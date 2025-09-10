@@ -279,6 +279,12 @@ export default function Home() {
                           <Button className="bg-white text-primary hover:bg-gray-100" data-testid="button-search-flights">
                             Search Flights
                           </Button>
+                          <Button className="bg-white text-primary hover:bg-gray-100" data-testid="button-car-rental">
+                            Car Rental
+                          </Button>
+                          <Button className="bg-white text-primary hover:bg-gray-100" data-testid="button-travel-companion">
+                            Smart Travel Companion
+                          </Button>
                         </>
                       )
                     }
