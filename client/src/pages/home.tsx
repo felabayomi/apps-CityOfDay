@@ -80,12 +80,6 @@ export default function Home() {
         <div className="auth-area">
           <a href="/library" className="library-link">Library</a>
           <a href="/admin" className="admin-link">Admin</a>
-          <button className="notif-btn" data-testid="button-notifications">
-            <Bell className="w-5 h-5" />
-          </button>
-          <button className="sign-in-btn" onClick={handleSignIn} data-testid="button-sign-in">
-            Sign In
-          </button>
         </div>
       </header>
 

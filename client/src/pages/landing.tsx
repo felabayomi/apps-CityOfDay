@@ -54,12 +54,7 @@ export default function Landing() {
           <span className="tagline">City of the Day™</span>
         </div>
         <div className="auth-area">
-          <button className="notif-btn">
-            <Bell className="w-5 h-5" />
-          </button>
-          <button className="sign-in-btn" onClick={handleSignIn} data-testid="button-sign-in">
-            Sign In
-          </button>
+          <a href="/admin" className="admin-link">Admin</a>
         </div>
       </header>
 
@@ -78,7 +73,7 @@ export default function Landing() {
                 <Button 
                   size="lg" 
                   className="bg-white text-blue-600 hover:bg-gray-100"
-                  onClick={handleSignIn}
+                  onClick={handleViewTodaysCity}
                   data-testid="button-start-journey"
                 >
                   Start Daily Discovery
