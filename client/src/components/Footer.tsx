@@ -8,7 +8,7 @@ export default function Footer() {
           <div className="flex items-center justify-center gap-2 mb-4">
             <span className="text-2xl">🌍</span>
             <p className="text-foreground font-medium">
-              CityDiscovere partners with <strong>Expedia</strong>, <strong>Viator</strong>, and <strong>Global Travel</strong> to bring you insider access and exclusive deals.
+              City Discoverer partners with <strong>Expedia</strong>, <strong>Viator</strong>, and <strong>Global Travel</strong> to bring you insider access and exclusive deals.
             </p>
           </div>
           
