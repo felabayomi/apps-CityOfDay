@@ -35,7 +35,7 @@ export function getCurrentCardType(): TimeBasedCard {
     { start: 0, end: 420, type: 'preview' as CardDisplayType, label: 'City Preview', timeRange: '12:01 AM - 7:00 AM', next: '7:00 AM' }, // 12:01 AM - 7:00 AM
     { start: 420, end: 660, type: 'morning' as CardDisplayType, label: 'Morning Discovery', timeRange: '7:00 AM - 11:00 AM', next: '11:00 AM' }, // 7:00 AM - 11:00 AM  
     { start: 660, end: 900, type: 'afternoon' as CardDisplayType, label: 'Afternoon Culture', timeRange: '11:00 AM - 3:00 PM', next: '3:00 PM' }, // 11:00 AM - 3:00 PM
-    { start: 900, end: 1140, type: 'evening' as CardDisplayType, label: 'Evening Budget Tips', timeRange: '3:00 PM - 7:00 PM', next: '7:00 PM' }, // 3:00 PM - 7:00 PM
+    { start: 900, end: 1140, type: 'evening' as CardDisplayType, label: 'Evening Experiences', timeRange: '3:00 PM - 7:00 PM', next: '7:00 PM' }, // 3:00 PM - 7:00 PM
     { start: 1140, end: 1380, type: 'bonus' as CardDisplayType, label: 'Did You Know?', timeRange: '7:00 PM - 11:00 PM', next: '11:00 PM' }, // 7:00 PM - 11:00 PM
     { start: 1380, end: 1440, type: 'preview' as CardDisplayType, label: 'City Preview', timeRange: '11:00 PM - 12:01 AM', next: '12:01 AM' }, // 11:00 PM - 11:59 PM
   ];

@@ -38,8 +38,8 @@ const cardTypeConfig = {
     icon: Moon,
     badge: "Evening",
     color: "bg-destructive text-destructive-foreground",
-    buttonText: "Save Money", 
-    buttonColor: "text-green-600 hover:text-green-700",
+    buttonText: "Explore Evening", 
+    buttonColor: "text-purple-600 hover:text-purple-700",
   },
   bonus: {
     icon: Lightbulb,
