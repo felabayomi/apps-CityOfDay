@@ -270,19 +270,39 @@ export default function Home() {
                       )) : (
                         // Fallback buttons if no custom CTAs are set
                         <>
-                          <Button className="bg-white text-primary hover:bg-gray-100" data-testid="button-book-hotels">
+                          <Button 
+                            className="bg-white text-primary hover:bg-gray-100" 
+                            data-testid="button-book-hotels"
+                            onClick={() => window.open('https://resmax.globaltravel.net/?custom1=GT20038250&custom2=resmax', '_blank')}
+                          >
                             Book Hotels
                           </Button>
-                          <Button className="bg-white text-primary hover:bg-gray-100" data-testid="button-find-tours">
+                          <Button 
+                            className="bg-white text-primary hover:bg-gray-100" 
+                            data-testid="button-find-tours"
+                            onClick={() => window.open('https://www.viator.com/?pid=P00113651&uid=U00350276&mcid=58086&currency=USD', '_blank')}
+                          >
                             Find Tours
                           </Button>
-                          <Button className="bg-white text-primary hover:bg-gray-100" data-testid="button-search-flights">
+                          <Button 
+                            className="bg-white text-primary hover:bg-gray-100" 
+                            data-testid="button-search-flights"
+                            onClick={() => window.open('https://globaltravel.airfareassist.com/agentsearch?cmp=R400000', '_blank')}
+                          >
                             Search Flights
                           </Button>
-                          <Button className="bg-white text-primary hover:bg-gray-100" data-testid="button-car-rental">
+                          <Button 
+                            className="bg-white text-primary hover:bg-gray-100" 
+                            data-testid="button-car-rental"
+                            onClick={() => window.open('https://rezervco.carhire-solutions.com/', '_blank')}
+                          >
                             Car Rental
                           </Button>
-                          <Button className="bg-white text-primary hover:bg-gray-100" data-testid="button-travel-companion">
+                          <Button 
+                            className="bg-white text-primary hover:bg-gray-100" 
+                            data-testid="button-travel-companion"
+                            onClick={() => window.open('https://detect.citydiscoverer.ai/', '_blank')}
+                          >
                             Smart Travel Companion
                           </Button>
                         </>
