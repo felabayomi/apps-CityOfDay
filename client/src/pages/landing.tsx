@@ -64,7 +64,7 @@ export default function Landing() {
               <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
                 Your daily guide to city discovery.<br />Curated travel inspiration, cultural insights, and hidden gems.
               </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <div className="flex justify-center">
                 <Button 
                   size="lg" 
                   className="bg-white text-blue-600 hover:bg-gray-100"
@@ -72,15 +72,6 @@ export default function Landing() {
                   data-testid="button-start-journey"
                 >
                   Start Daily Discovery
-                </Button>
-                <Button 
-                  size="lg" 
-                  variant="outline"
-                  className="border-white text-white hover:bg-white hover:text-blue-600 border-2"
-                  onClick={handleViewTodaysCity}
-                  data-testid="button-view-today"
-                >
-                  View Today's City
                 </Button>
               </div>
             </div>
