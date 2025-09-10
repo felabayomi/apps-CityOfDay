@@ -160,11 +160,11 @@ export default function Landing() {
           </div>
 
           {/* CTA Section */}
-          <div className="mt-12 text-center">
+          <div className="mt-8 text-center">
             <Card className="bg-gradient-travel text-white border-none">
-              <CardContent className="p-8">
-                <h4 className="text-2xl font-bold mb-4">Ready to Explore?</h4>
-                <p className="text-white/90 mb-6 max-w-2xl mx-auto">
+              <CardContent className="p-6">
+                <h4 className="text-xl font-bold mb-3">Ready to Explore?</h4>
+                <p className="text-white/90 mb-4 max-w-2xl mx-auto">
                   Join thousands of travelers discovering new cities every day. Start your journey now.
                 </p>
                 <Button 
@@ -182,7 +182,7 @@ export default function Landing() {
       </section>
 
       {/* Partnership Section */}
-      <section className="py-16 bg-background">
+      <section className="py-12 bg-background">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="mb-8">
             <MapPin className="w-12 h-12 mx-auto text-primary mb-4" />
