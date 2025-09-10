@@ -114,12 +114,12 @@ export default function Landing() {
                 }).toUpperCase()}
               </p>
               
-              {/* Time Indicator - Bottom Right Corner */}
-              <div className="absolute bottom-4 right-4 bg-gray-900/90 backdrop-blur-sm text-white rounded-lg shadow-xl px-4 py-3 border-2 border-white/50">
-                <div className="flex items-center gap-2">
-                  <div className="text-sm font-bold">
+              {/* Time Indicator - Responsive positioning */}
+              <div className="absolute top-4 right-4 md:bottom-4 md:top-auto bg-gray-900/90 backdrop-blur-sm text-white rounded-lg shadow-xl px-3 py-2 md:px-4 md:py-3 border-2 border-white/50">
+                <div className="flex items-center gap-1 md:gap-2">
+                  <div className="text-xs md:text-sm font-bold">
                     <div className="text-yellow-300 text-xs font-semibold">{nextCardInfo.label}</div>
-                    <div className="text-white font-bold text-base">{timeUntilNext}</div>
+                    <div className="text-white font-bold text-sm md:text-base">{timeUntilNext}</div>
                   </div>
                 </div>
               </div>
