@@ -256,7 +256,6 @@ export default function Landing() {
           <h4>Product</h4>
           <ul>
             <li><a href="#discover">Features</a></li>
-            <li><a href="#premium">Pricing</a></li>
             <li><a href="#">Mobile App</a></li>
           </ul>
         </div>

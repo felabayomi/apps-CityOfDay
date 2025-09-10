@@ -145,7 +145,6 @@ export default function Home() {
         <nav className="nav-links">
           <a href="#discover">Discover</a>
           <a href="/admin">Admin</a>
-          <a href="#premium">Premium</a>
         </nav>
         <div className="auth-area">
           <button className="notif-btn" data-testid="button-notifications">
@@ -399,26 +398,7 @@ export default function Home() {
         </section>
       )}
 
-      {/* Premium Upgrade Prompt */}
-      {user.subscriptionTier === 'free' && (
-        <section className="py-12" style={{backgroundColor: '#ffffff'}}>
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <Card className="border-primary/20 bg-primary/5">
-              <CardHeader>
-                <CardTitle style={{color: 'var(--text-dark)'}}>Unlock Premium Features</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="mb-6" style={{color: '#666'}}>
-                  Get access to city archives, detailed itineraries, exclusive deals, and more.
-                </p>
-                <Button asChild data-testid="button-upgrade-premium">
-                  <a href="/subscribe">Upgrade to Premium</a>
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
-        </section>
-      )}
+      {/* Premium upgrade section removed - app is now completely free */}
 
       {/* Camera Capture Modal */}
       <CameraCapture
