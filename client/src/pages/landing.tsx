@@ -126,9 +126,9 @@ export default function Landing() {
                 size="lg" 
                 className="bg-white/20 hover:bg-white/30 border border-white/30 text-white backdrop-blur-sm"
                 onClick={handleViewTodaysCity}
-                data-testid="button-read-full-guide"
+                data-testid="button-visit-city"
               >
-                Read Full City Guide →
+                Visit {city.name}
               </Button>
             </div>
           ) : (
