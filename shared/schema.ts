@@ -52,6 +52,11 @@ export const cities = pgTable("cities", {
   isPublished: boolean("is_published").default(false),
   isPinned: boolean("is_pinned").default(false),
   cityCtaLinks: jsonb("city_cta_links"), // array of {text, url, type} for main city CTAs
+  // Content card affiliate links
+  morningCtaLink: varchar("morning_cta_link"), // Link for "Explore Landmark" button
+  afternoonCtaLink: varchar("afternoon_cta_link"), // Link for "Find Cafés" button  
+  eveningCtaLink: varchar("evening_cta_link"), // Link for "Save Money" button
+  bonusCtaLink: varchar("bonus_cta_link"), // Link for "Learn More" button
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
