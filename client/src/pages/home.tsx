@@ -314,8 +314,8 @@ export default function Home() {
                   <p className="text-white/90 mb-6 max-w-2xl mx-auto">
                     Turn today's inspiration into tomorrow's adventure. Book your experience now.
                   </p>
-                  {/* Mobile-Optimized CTA Grid */}
-                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-4 max-w-4xl mx-auto">
+                  {/* Compact CTA Grid */}
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 max-w-3xl mx-auto">
                     {/* Custom City CTAs - Show first if they exist */}
                     {todaysCity?.cityCtaLinks && Array.isArray(todaysCity.cityCtaLinks) && todaysCity.cityCtaLinks.length > 0 && 
                       todaysCity.cityCtaLinks.map((link: any, index: number) => (
