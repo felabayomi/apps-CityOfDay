@@ -39,9 +39,6 @@ export default function Landing() {
           <span className="brand-name">City Discoverer</span>
           <span className="tagline">City of the Day™</span>
         </div>
-        <nav className="nav-links">
-          <a href="#discover">Discover</a>
-        </nav>
         <div className="auth-area">
           <button className="notif-btn">
             <Bell className="w-5 h-5" />
