@@ -603,6 +603,44 @@ export function ContentEditor({ selectedCityId, onCityChange }: ContentEditorPro
                 placeholder="https://example.com/info"
               />
             </div>
+
+            {/* Luxury Card Link */}
+            <div className="space-y-2">
+              <Label htmlFor="luxury-link" className="flex items-center">
+                <Crown className="w-4 h-4 mr-2 text-yellow-600" />
+                Luxury - "Book Experience" Link
+              </Label>
+              <Input
+                id="luxury-link"
+                value={city.luxuryCtaLink || ""}
+                onChange={(e) => {
+                  updateCityMutation.mutate({ 
+                    id: city.id, 
+                    luxuryCtaLink: e.target.value 
+                  });
+                }}
+                placeholder="https://example.com/luxury-hotels"
+              />
+            </div>
+
+            {/* Wildlife Card Link */}
+            <div className="space-y-2">
+              <Label htmlFor="wildlife-link" className="flex items-center">
+                <Trees className="w-4 h-4 mr-2 text-green-700" />
+                Wildlife - "Explore Nature" Link
+              </Label>
+              <Input
+                id="wildlife-link"
+                value={city.wildlifeCtaLink || ""}
+                onChange={(e) => {
+                  updateCityMutation.mutate({ 
+                    id: city.id, 
+                    wildlifeCtaLink: e.target.value 
+                  });
+                }}
+                placeholder="https://example.com/nature-tours"
+              />
+            </div>
           </div>
           
           <div className="bg-muted/30 rounded-lg p-3 mt-4">
