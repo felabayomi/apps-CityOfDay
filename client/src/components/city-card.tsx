@@ -7,6 +7,7 @@ import { useState } from "react";
 
 interface CityCardProps {
   content: CityContent;
+  city?: any; // City data with affiliate links
   onCollect?: () => void;
   onAddToBucketList?: () => void;
   isCollecting?: boolean;
@@ -47,6 +48,7 @@ const cardTypeConfig = {
 
 export function CityCard({ 
   content, 
+  city,
   onCollect, 
   onAddToBucketList, 
   isCollecting = false,
@@ -126,6 +128,28 @@ export function CityCard({
             size="sm" 
             className={`${buttonColor} hover:bg-accent/10 font-medium`}
             data-testid={`button-${content.cardType}-action`}
+            onClick={() => {
+              if (city) {
+                let affiliateLink = '';
+                switch(content.cardType) {
+                  case 'morning':
+                    affiliateLink = city.morningCtaLink;
+                    break;
+                  case 'afternoon':
+                    affiliateLink = city.afternoonCtaLink;
+                    break;
+                  case 'evening':
+                    affiliateLink = city.eveningCtaLink;
+                    break;
+                  case 'bonus':
+                    affiliateLink = city.bonusCtaLink;
+                    break;
+                }
+                if (affiliateLink) {
+                  window.open(affiliateLink, '_blank');
+                }
+              }
+            }}
           >
             <MapPin className="w-4 h-4 mr-2" />
             {buttonText}

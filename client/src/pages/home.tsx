@@ -244,6 +244,7 @@ export default function Home() {
                   <CityCard
                     key={content.id}
                     content={content}
+                    city={todaysCity}
                   />
                 ))}
             </div>
