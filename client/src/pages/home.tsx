@@ -144,6 +144,7 @@ export default function Home() {
         </div>
         <nav className="nav-links">
           <a href="#discover">Discover</a>
+          <a href="/library">Library</a>
           <a href="/admin">Admin</a>
         </nav>
         <div className="auth-area">
