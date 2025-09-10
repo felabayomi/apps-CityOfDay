@@ -80,7 +80,15 @@ export class DatabaseStorage implements IStorage {
     return user;
   }
 
-  // updateUserStripeInfo method removed - app is now completely free
+  async updateUserStripeInfo(userId: string, customerId: string, subscriptionId: string): Promise<User> {
+    // Note: App is now completely free, this method exists for interface compatibility
+    const [user] = await db
+      .update(users)
+      .set({ updatedAt: new Date() })
+      .where(eq(users.id, userId))
+      .returning();
+    return user;
+  }
 
   async updateUserStats(userId: string, stats: { discoveredCities?: number; bucketListCities?: number; currentStreak?: number }): Promise<User> {
     const [user] = await db
@@ -192,7 +200,7 @@ export class DatabaseStorage implements IStorage {
       .orderBy(desc(cities.publishedDate));
     
     // Find the most recent city published in the past or today
-    const validCities = allPublishedCities.filter(city => city.publishedDate <= today);
+    const validCities = allPublishedCities.filter(city => city.publishedDate && city.publishedDate <= today);
     
     return validCities[0] || allPublishedCities[0]; // Return best option or any published city as fallback
   }

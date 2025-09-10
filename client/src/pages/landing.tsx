@@ -15,8 +15,8 @@ export default function Landing() {
   });
 
   // Get the morning content for preview
-  const morningContent = todaysCityData?.content?.find((c: any) => c.cardType === 'morning');
-  const city = todaysCityData?.city;
+  const morningContent = (todaysCityData as any)?.content?.find((c: any) => c.cardType === 'morning');
+  const city = (todaysCityData as any)?.city;
   
   const handleSignIn = () => {
     window.location.href = "/api/login";
