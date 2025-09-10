@@ -45,8 +45,8 @@ export const cities = pgTable("cities", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   name: varchar("name").notNull(),
   country: varchar("country").notNull(),
-  state: varchar("state"), // For US cities, Canadian provinces, etc.
-  region: varchar("region"), // Broader geographic regions like "Mediterranean", "Southeast Asia"
+  // state: varchar("state"), // For US cities, Canadian provinces, etc. - TO BE ADDED LATER
+  // region: varchar("region"), // Broader geographic regions like "Mediterranean", "Southeast Asia" - TO BE ADDED LATER
   scheduledDate: timestamp("scheduled_date"), // When content should appear to users
   publishedDate: timestamp("published_date"), // When admin published it
   isPublished: boolean("is_published").default(false),

@@ -17,8 +17,8 @@ export default function LibraryPage() {
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
   const [countryFilter, setCountryFilter] = useState("all");
-  const [stateFilter, setStateFilter] = useState("all");
-  const [regionFilter, setRegionFilter] = useState("all");
+  // const [stateFilter, setStateFilter] = useState("all"); // TO BE IMPLEMENTED LATER
+  // const [regionFilter, setRegionFilter] = useState("all"); // TO BE IMPLEMENTED LATER
   const [themeFilter, setThemeFilter] = useState("all");
 
   // Redirect to login if not authenticated
@@ -71,19 +71,17 @@ export default function LibraryPage() {
       (city.region && city.region.toLowerCase().includes(searchTerm.toLowerCase()));
     
     const matchesCountry = countryFilter === "all" || city.country === countryFilter;
-    const matchesState = stateFilter === "all" || city.state === stateFilter;
-    const matchesRegion = regionFilter === "all" || city.region === regionFilter;
+    // const matchesState = stateFilter === "all" || city.state === stateFilter; // TO BE IMPLEMENTED LATER
+    // const matchesRegion = regionFilter === "all" || city.region === regionFilter; // TO BE IMPLEMENTED LATER
     
     // Theme filtering would require checking city content
     const matchesTheme = themeFilter === "all"; // TODO: Implement theme filtering based on content
     
-    return matchesSearch && matchesCountry && matchesState && matchesRegion && matchesTheme;
+    return matchesSearch && matchesCountry && matchesTheme; // && matchesState && matchesRegion; // TO BE IMPLEMENTED LATER
   }) || [];
 
   // Get unique values for filter dropdowns
-  const countries = [...new Set(cities?.map(city => city.country) || [])];
-  const states = [...new Set(cities?.map(city => city.state).filter(Boolean) || [])];
-  const regions = [...new Set(cities?.map(city => city.region).filter(Boolean) || [])];
+  const countries = Array.from(new Set(cities?.map(city => city.country) || []));
 
   return (
     <div className="min-h-screen bg-background">
@@ -109,7 +107,7 @@ export default function LibraryPage() {
         </nav>
         <div className="auth-area">
           <div className="user-section">
-            <span className="welcome-text">Welcome, {user.firstName || 'Explorer'}</span>
+            <span className="welcome-text">Welcome, {(user as any)?.firstName || 'Explorer'}</span>
             <button 
               className="sign-in-btn" 
               onClick={() => window.location.href = "/api/logout"}
@@ -150,9 +148,9 @@ export default function LibraryPage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {/* Search */}
-                <div className="lg:col-span-2">
+                <div>
                   <div className="relative">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
                     <Input
@@ -178,18 +176,7 @@ export default function LibraryPage() {
                   </SelectContent>
                 </Select>
 
-                {/* State Filter */}
-                <Select value={stateFilter} onValueChange={setStateFilter}>
-                  <SelectTrigger data-testid="select-state-filter">
-                    <SelectValue placeholder="State" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All States</SelectItem>
-                    {states.map(state => (
-                      <SelectItem key={state} value={state}>{state}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                {/* State Filter - TO BE IMPLEMENTED LATER */}
 
                 {/* Theme Filter */}
                 <Select value={themeFilter} onValueChange={setThemeFilter}>
@@ -208,7 +195,7 @@ export default function LibraryPage() {
               </div>
 
               {/* Active Filters Display */}
-              {(searchTerm || countryFilter !== "all" || stateFilter !== "all" || themeFilter !== "all") && (
+              {(searchTerm || countryFilter !== "all" || themeFilter !== "all") && (
                 <div className="flex flex-wrap gap-2 mt-4 pt-4 border-t">
                   {searchTerm && (
                     <Badge variant="outline" className="cursor-pointer" onClick={() => setSearchTerm("")}>
@@ -220,11 +207,7 @@ export default function LibraryPage() {
                       Country: {countryFilter} ×
                     </Badge>
                   )}
-                  {stateFilter !== "all" && (
-                    <Badge variant="outline" className="cursor-pointer" onClick={() => setStateFilter("all")}>
-                      State: {stateFilter} ×
-                    </Badge>
-                  )}
+                  {/* State filter badge - TO BE IMPLEMENTED LATER */}
                   {themeFilter !== "all" && (
                     <Badge variant="outline" className="cursor-pointer" onClick={() => setThemeFilter("all")}>
                       Theme: {themeFilter} ×
@@ -262,7 +245,7 @@ export default function LibraryPage() {
                             {city.name}
                           </CardTitle>
                           <p className="text-muted-foreground">
-                            {city.state ? `${city.state}, ` : ''}{city.country}
+                            {city.country}
                           </p>
                         </div>
                         <div className="flex flex-col items-end">

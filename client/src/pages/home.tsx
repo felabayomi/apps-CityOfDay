@@ -152,7 +152,7 @@ export default function Home() {
             <Bell className="w-5 h-5" />
           </button>
           <div className="user-section">
-            <span className="welcome-text">Welcome, {user.firstName || 'Explorer'}</span>
+            <span className="welcome-text">Welcome, {(user as any)?.firstName || 'Explorer'}</span>
             <button className="sign-in-btn" onClick={handleLogout} data-testid="button-logout">
               <LogOut className="w-4 h-4 mr-1" />
               Sign Out
@@ -205,19 +205,19 @@ export default function Home() {
           <div className="grid md:grid-cols-3 gap-6">
             <UserStats
               icon={MapPin}
-              value={user.discoveredCities || 0}
+              value={(user as any)?.discoveredCities || 0}
               label="Cities Discovered"
               color="primary"
             />
             <UserStats
               icon={Heart}
-              value={user.bucketListCities || 0}
+              value={(user as any)?.bucketListCities || 0}
               label="Bucket List Cities"
               color="secondary"
             />
             <UserStats
               icon={Flame}
-              value={user.currentStreak || 0}
+              value={(user as any)?.currentStreak || 0}
               label="Day Streak"
               color="accent"
             />

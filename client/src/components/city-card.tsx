@@ -196,7 +196,7 @@ export function CityCard({
                   onClick={() => window.open(link.url, '_blank')}
                   data-testid={`affiliate-link-${index}`}
                 >
-                  {link.text}
+                  {String(link.text)}
                 </Button>
               ))}
             </div>
