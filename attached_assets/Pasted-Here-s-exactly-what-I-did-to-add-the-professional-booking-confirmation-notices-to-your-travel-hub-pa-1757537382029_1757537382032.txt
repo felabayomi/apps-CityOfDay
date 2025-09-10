@@ -1,0 +1,65 @@
+Here's exactly what I did to add the professional booking confirmation notices to your travel hub page:
+
+1. Header Section - Added Travel Agent Support Notice
+Location: In the header section, after the existing description text
+
+Added this HTML:
+
+<div className="mt-6 p-4 bg-blue-500/20 rounded-lg border border-blue-300">
+  <p className="text-base font-medium">
+    <strong>Travel Agent Support:</strong> After booking through any of our partner links below, please send your booking confirmation to us so we can track your reservation and provide full travel agent support throughout your journey.
+  </p>
+</div>
+2. Individual Booking Cards - Added Agent Support Boxes
+For each booking card, I added this notice box before the booking button:
+
+Book Hotels Card:
+<div className="mb-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+  <p className="text-sm text-blue-700">
+    <strong>Agent Support:</strong> Send us your booking confirmation for tracking and assistance.
+  </p>
+</div>
+Find Tours Card:
+<div className="mb-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+  <p className="text-sm text-blue-700">
+    <strong>Agent Support:</strong> Send us your booking confirmation for tracking and assistance.
+  </p>
+</div>
+Search Flights Card:
+<div className="mb-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+  <p className="text-sm text-blue-700">
+    <strong>Agent Support:</strong> Send us your booking confirmation for tracking and assistance.
+  </p>
+</div>
+Car Rental Card:
+<div className="mb-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+  <p className="text-sm text-blue-700">
+    <strong>Agent Support:</strong> Send us your booking confirmation for tracking and assistance.
+  </p>
+</div>
+Travel Itinerary Planner Card:
+<div className="mb-4 p-3 bg-green-50 rounded-lg border border-green-200">
+  <p className="text-sm text-green-700">
+    <strong>Agent Support:</strong> Send us your booking confirmation for tracking and assistance.
+  </p>
+</div>
+Smart Travel Companion Card:
+<div className="mb-4 p-3 bg-orange-50 rounded-lg border border-orange-200">
+  <p className="text-sm text-orange-700">
+    <strong>Agent Support:</strong> Send us your booking confirmation for tracking and assistance.
+  </p>
+</div>
+Expedia Bookings Card:
+<div className="mb-4 p-3 bg-purple-50 rounded-lg border border-purple-200">
+  <p className="text-sm text-purple-700">
+    <strong>Agent Support:</strong> Send us your booking confirmation for tracking and assistance.
+  </p>
+</div>
+Key Design Notes:
+Color Coordination: Each notice box matches the color theme of its service (blue, green, orange, purple)
+Consistent Messaging: Same core message with professional tone
+Placement: Notice appears after the description but before the booking button
+Styling: Light background with colored border and text to stand out without being intrusive
+This gives you a professional way to request booking confirmations while maintaining the existing design aesthetic!
+
+Sent from my iPhone

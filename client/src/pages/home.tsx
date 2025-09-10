@@ -158,78 +158,171 @@ export default function Home() {
             </div>
           </div>
 
-            {/* Affiliate CTA */}
-            <div className="mt-12 text-center">
-              <Card className="text-white border-none" style={{background: 'linear-gradient(135deg, #3A7CA5, #2A5B7A)'}}>
-                <CardContent className="p-8">
-                  <h4 className="text-2xl font-bold mb-4">Ready to Visit {todaysCity?.name}?</h4>
-                  <p className="text-white/90 mb-6 max-w-2xl mx-auto">
-                    Turn today's inspiration into tomorrow's adventure. Book your experience now.
+            {/* Travel Booking Hub */}
+            <div className="mt-12">
+              <div className="text-center mb-8">
+                <h4 className="text-2xl font-bold mb-4">Ready to Visit {todaysCity?.name}?</h4>
+                <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
+                  Turn today's inspiration into tomorrow's adventure. Book your experience now.
+                </p>
+
+                {/* Travel Agent Support Notice */}
+                <div className="mt-6 p-4 bg-blue-500/20 rounded-lg border border-blue-300 max-w-4xl mx-auto">
+                  <p className="text-base font-medium">
+                    <strong>Travel Agent Support:</strong> After booking through any of our partner links below, please send your booking confirmation to us so we can track your reservation and provide full travel agent support throughout your journey.
                   </p>
-                  {/* Compact CTA Grid */}
-                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 max-w-3xl mx-auto">
-                    {/* Custom City CTAs - Show first if they exist */}
-                    {todaysCity?.cityCtaLinks && Array.isArray(todaysCity.cityCtaLinks) && todaysCity.cityCtaLinks.length > 0 && 
-                      todaysCity.cityCtaLinks.map((link: any, index: number) => (
+                </div>
+              </div>
+
+              {/* Custom City CTAs - Show first if they exist */}
+              {todaysCity?.cityCtaLinks && Array.isArray(todaysCity.cityCtaLinks) && todaysCity.cityCtaLinks.length > 0 && (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8 max-w-6xl mx-auto">
+                  {todaysCity.cityCtaLinks.map((link: any, index: number) => (
+                    <Card key={`custom-${index}`} className="hover:shadow-lg transition-shadow">
+                      <CardContent className="p-6">
+                        <h5 className="text-lg font-semibold mb-4">{link.text}</h5>
+                        <div className="mb-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                          <p className="text-sm text-blue-700">
+                            <strong>Agent Support:</strong> Send us your booking confirmation for tracking and assistance.
+                          </p>
+                        </div>
                         <Button 
-                          key={`custom-${index}`}
-                          className="bg-white text-primary hover:bg-gray-100 border-2 border-primary/20 text-xs md:text-sm px-2 md:px-4 py-2 md:py-2 h-auto min-h-[44px] whitespace-normal leading-tight"
+                          className="w-full bg-primary hover:bg-primary/90" 
                           onClick={() => window.open(link.url, '_blank')}
                           data-testid={`button-city-cta-${index}`}
                         >
                           {link.text}
                         </Button>
-                      ))
-                    }
-                    
-                    {/* Default Affiliate Buttons - Always show */}
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              )}
+              
+              {/* Travel Services Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+                
+                {/* Book Hotels Card */}
+                <Card className="hover:shadow-lg transition-shadow">
+                  <CardContent className="p-6">
+                    <h5 className="text-lg font-semibold mb-4">Book Hotels</h5>
+                    <p className="text-sm text-muted-foreground mb-4">Find and book accommodations worldwide with competitive rates and exclusive deals.</p>
+                    <div className="mb-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                      <p className="text-sm text-blue-700">
+                        <strong>Agent Support:</strong> Send us your booking confirmation for tracking and assistance.
+                      </p>
+                    </div>
                     <Button 
-                      className="bg-white text-primary hover:bg-gray-100 text-xs md:text-sm px-2 md:px-4 py-2 md:py-2 h-auto min-h-[44px] whitespace-normal leading-tight" 
+                      className="w-full bg-primary hover:bg-primary/90" 
                       data-testid="button-book-hotels"
                       onClick={() => window.open('https://resmax.globaltravel.net/?custom1=GT20038250&custom2=resmax', '_blank')}
                     >
                       Book Hotels
                     </Button>
+                  </CardContent>
+                </Card>
+
+                {/* Find Tours Card */}
+                <Card className="hover:shadow-lg transition-shadow">
+                  <CardContent className="p-6">
+                    <h5 className="text-lg font-semibold mb-4">Find Tours</h5>
+                    <p className="text-sm text-muted-foreground mb-4">Discover amazing experiences and guided tours to make the most of your destination.</p>
+                    <div className="mb-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                      <p className="text-sm text-blue-700">
+                        <strong>Agent Support:</strong> Send us your booking confirmation for tracking and assistance.
+                      </p>
+                    </div>
                     <Button 
-                      className="bg-white text-primary hover:bg-gray-100 text-xs md:text-sm px-2 md:px-4 py-2 md:py-2 h-auto min-h-[44px] whitespace-normal leading-tight" 
+                      className="w-full bg-primary hover:bg-primary/90" 
                       data-testid="button-find-tours"
                       onClick={() => window.open('https://www.viator.com/?pid=P00113651&uid=U00350276&mcid=58086&currency=USD', '_blank')}
                     >
                       Find Tours
                     </Button>
+                  </CardContent>
+                </Card>
+
+                {/* Search Flights Card */}
+                <Card className="hover:shadow-lg transition-shadow">
+                  <CardContent className="p-6">
+                    <h5 className="text-lg font-semibold mb-4">Search Flights</h5>
+                    <p className="text-sm text-muted-foreground mb-4">Compare and book flights from multiple airlines to get the best deals for your trip.</p>
+                    <div className="mb-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                      <p className="text-sm text-blue-700">
+                        <strong>Agent Support:</strong> Send us your booking confirmation for tracking and assistance.
+                      </p>
+                    </div>
                     <Button 
-                      className="bg-white text-primary hover:bg-gray-100 text-xs md:text-sm px-2 md:px-4 py-2 md:py-2 h-auto min-h-[44px] whitespace-normal leading-tight" 
+                      className="w-full bg-primary hover:bg-primary/90" 
                       data-testid="button-search-flights"
                       onClick={() => window.open('https://globaltravel.airfareassist.com/agentsearch?cmp=R400000', '_blank')}
                     >
                       Search Flights
                     </Button>
+                  </CardContent>
+                </Card>
+
+                {/* Car Rental Card */}
+                <Card className="hover:shadow-lg transition-shadow">
+                  <CardContent className="p-6">
+                    <h5 className="text-lg font-semibold mb-4">Car Rental</h5>
+                    <p className="text-sm text-muted-foreground mb-4">Rent a car for ultimate freedom and flexibility during your travels.</p>
+                    <div className="mb-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                      <p className="text-sm text-blue-700">
+                        <strong>Agent Support:</strong> Send us your booking confirmation for tracking and assistance.
+                      </p>
+                    </div>
                     <Button 
-                      className="bg-white text-primary hover:bg-gray-100 text-xs md:text-sm px-2 md:px-4 py-2 md:py-2 h-auto min-h-[44px] whitespace-normal leading-tight" 
+                      className="w-full bg-primary hover:bg-primary/90" 
                       data-testid="button-car-rental"
                       onClick={() => window.open('https://rezervco.carhire-solutions.com/', '_blank')}
                     >
                       Car Rental
                     </Button>
+                  </CardContent>
+                </Card>
+
+                {/* Smart Travel Companion Card */}
+                <Card className="hover:shadow-lg transition-shadow">
+                  <CardContent className="p-6">
+                    <h5 className="text-lg font-semibold mb-4">Smart Travel Companion</h5>
+                    <p className="text-sm text-muted-foreground mb-4">Get AI-powered travel insights and recommendations tailored to your preferences.</p>
+                    <div className="mb-4 p-3 bg-orange-50 rounded-lg border border-orange-200">
+                      <p className="text-sm text-orange-700">
+                        <strong>Agent Support:</strong> Send us your booking confirmation for tracking and assistance.
+                      </p>
+                    </div>
                     <Button 
-                      className="bg-white text-primary hover:bg-gray-100 text-xs md:text-sm px-2 md:px-4 py-2 md:py-2 h-auto min-h-[44px] whitespace-normal leading-tight" 
+                      className="w-full bg-primary hover:bg-primary/90" 
                       data-testid="button-travel-companion"
                       onClick={() => window.open('https://detect.citydiscoverer.ai/', '_blank')}
                     >
-                      <span className="hidden md:inline">Smart Travel Companion</span>
-                      <span className="md:hidden">Travel AI</span>
+                      Smart Travel Companion
                     </Button>
+                  </CardContent>
+                </Card>
+
+                {/* Itinerary Planner Card */}
+                <Card className="hover:shadow-lg transition-shadow">
+                  <CardContent className="p-6">
+                    <h5 className="text-lg font-semibold mb-4">Itinerary Planner</h5>
+                    <p className="text-sm text-muted-foreground mb-4">Plan your perfect trip with our intelligent itinerary planning tools.</p>
+                    <div className="mb-4 p-3 bg-green-50 rounded-lg border border-green-200">
+                      <p className="text-sm text-green-700">
+                        <strong>Agent Support:</strong> Send us your booking confirmation for tracking and assistance.
+                      </p>
+                    </div>
                     <Button 
-                      className="bg-white text-primary hover:bg-gray-100 text-xs md:text-sm px-2 md:px-4 py-2 md:py-2 h-auto min-h-[44px] whitespace-normal leading-tight" 
+                      className="w-full bg-primary hover:bg-primary/90" 
                       data-testid="button-itinerary-planner"
                       onClick={() => window.open('https://plan.citydiscoverer.ai/', '_blank')}
                     >
-                      <span className="hidden md:inline">Itinerary Planner</span>
-                      <span className="md:hidden">Plan Trip</span>
+                      Itinerary Planner
                     </Button>
-                  </div>
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
+
+              </div>
             </div>
           </div>
         </section>
