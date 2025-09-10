@@ -188,19 +188,17 @@ export class DatabaseStorage implements IStorage {
       return scheduledCity;
     }
     
-    // Fallback: get the most recently published city without scheduled date
-    const [fallbackCity] = await db
+    // Fallback: get the most recently published city (published today or in the past)
+    const allPublishedCities = await db
       .select()
       .from(cities)
-      .where(
-        and(
-          eq(cities.isPublished, true),
-          isNull(cities.scheduledDate)
-        )
-      )
-      .orderBy(desc(cities.publishedDate))
-      .limit(1);
-    return fallbackCity;
+      .where(eq(cities.isPublished, true))
+      .orderBy(desc(cities.publishedDate));
+    
+    // Find the most recent city published in the past or today
+    const validCities = allPublishedCities.filter(city => city.publishedDate <= today);
+    
+    return validCities[0] || allPublishedCities[0]; // Return best option or any published city as fallback
   }
 
   async getScheduledCities(): Promise<City[]> {
