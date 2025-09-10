@@ -13,24 +13,17 @@ import LibraryPage from "@/pages/library";
 import { useAuth } from "@/hooks/useAuth";
 
 function Router() {
-  const { isAuthenticated, isLoading } = useAuth();
-
   return (
     <Switch>
       {/* Public routes - always available */}
+      <Route path="/" component={Landing} />
+      <Route path="/home" component={Home} />
       <Route path="/preview" component={Preview} />
       <Route path="/cities/:id" component={CityDetail} />
+      <Route path="/library" component={LibraryPage} />
       
       {/* Protected routes that handle their own auth */}
       <Route path="/admin" component={Admin} />
-      <Route path="/library" component={LibraryPage} />
-      
-      {/* Main routes based on auth state */}
-      {isLoading || !isAuthenticated ? (
-        <Route path="/" component={Landing} />
-      ) : (
-        <Route path="/" component={Home} />
-      )}
       
       <Route component={NotFound} />
     </Switch>

@@ -1,25 +1,17 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useAuth } from "@/hooks/useAuth";
+import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Globe, Bell, Heart, Flame, MapPin, LogOut } from "lucide-react";
+import { Globe, Bell, Heart, Flame, MapPin } from "lucide-react";
 import { CityCard } from "@/components/city-card";
-import { UserStats } from "@/components/user-stats";
 import { useToast } from "@/hooks/use-toast";
-import { isUnauthorizedError } from "@/lib/authUtils";
 import { useEffect, useState } from "react";
-import { apiRequest } from "@/lib/queryClient";
-import { CameraCapture } from "@/components/camera-capture";
 import Footer from "@/components/Footer";
 import { ShareButton } from "@/components/ShareButton";
 import { getCurrentCardType, getNextCardType, formatTimeUntilNext, type CardDisplayType } from "@/lib/timeBasedContent";
 
 export default function Home() {
-  const { user, isLoading, isAuthenticated } = useAuth();
   const { toast } = useToast();
-  const queryClient = useQueryClient();
-  const [isCameraOpen, setIsCameraOpen] = useState(false);
   
   // Time-based content state
   const [currentCardInfo, setCurrentCardInfo] = useState(getCurrentCardType());
@@ -40,20 +32,6 @@ export default function Home() {
     return () => clearInterval(interval);
   }, []);
 
-  // Redirect to login if not authenticated
-  useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
-      toast({
-        title: "Unauthorized",
-        description: "You are logged out. Logging in again...",
-        variant: "destructive",
-      });
-      setTimeout(() => {
-        window.location.href = "/api/login";
-      }, 500);
-      return;
-    }
-  }, [isAuthenticated, isLoading, toast]);
 
   // Fetch today's city
   const { data: todaysCityData, isLoading: loadingToday } = useQuery<{city: any, content: any[]}>({
@@ -61,93 +39,16 @@ export default function Home() {
     retry: false,
   });
 
-  // Fetch user's collected cities
-  const { data: collectedCities, isLoading: loadingCollected } = useQuery<any[]>({
-    queryKey: ["/api/user/collected"],
-    retry: false,
-    enabled: !!user,
-  });
-
-  // Collect city mutation
-  const collectCityMutation = useMutation({
-    mutationFn: async (cityId: string) => {
-      await apiRequest("POST", `/api/user/collect/${cityId}`);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/user/collected"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
-      toast({
-        title: "City Collected!",
-        description: "Added to your digital postcard collection.",
-      });
-    },
-    onError: (error) => {
-      if (isUnauthorizedError(error)) {
-        toast({
-          title: "Unauthorized",
-          description: "You are logged out. Logging in again...",
-          variant: "destructive",
-        });
-        setTimeout(() => {
-          window.location.href = "/api/login";
-        }, 500);
-        return;
-      }
-      toast({
-        title: "Error",
-        description: "Failed to collect city. Please try again.",
-        variant: "destructive",
-      });
-    },
-  });
-
-  // Add to bucket list mutation
-  const addToBucketListMutation = useMutation({
-    mutationFn: async (cityId: string) => {
-      await apiRequest("POST", `/api/user/bucket-list/${cityId}`);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/user/bucket-list"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
-      toast({
-        title: "Added to Bucket List!",
-        description: "City saved for your future adventures.",
-      });
-    },
-    onError: (error) => {
-      if (isUnauthorizedError(error)) {
-        toast({
-          title: "Unauthorized",
-          description: "You are logged out. Logging in again...",
-          variant: "destructive",
-        });
-        setTimeout(() => {
-          window.location.href = "/api/login";
-        }, 500);
-        return;
-      }
-      toast({
-        title: "Error",
-        description: "Failed to add to bucket list. Please try again.",
-        variant: "destructive",
-      });
-    },
-  });
-
-  const handleLogout = () => {
-    window.location.href = "/api/logout";
+  const handleSignIn = () => {
+    window.location.href = "/api/login";
   };
 
-  if (isLoading || loadingToday) {
+  if (loadingToday) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
       </div>
     );
-  }
-
-  if (!user) {
-    return null;
   }
 
   const todaysCity = todaysCityData?.city;
@@ -178,19 +79,13 @@ export default function Home() {
         </div>
         <div className="auth-area">
           <a href="/library" className="library-link">Library</a>
-          {(user as any)?.email === import.meta.env.VITE_ADMIN_EMAIL && user && (
-            <a href="/admin" className="admin-link">Admin</a>
-          )}
+          <a href="/admin" className="admin-link">Admin</a>
           <button className="notif-btn" data-testid="button-notifications">
             <Bell className="w-5 h-5" />
           </button>
-          <div className="user-section">
-            <span className="welcome-text">Welcome, {(user as any)?.firstName || 'Explorer'}</span>
-            <button className="sign-in-btn" onClick={handleLogout} data-testid="button-logout">
-              <LogOut className="w-4 h-4 mr-1" />
-              Sign Out
-            </button>
-          </div>
+          <button className="sign-in-btn" onClick={handleSignIn} data-testid="button-sign-in">
+            Sign In
+          </button>
         </div>
       </header>
 
@@ -207,24 +102,7 @@ export default function Home() {
                   {todaysCity.name}, {todaysCity.country}
                 </h3>
                 <div className="flex flex-wrap justify-center gap-4">
-                  <Button 
-                    className="bg-white text-primary hover:bg-gray-100"
-                    onClick={() => setIsCameraOpen(true)}
-                    data-testid="button-collect-city"
-                  >
-                    <MapPin className="w-4 h-4 mr-2" />
-                    Collect City
-                  </Button>
-                  <Button 
-                    variant="outline"
-                    className="border-white text-white hover:bg-white/10"
-                    onClick={() => addToBucketListMutation.mutate(todaysCity.id)}
-                    disabled={addToBucketListMutation.isPending}
-                    data-testid="button-add-bucket-list"
-                  >
-                    <Heart className="w-4 h-4 mr-2" />
-                    Add to Bucket List
-                  </Button>
+                  {/* User interaction buttons removed - app is now fully public */}
                   <div className="flex">
                     <ShareButton 
                       city={{ name: todaysCity.name, country: todaysCity.country }}
@@ -243,31 +121,7 @@ export default function Home() {
         </section>
       )}
 
-      {/* User Stats */}
-      <section className="py-8" style={{backgroundColor: '#F9F5EC'}}>
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-3 gap-2 md:gap-6">
-            <UserStats
-              icon={MapPin}
-              value={(user as any)?.discoveredCities || 0}
-              label="Cities Discovered"
-              color="primary"
-            />
-            <UserStats
-              icon={Heart}
-              value={(user as any)?.bucketListCities || 0}
-              label="Bucket List Cities"
-              color="secondary"
-            />
-            <UserStats
-              icon={Flame}
-              value={(user as any)?.currentStreak || 0}
-              label="Day Streak"
-              color="accent"
-            />
-          </div>
-        </div>
-      </section>
+      {/* User stats section removed - app is now fully public */}
 
       {/* Time-Based Content Display */}
       <section className="py-16" style={{backgroundColor: '#ffffff'}}>
@@ -385,86 +239,7 @@ export default function Home() {
           </div>
         </section>
 
-      {/* Digital Postcards Collection */}
-      {!loadingCollected && collectedCities && collectedCities.length > 0 && (
-        <section className="py-16" style={{backgroundColor: '#F9F5EC'}}>
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h4 className="text-xl font-semibold mb-6 flex items-center" style={{color: 'var(--text-dark)'}}>
-              <MapPin className="mr-3 text-primary w-5 h-5" />
-              Your Digital Postcards
-            </h4>
-            
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-              {collectedCities.slice(0, 11).map((city: any) => (
-                <div 
-                  key={city.id}
-                  className="aspect-square rounded-xl overflow-hidden postcard-shadow cursor-pointer hover:transform hover:scale-105 transition-all group relative"
-                  style={{
-                    background: 'linear-gradient(135deg, #f59e0b 0%, #3b82f6 40%, #06b6d4 70%, #10b981 100%)',
-                  }}
-                  data-testid={`postcard-${city.name.toLowerCase().replace(/\s+/g, '-')}`}
-                >
-                  {/* Postcard pattern overlay */}
-                  <div className="absolute inset-0 bg-white/10" 
-                       style={{
-                         backgroundImage: `
-                           radial-gradient(circle at 20% 80%, rgba(255,255,255,0.1) 1px, transparent 1px),
-                           radial-gradient(circle at 80% 20%, rgba(255,255,255,0.1) 1px, transparent 1px),
-                           linear-gradient(45deg, transparent 40%, rgba(255,255,255,0.05) 50%, transparent 60%)
-                         `,
-                         backgroundSize: '20px 20px, 30px 30px, 100% 100%'
-                       }}>
-                  </div>
-                  
-                  {/* Main content */}
-                  <div className="absolute inset-0 flex flex-col items-center justify-center p-3 text-white">
-                    <Globe className="w-8 h-8 text-white/90 mb-2" />
-                    <div className="text-center">
-                      <h5 className="text-sm font-bold text-white drop-shadow-sm leading-tight">
-                        {city.name}
-                      </h5>
-                      <p className="text-xs text-white/80 mt-1 drop-shadow-sm">
-                        {city.country}
-                      </p>
-                    </div>
-                  </div>
-                  
-                  {/* Vintage postcard stamp effect */}
-                  <div className="absolute top-2 right-2 w-6 h-6 border border-white/40 rounded-sm bg-white/20 flex items-center justify-center">
-                    <div className="w-2 h-2 bg-white/60 rounded-full"></div>
-                  </div>
-                  
-                  {/* Hover overlay */}
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all"></div>
-                </div>
-              ))}
-              
-              {collectedCities.length < 12 && (
-                <div 
-                  className="aspect-square rounded-xl border-2 border-dashed border-primary/30 bg-gradient-to-br from-primary/5 to-accent/5 flex items-center justify-center cursor-pointer hover:bg-primary/10 transition-all group hover:border-primary/50"
-                  onClick={() => setIsCameraOpen(true)}
-                  data-testid="button-collect-more"
-                >
-                  <div className="text-center">
-                    <MapPin className="w-8 h-8 text-primary mb-2 group-hover:scale-110 transition-transform mx-auto" />
-                    <p className="text-sm font-medium text-primary">Collect More</p>
-                    <p className="text-xs text-muted-foreground mt-1">Discover new cities</p>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* Premium upgrade section removed - app is now completely free */}
-
-      {/* Camera Capture Modal */}
-      <CameraCapture
-        isOpen={isCameraOpen}
-        onClose={() => setIsCameraOpen(false)}
-        currentCity={todaysCity}
-      />
+      {/* Camera and collection features removed - app is now fully public */}
 
       <Footer />
     </div>

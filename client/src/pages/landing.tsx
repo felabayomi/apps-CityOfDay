@@ -37,8 +37,8 @@ export default function Landing() {
   };
   
   const handleViewTodaysCity = () => {
-    // Direct users to sign in, which will take them to the main home page
-    handleSignIn();
+    // Go directly to the public city view - no authentication needed
+    window.location.href = "/home";
   };
 
 
