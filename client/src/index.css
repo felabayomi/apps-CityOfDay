@@ -269,6 +269,20 @@
   align-items: center;
 }
 
+.library-link, .admin-link {
+  color: var(--text-dark);
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.95rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  transition: background-color 0.2s ease;
+}
+
+.library-link:hover, .admin-link:hover {
+  background-color: var(--elevate-1);
+}
+
 .user-section {
   display: flex;
   align-items: center;

@@ -176,13 +176,11 @@ export default function Home() {
           <span className="brand-name">City Discoverer</span>
           <span className="tagline">City of the Day™</span>
         </div>
-        <nav className="nav-links">
-          <a href="/library">Library</a>
-          {(user as any)?.email === import.meta.env.VITE_ADMIN_EMAIL && user && (
-            <a href="/admin">Admin</a>
-          )}
-        </nav>
         <div className="auth-area">
+          <a href="/library" className="library-link">Library</a>
+          {(user as any)?.email === import.meta.env.VITE_ADMIN_EMAIL && user && (
+            <a href="/admin" className="admin-link">Admin</a>
+          )}
           <button className="notif-btn" data-testid="button-notifications">
             <Bell className="w-5 h-5" />
           </button>
