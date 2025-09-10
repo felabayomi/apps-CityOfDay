@@ -330,7 +330,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.put("/api/admin/cities/:id", isAuthenticated, isAdmin, async (req, res) => {
     try {
       // Only allow specific fields to be updated to avoid timestamp field conflicts
-      const allowedFields = ['name', 'country', 'isPublished', 'isPinned', 'publishedDate', 'scheduledDate', 'cityCtaLinks', 'morningCtaLink', 'afternoonCtaLink', 'eveningCtaLink', 'bonusCtaLink'];
+      const allowedFields = ['name', 'country', 'isPublished', 'isPinned', 'publishedDate', 'scheduledDate', 'cityCtaLinks', 'morningCtaLink', 'afternoonCtaLink', 'eveningCtaLink', 'bonusCtaLink', 'luxuryCtaLink', 'wildlifeCtaLink'];
       const updateData: any = {};
       
       // Only copy allowed fields
