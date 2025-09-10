@@ -14,6 +14,8 @@ interface CityCardProps {
   isCollecting?: boolean;
   isAddingToBucketList?: boolean;
   isPreview?: boolean;
+  nextCardTitle?: string;
+  timeUntilNext?: string;
 }
 
 const cardTypeConfig = {
@@ -54,28 +56,14 @@ export function CityCard({
   onAddToBucketList, 
   isCollecting = false,
   isAddingToBucketList = false,
-  isPreview = false 
+  isPreview = false,
+  nextCardTitle,
+  timeUntilNext
 }: CityCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
-  const [timeUntilNext, setTimeUntilNext] = useState("");
   
   const config = cardTypeConfig[content.cardType as keyof typeof cardTypeConfig];
   if (!config) return null;
-
-  // Get next card info for time indicator
-  const nextCardInfo = getNextCardType();
-
-  // Update countdown every minute
-  useEffect(() => {
-    const updateTime = () => {
-      setTimeUntilNext(formatTimeUntilNext());
-    };
-    
-    updateTime();
-    const interval = setInterval(updateTime, 60000); // Update every minute
-    
-    return () => clearInterval(interval);
-  }, []);
 
   const { icon: IconComponent, badge, color, buttonText, buttonColor } = config;
   
@@ -223,12 +211,12 @@ export function CityCard({
       </CardContent>
       
       {/* Time Indicator - Bottom Right Corner */}
-      {!isPreview && (
+      {!isPreview && nextCardTitle && timeUntilNext && (
         <div className="absolute bottom-3 right-3 bg-white/95 backdrop-blur-sm border border-gray-200 rounded-lg shadow-md px-2 py-1">
           <div className="flex items-center gap-1">
             <Clock className="w-3 h-3 text-gray-500" />
             <div className="text-xs">
-              <div className="text-gray-600 font-medium leading-tight">{nextCardInfo.label}</div>
+              <div className="text-gray-600 font-medium leading-tight">{nextCardTitle}</div>
               <div className="text-primary font-bold leading-tight">{timeUntilNext}</div>
             </div>
           </div>

@@ -297,6 +297,8 @@ export default function Home() {
               <CityCard
                 content={currentContent}
                 city={todaysCity}
+                nextCardTitle={nextCardInfo.label}
+                timeUntilNext={timeUntilNext}
               />
             </div>
           ) : (
