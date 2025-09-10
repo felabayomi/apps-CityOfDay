@@ -336,23 +336,53 @@ export default function Home() {
               {collectedCities.slice(0, 11).map((city: any) => (
                 <div 
                   key={city.id}
-                  className="aspect-square rounded-lg overflow-hidden postcard-shadow cursor-pointer hover:transform hover:scale-105 transition-all group bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center relative"
+                  className="aspect-square rounded-xl overflow-hidden postcard-shadow cursor-pointer hover:transform hover:scale-105 transition-all group relative"
+                  style={{
+                    background: 'linear-gradient(135deg, #f59e0b 0%, #3b82f6 40%, #06b6d4 70%, #10b981 100%)',
+                  }}
                   data-testid={`postcard-${city.name.toLowerCase().replace(/\s+/g, '-')}`}
                 >
-                  <Globe className="w-8 h-8 text-primary opacity-30" />
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all flex items-end p-2">
-                    <span className="text-foreground text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity">
-                      {city.name}
-                    </span>
+                  {/* Postcard pattern overlay */}
+                  <div className="absolute inset-0 bg-white/10" 
+                       style={{
+                         backgroundImage: `
+                           radial-gradient(circle at 20% 80%, rgba(255,255,255,0.1) 1px, transparent 1px),
+                           radial-gradient(circle at 80% 20%, rgba(255,255,255,0.1) 1px, transparent 1px),
+                           linear-gradient(45deg, transparent 40%, rgba(255,255,255,0.05) 50%, transparent 60%)
+                         `,
+                         backgroundSize: '20px 20px, 30px 30px, 100% 100%'
+                       }}>
                   </div>
+                  
+                  {/* Main content */}
+                  <div className="absolute inset-0 flex flex-col items-center justify-center p-3 text-white">
+                    <Globe className="w-8 h-8 text-white/90 mb-2" />
+                    <div className="text-center">
+                      <h5 className="text-sm font-bold text-white drop-shadow-sm leading-tight">
+                        {city.name}
+                      </h5>
+                      <p className="text-xs text-white/80 mt-1 drop-shadow-sm">
+                        {city.country}
+                      </p>
+                    </div>
+                  </div>
+                  
+                  {/* Vintage postcard stamp effect */}
+                  <div className="absolute top-2 right-2 w-6 h-6 border border-white/40 rounded-sm bg-white/20 flex items-center justify-center">
+                    <div className="w-2 h-2 bg-white/60 rounded-full"></div>
+                  </div>
+                  
+                  {/* Hover overlay */}
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all"></div>
                 </div>
               ))}
               
               {collectedCities.length < 12 && (
-                <div className="aspect-square rounded-lg border-2 border-dashed border-border bg-muted/30 flex items-center justify-center cursor-pointer hover:bg-muted/50 transition-colors group">
+                <div className="aspect-square rounded-xl border-2 border-dashed border-primary/30 bg-gradient-to-br from-primary/5 to-accent/5 flex items-center justify-center cursor-pointer hover:bg-primary/10 transition-all group hover:border-primary/50">
                   <div className="text-center">
-                    <MapPin className="w-6 h-6 text-muted-foreground mb-2 group-hover:text-foreground transition-colors mx-auto" />
-                    <p className="text-xs text-muted-foreground group-hover:text-foreground transition-colors">Collect More</p>
+                    <MapPin className="w-8 h-8 text-primary mb-2 group-hover:scale-110 transition-transform mx-auto" />
+                    <p className="text-sm font-medium text-primary">Collect More</p>
+                    <p className="text-xs text-muted-foreground mt-1">Discover new cities</p>
                   </div>
                 </div>
               )}
