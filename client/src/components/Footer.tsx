@@ -26,7 +26,9 @@ export default function Footer() {
               © 2025 City Discoverer, An Expedition America LLC Co.
             </p>
             <p className="text-xs text-muted-foreground mt-1">
-              50 Stately, St Wiley Ford WV, 26767
+              <a href="https://citydiscoverer.ai/contact" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                Contact
+              </a>
             </p>
           </div>
         </div>
