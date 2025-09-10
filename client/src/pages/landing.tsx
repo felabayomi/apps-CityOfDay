@@ -109,7 +109,7 @@ export default function Landing() {
               </div>
               
               <blockquote className="text-lg italic mb-6 max-w-2xl mx-auto leading-relaxed">
-                "{morningContent.description}"
+                "{morningContent.content}"
               </blockquote>
               <p className="text-sm text-white/70 mb-8">—Your Morning in {city.name}</p>
               
