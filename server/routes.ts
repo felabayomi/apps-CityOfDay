@@ -258,6 +258,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
           cardType: "bonus",
           title: generatedContent.bonus.title,
           content: generatedContent.bonus.content,
+        },
+        {
+          cityId: city.id,
+          cardType: "luxury",
+          title: generatedContent.luxury.title,
+          content: generatedContent.luxury.content,
+        },
+        {
+          cityId: city.id,
+          cardType: "wildlife",
+          title: generatedContent.wildlife.title,
+          content: generatedContent.wildlife.content,
         }
       ];
 
