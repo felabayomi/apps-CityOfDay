@@ -116,7 +116,7 @@ export default function Landing() {
               <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-2 mb-6">
                 <span className="text-sm font-medium">{currentCardInfo.label}</span>
                 <Badge className="bg-white/20 text-white border-white/30 text-xs">
-                  {currentCardInfo.timeRange}
+                  {timeUntilNext}
                 </Badge>
               </div>
               
@@ -131,9 +131,6 @@ export default function Landing() {
                     Get ready to discover amazing landmarks, local culture, and hidden gems. 
                     Your {currentContent ? 'morning' : 'next'} discovery begins at 7:00 AM!
                   </p>
-                  <div className="text-sm text-white/70 mb-6">
-                    Next content change in: <span className="font-semibold">{timeUntilNext}</span>
-                  </div>
                 </>
               ) : currentContent ? (
                 /* Current Time Content */
@@ -144,9 +141,6 @@ export default function Landing() {
                   <p className="text-sm text-white/70 mb-6">
                     —Your {currentCardInfo.label} in {city.name}
                   </p>
-                  <div className="text-sm text-white/70 mb-6">
-                    Next content change in: <span className="font-semibold">{timeUntilNext}</span>
-                  </div>
                 </>
               ) : (
                 /* Loading current content */

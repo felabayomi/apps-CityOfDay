@@ -282,15 +282,10 @@ export default function Home() {
                 variant="secondary" 
                 className="text-sm font-medium bg-primary/10 text-primary border-primary/20"
               >
-                {currentCardInfo.timeRange}
+                {timeUntilNext}
               </Badge>
             </div>
             
-            {/* Time indicator */}
-            <div className="mb-6 p-4 bg-gradient-to-r from-primary/5 to-accent/5 rounded-lg border border-primary/10 max-w-md mx-auto">
-              <p className="text-sm text-muted-foreground mb-1">Next content change in:</p>
-              <p className="text-lg font-semibold text-primary">{timeUntilNext}</p>
-            </div>
             
             <p className="text-xl mb-4" style={{color: '#666'}}>
               {currentCardInfo.type === 'preview' 
