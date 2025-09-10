@@ -501,6 +501,106 @@ export function ContentEditor({ selectedCityId, onCityChange }: ContentEditorPro
         </CardContent>
       </Card>
     )}
+
+    {/* Content Card Affiliate Links Panel */}
+    {city && (
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center text-foreground">
+            <Lightbulb className="mr-3 text-primary w-5 h-5" />
+            Content Card Affiliate Links - {city.name}
+          </CardTitle>
+          <p className="text-muted-foreground text-sm">
+            Set affiliate links for content card buttons (Explore Landmark, Find Cafés, Save Money, Learn More)
+          </p>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Morning Card Link */}
+            <div className="space-y-2">
+              <Label htmlFor="morning-link" className="flex items-center">
+                <Sun className="w-4 h-4 mr-2 text-amber-600" />
+                Morning - "Explore Landmark" Link
+              </Label>
+              <Input
+                id="morning-link"
+                value={city.morningCtaLink || ""}
+                onChange={(e) => {
+                  updateCityMutation.mutate({ 
+                    id: city.id, 
+                    morningCtaLink: e.target.value 
+                  });
+                }}
+                placeholder="https://example.com/landmarks"
+              />
+            </div>
+
+            {/* Afternoon Card Link */}
+            <div className="space-y-2">
+              <Label htmlFor="afternoon-link" className="flex items-center">
+                <Utensils className="w-4 h-4 mr-2 text-orange-600" />
+                Afternoon - "Find Cafés" Link
+              </Label>
+              <Input
+                id="afternoon-link"
+                value={city.afternoonCtaLink || ""}
+                onChange={(e) => {
+                  updateCityMutation.mutate({ 
+                    id: city.id, 
+                    afternoonCtaLink: e.target.value 
+                  });
+                }}
+                placeholder="https://example.com/restaurants"
+              />
+            </div>
+
+            {/* Evening Card Link */}
+            <div className="space-y-2">
+              <Label htmlFor="evening-link" className="flex items-center">
+                <Moon className="w-4 h-4 mr-2 text-green-600" />
+                Evening - "Save Money" Link
+              </Label>
+              <Input
+                id="evening-link"
+                value={city.eveningCtaLink || ""}
+                onChange={(e) => {
+                  updateCityMutation.mutate({ 
+                    id: city.id, 
+                    eveningCtaLink: e.target.value 
+                  });
+                }}
+                placeholder="https://example.com/deals"
+              />
+            </div>
+
+            {/* Bonus Card Link */}
+            <div className="space-y-2">
+              <Label htmlFor="bonus-link" className="flex items-center">
+                <Lightbulb className="w-4 h-4 mr-2 text-purple-600" />
+                Bonus - "Learn More" Link
+              </Label>
+              <Input
+                id="bonus-link"
+                value={city.bonusCtaLink || ""}
+                onChange={(e) => {
+                  updateCityMutation.mutate({ 
+                    id: city.id, 
+                    bonusCtaLink: e.target.value 
+                  });
+                }}
+                placeholder="https://example.com/info"
+              />
+            </div>
+          </div>
+          
+          <div className="bg-muted/30 rounded-lg p-3 mt-4">
+            <p className="text-sm text-muted-foreground">
+              <strong>Note:</strong> These links will be used when users click the content card buttons. Leave empty to disable clicking for that card type.
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+    )}
     </div>
   );
 }
