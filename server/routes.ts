@@ -225,6 +225,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       console.log('Filtered update data:', updateData);
+      console.log('Type check - publishedDate:', typeof updateData.publishedDate, updateData.publishedDate);
+      console.log('Type check - scheduledDate:', typeof updateData.scheduledDate, updateData.scheduledDate);
+      
       const city = await storage.updateCity(req.params.id, updateData);
       res.json(city);
     } catch (error) {

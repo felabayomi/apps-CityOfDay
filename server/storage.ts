@@ -140,9 +140,23 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateCity(id: string, cityData: Partial<InsertCity>): Promise<City> {
+    console.log('Storage updateCity - received data:', cityData);
+    
+    // Ensure all date fields are proper Date objects
+    const sanitizedData = { ...cityData };
+    
+    if (sanitizedData.publishedDate && typeof sanitizedData.publishedDate === 'string') {
+      sanitizedData.publishedDate = new Date(sanitizedData.publishedDate);
+    }
+    if (sanitizedData.scheduledDate && typeof sanitizedData.scheduledDate === 'string') {
+      sanitizedData.scheduledDate = new Date(sanitizedData.scheduledDate);
+    }
+    
+    console.log('Storage updateCity - sanitized data:', sanitizedData);
+    
     const [city] = await db
       .update(cities)
-      .set({ ...cityData, updatedAt: new Date() })
+      .set({ ...sanitizedData, updatedAt: new Date() })
       .where(eq(cities.id, id))
       .returning();
     return city;
