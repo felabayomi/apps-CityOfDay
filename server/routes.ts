@@ -194,7 +194,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.put("/api/admin/cities/:id", isAuthenticated, async (req, res) => {
     try {
-      const city = await storage.updateCity(req.params.id, req.body);
+      const updateData = { ...req.body };
+      
+      // Convert string dates to Date objects for proper database handling
+      if (updateData.publishedDate && typeof updateData.publishedDate === 'string') {
+        updateData.publishedDate = new Date(updateData.publishedDate);
+      }
+      if (updateData.scheduledDate && typeof updateData.scheduledDate === 'string') {
+        updateData.scheduledDate = new Date(updateData.scheduledDate);
+      }
+      
+      const city = await storage.updateCity(req.params.id, updateData);
       res.json(city);
     } catch (error) {
       console.error("Error updating city:", error);
