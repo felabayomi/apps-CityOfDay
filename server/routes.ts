@@ -4,8 +4,10 @@ import Stripe from "stripe";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
 import { generateCityContent, generateCityImageSuggestions } from "./openai";
-import { insertCitySchema, insertCityContentSchema } from "@shared/schema";
+import { insertCitySchema, insertCityContentSchema, cities } from "@shared/schema";
 import { z } from "zod";
+import { eq } from "drizzle-orm";
+import { db } from "./db";
 
 // Initialize Stripe
 const stripe = process.env.STRIPE_SECRET_KEY ? new Stripe(process.env.STRIPE_SECRET_KEY, {
@@ -189,6 +191,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       console.error("Error creating city:", error);
       res.status(500).json({ message: "Failed to create city" });
+    }
+  });
+
+  // Specific publish route to avoid timestamp conflicts
+  app.put("/api/admin/cities/:id/publish", isAuthenticated, async (req, res) => {
+    try {
+      console.log('Publishing city:', req.params.id);
+      
+      // Direct database update for publish action only
+      const [city] = await db
+        .update(cities)
+        .set({ 
+          isPublished: true, 
+          publishedDate: new Date() // Always use current server time
+        })
+        .where(eq(cities.id, req.params.id))
+        .returning();
+      
+      if (!city) {
+        return res.status(404).json({ message: "City not found" });
+      }
+      
+      res.json(city);
+    } catch (error) {
+      console.error("Error publishing city:", error);
+      res.status(500).json({ message: "Failed to publish city" });
     }
   });
 

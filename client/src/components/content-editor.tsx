@@ -199,13 +199,8 @@ export function ContentEditor({ selectedCityId, onCityChange }: ContentEditorPro
   // Publish city mutation
   const publishCityMutation = useMutation({
     mutationFn: async (cityId: string) => {
-      // Send current timestamp as string, backend will handle timezone conversion
-      const publishedDate = new Date().toISOString();
-      
-      await apiRequest("PUT", `/api/admin/cities/${cityId}`, {
-        isPublished: true,
-        publishedDate: publishedDate,
-      });
+      // Use dedicated publish endpoint
+      await apiRequest("PUT", `/api/admin/cities/${cityId}/publish`, {});
     },
     onSuccess: () => {
       toast({
