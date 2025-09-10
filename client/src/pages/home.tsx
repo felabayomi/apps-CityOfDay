@@ -290,16 +290,24 @@ export default function Home() {
           </div>
 
           {/* Display current content */}
-          {todaysCity && currentContent && (
-            <div className="max-w-2xl mx-auto">
-              <CityCard
-                content={currentContent}
-                city={todaysCity}
-                nextCardTitle={nextCardInfo.label}
-                timeUntilNext={timeUntilNext}
-              />
-            </div>
-          )}
+          <div className="max-w-2xl mx-auto">
+            <CityCard
+              content={currentContent || {
+                id: "fallback",
+                cardType: "morning",
+                title: todaysCity?.name ? `Discover ${todaysCity.name}` : "City Discovery",
+                content: "Connect to see today's discovery content for this amazing destination.",
+                imageUrl: null,
+                affiliateLinks: null,
+                createdAt: null,
+                updatedAt: null,
+                cityId: null
+              }}
+              city={todaysCity || { name: "Your City" }}
+              nextCardTitle={nextCardInfo.label}
+              timeUntilNext={timeUntilNext}
+            />
+          </div>
 
             {/* Affiliate CTA */}
             <div className="mt-12 text-center">
