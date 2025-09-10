@@ -57,6 +57,8 @@ export const cities = pgTable("cities", {
   afternoonCtaLink: varchar("afternoon_cta_link"), // Link for "Find Cafés" button  
   eveningCtaLink: varchar("evening_cta_link"), // Link for "Save Money" button
   bonusCtaLink: varchar("bonus_cta_link"), // Link for "Learn More" button
+  luxuryCtaLink: varchar("luxury_cta_link"), // Link for "Book Luxury" button
+  wildlifeCtaLink: varchar("wildlife_cta_link"), // Link for "Explore Nature" button
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -65,7 +67,7 @@ export const cities = pgTable("cities", {
 export const cityContent = pgTable("city_content", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   cityId: varchar("city_id").references(() => cities.id, { onDelete: "cascade" }),
-  cardType: varchar("card_type").notNull(), // morning, afternoon, evening, bonus
+  cardType: varchar("card_type").notNull(), // morning, afternoon, evening, bonus, luxury, wildlife
   title: varchar("title").notNull(),
   content: text("content").notNull(),
   imageUrl: varchar("image_url"),

@@ -26,6 +26,16 @@ export interface CityContentGeneration {
     content: string;
     funFact: string;
   };
+  luxury: {
+    title: string;
+    content: string;
+    luxuryExperience: string;
+  };
+  wildlife: {
+    title: string;
+    content: string;
+    natureActivity: string;
+  };
 }
 
 export async function generateCityContent(cityName: string, country: string, focus: string = "balanced"): Promise<CityContentGeneration> {
@@ -44,7 +54,7 @@ export async function generateCityContent(cityName: string, country: string, foc
 
     const prompt = `Generate comprehensive daily travel content for ${cityName}, ${country}, ${focusDescription}.
 
-Create exactly 4 content cards in JSON format:
+Create exactly 6 content cards in JSON format:
 
 1. MORNING CARD - Wake up in [City] (Landmark focus)
    - Highlight the most iconic landmark
@@ -65,6 +75,16 @@ Create exactly 4 content cards in JSON format:
    - Share a surprising historical or cultural fact
    - Make it memorable and conversation-worthy
    - Should make people want to share it
+
+5. LUXURY CARD - Indulge in [City] (High-end experience)
+   - Feature the best luxury experience or accommodation
+   - Highlight premium dining, spas, or exclusive activities
+   - Make it aspirational and special
+
+6. WILDLIFE CARD - Nature & Wildlife (Outdoor adventure)
+   - Showcase the best nature or wildlife experience
+   - Feature parks, gardens, wildlife viewing, or outdoor activities
+   - Connect with the natural side of the destination
 
 Write in a friendly, upbeat tone with a hint of wanderlust. Use concise, vivid language that evokes sensory detail (sights, tastes, sounds). Aim for modern and approachable — like a travel-savvy friend sharing a great find. Keep it light, not too literary or academic. Avoid clichés and generic praise. Assume the reader is curious, not committed — spark their imagination in 100 words or less. Think curated Instagram caption meets travel-savvy friend, not Lonely Planet chapter.
 
@@ -89,6 +109,16 @@ Respond with JSON in this exact format:
     "title": "Did You Know?",
     "content": "...",
     "funFact": "[fact summary]"
+  },
+  "luxury": {
+    "title": "Indulge in [City]",
+    "content": "...",
+    "luxuryExperience": "[luxury experience name]"
+  },
+  "wildlife": {
+    "title": "Nature & Wildlife",
+    "content": "...",
+    "natureActivity": "[nature activity name]"
   }
 }`;
 
@@ -125,7 +155,9 @@ export async function generateCityImageSuggestions(cityName: string, cardType: s
     - Relevant to ${cardType === 'morning' ? 'landmarks and morning scenes' : 
                    cardType === 'afternoon' ? 'local food and cultural activities' :
                    cardType === 'evening' ? 'budget-friendly activities and practical scenes' :
-                   'historical or cultural scenes'}
+                   cardType === 'bonus' ? 'historical or cultural scenes' :
+                   cardType === 'luxury' ? 'luxury hotels, fine dining, and premium experiences' :
+                   'nature, wildlife, parks, and outdoor activities'}
     - Professional travel photography style
     
     Return as JSON array of strings: ["query1", "query2", "query3"]`;

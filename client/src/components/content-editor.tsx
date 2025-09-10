@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Edit, Save, Eye, Sun, Utensils, Moon, Lightbulb, Globe, Trash2, Plus } from "lucide-react";
+import { Edit, Save, Eye, Sun, Utensils, Moon, Lightbulb, Globe, Trash2, Plus, Crown, Trees } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { isUnauthorizedError } from "@/lib/authUtils";
@@ -42,6 +42,18 @@ const cardTypeConfig = {
     label: "Fun Fact",
     color: "bg-primary/10 text-primary",
     placeholder: "Interesting facts and cultural insights..."
+  },
+  luxury: {
+    icon: Crown,
+    label: "Luxury",
+    color: "bg-yellow-100 text-yellow-700",
+    placeholder: "High-end experiences, luxury hotels, premium dining..."
+  },
+  wildlife: {
+    icon: Trees,
+    label: "Nature",
+    color: "bg-green-100 text-green-700",
+    placeholder: "Nature experiences, wildlife, parks, outdoor adventures..."
   },
 };
 

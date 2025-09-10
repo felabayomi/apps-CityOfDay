@@ -1,7 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Heart, Sun, Utensils, Moon, Lightbulb, Globe, ChevronDown, ChevronUp, Clock, Share2 } from "lucide-react";
+import { MapPin, Heart, Sun, Utensils, Moon, Lightbulb, Globe, ChevronDown, ChevronUp, Clock, Share2, Crown, Trees } from "lucide-react";
 import type { CityContent } from "@shared/schema";
 import { useState, useEffect } from "react";
 import { getNextCardType, formatTimeUntilNext } from "@/lib/timeBasedContent";
@@ -48,6 +48,20 @@ const cardTypeConfig = {
     color: "bg-primary text-primary-foreground",
     buttonText: "Learn More",
     buttonColor: "text-purple-600 hover:text-purple-700",
+  },
+  luxury: {
+    icon: Crown,
+    badge: "Luxury",
+    color: "bg-gradient-to-r from-yellow-500 to-amber-600 text-white",
+    buttonText: "Book Luxury",
+    buttonColor: "text-yellow-600 hover:text-yellow-700",
+  },
+  wildlife: {
+    icon: Trees,
+    badge: "Nature",
+    color: "bg-gradient-to-r from-green-500 to-emerald-600 text-white",
+    buttonText: "Explore Nature",
+    buttonColor: "text-green-600 hover:text-green-700",
   },
 };
 
@@ -175,6 +189,12 @@ export function CityCard({
                     break;
                   case 'bonus':
                     affiliateLink = city.bonusCtaLink;
+                    break;
+                  case 'luxury':
+                    affiliateLink = city.luxuryCtaLink;
+                    break;
+                  case 'wildlife':
+                    affiliateLink = city.wildlifeCtaLink;
                     break;
                 }
                 if (affiliateLink) {
