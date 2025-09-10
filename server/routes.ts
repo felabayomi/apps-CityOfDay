@@ -196,14 +196,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const updateData = { ...req.body };
       
-      // Convert string dates to Date objects for proper database handling
-      if (updateData.publishedDate && typeof updateData.publishedDate === 'string') {
-        updateData.publishedDate = new Date(updateData.publishedDate);
-      }
-      if (updateData.scheduledDate && typeof updateData.scheduledDate === 'string') {
-        updateData.scheduledDate = new Date(updateData.scheduledDate);
+      // Handle date conversions - only convert valid date strings
+      if (updateData.publishedDate) {
+        if (typeof updateData.publishedDate === 'string') {
+          // Convert to EST time and create proper Date object
+          const date = new Date(updateData.publishedDate);
+          if (!isNaN(date.getTime())) {
+            updateData.publishedDate = date;
+          } else {
+            delete updateData.publishedDate; // Remove invalid date
+          }
+        }
       }
       
+      if (updateData.scheduledDate) {
+        if (typeof updateData.scheduledDate === 'string') {
+          const date = new Date(updateData.scheduledDate);
+          if (!isNaN(date.getTime())) {
+            updateData.scheduledDate = date;
+          } else {
+            delete updateData.scheduledDate; // Remove invalid date
+          }
+        }
+      }
+      
+      console.log('Update data before storage:', updateData);
       const city = await storage.updateCity(req.params.id, updateData);
       res.json(city);
     } catch (error) {
