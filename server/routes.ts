@@ -75,8 +75,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Library routes - for Evergreen Library feature
-  app.get("/api/cities/library", isAuthenticated, async (req, res) => {
+  // Library routes - for Evergreen Library feature (now public)
+  app.get("/api/cities/library", async (req, res) => {
     try {
       // Get all published cities except today's city
       const allPublishedCities = await storage.getPublishedCities();
@@ -94,7 +94,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/cities/all-content", isAuthenticated, async (req, res) => {
+  app.get("/api/cities/all-content", async (req, res) => {
     try {
       // Get all published cities except today's city  
       const allPublishedCities = await storage.getPublishedCities();
