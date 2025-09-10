@@ -9,6 +9,7 @@ import Home from "@/pages/home";
 import Admin from "@/pages/admin";
 import Preview from "@/pages/preview";
 import CityDetail from "@/pages/city-detail";
+import LibraryPage from "@/pages/library";
 import { useAuth } from "@/hooks/useAuth";
 
 function Router() {
@@ -22,6 +23,7 @@ function Router() {
       
       {/* Protected routes that handle their own auth */}
       <Route path="/admin" component={Admin} />
+      <Route path="/library" component={LibraryPage} />
       
       {/* Main routes based on auth state */}
       {isLoading || !isAuthenticated ? (

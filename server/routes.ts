@@ -75,6 +75,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Library routes - for Evergreen Library feature
+  app.get("/api/cities/library", isAuthenticated, async (req, res) => {
+    try {
+      const cities = await storage.getPublishedCities();
+      res.json(cities);
+    } catch (error) {
+      console.error("Error fetching library cities:", error);
+      res.status(500).json({ message: "Failed to fetch library cities" });
+    }
+  });
+
+  app.get("/api/cities/all-content", isAuthenticated, async (req, res) => {
+    try {
+      const allCities = await storage.getPublishedCities();
+      const citiesWithContent = await Promise.all(
+        allCities.map(async (city) => {
+          const content = await storage.getCityContent(city.id);
+          return { city, content };
+        })
+      );
+      res.json(citiesWithContent);
+    } catch (error) {
+      console.error("Error fetching all cities content:", error);
+      res.status(500).json({ message: "Failed to fetch all cities content" });
+    }
+  });
+
   // Admin routes (protected)
   app.get("/api/admin/cities", isAuthenticated, async (req, res) => {
     try {
