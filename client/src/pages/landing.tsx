@@ -135,19 +135,22 @@ export default function Landing() {
               
               <Button 
                 size="lg" 
-                className="bg-white/20 hover:bg-white/30 border border-white/30 text-white backdrop-blur-sm mb-4"
+                className="bg-white/20 hover:bg-white/30 border border-white/30 text-white backdrop-blur-sm mb-6"
                 onClick={handleViewTodaysCity}
                 data-testid="button-visit-city"
               >
                 {currentCardInfo.type === 'preview' ? 'Discover' : 'Explore'} {city.name}
               </Button>
               
-              {/* Time Indicator - Below button */}
-              <div className="bg-gray-900/90 backdrop-blur-sm text-white rounded-lg shadow-xl px-4 py-3 border-2 border-white/50 inline-block">
-                <div className="flex items-center gap-2">
-                  <div className="text-sm font-bold text-center">
-                    <div className="text-yellow-300 text-xs font-semibold">{nextCardInfo.label}</div>
-                    <div className="text-white font-bold text-base">{timeUntilNext}</div>
+              {/* Next Content Footer */}
+              <div className="bg-black/40 backdrop-blur-sm rounded-lg px-4 py-3 border border-white/20">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="text-white/80 text-sm">Next:</div>
+                    <div className="text-white font-medium text-sm">{nextCardInfo.label}</div>
+                  </div>
+                  <div className="text-white/90 font-semibold text-sm">
+                    in {timeUntilNext}
                   </div>
                 </div>
               </div>

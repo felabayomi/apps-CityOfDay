@@ -210,16 +210,20 @@ export function CityCard({
         ) : null}
       </CardContent>
       
-      {/* Time Indicator - Bottom Right Corner - ALWAYS VISIBLE FOR TESTING */}
-      <div className="absolute bottom-4 right-4 bg-red-600 text-white rounded-lg shadow-lg px-3 py-2 z-50 border-2 border-yellow-400">
-        <div className="flex items-center gap-2">
-          <Clock className="w-4 h-4" />
-          <div className="text-sm font-medium">
-            <div className="text-white font-bold">{nextCardTitle || "Next Card"}</div>
-            <div className="text-yellow-200 font-bold">{timeUntilNext || "4h 38m"}</div>
+      {/* Next Content Footer */}
+      {(nextCardTitle || timeUntilNext) && (
+        <div className="mx-6 mb-6 bg-muted/50 rounded-lg px-4 py-3 border border-border/50">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="text-muted-foreground text-sm">Next:</div>
+              <div className="text-foreground font-medium text-sm">{nextCardTitle || "Next Card"}</div>
+            </div>
+            <div className="text-foreground font-semibold text-sm">
+              in {timeUntilNext || "Loading..."}
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </Card>
   );
 }
