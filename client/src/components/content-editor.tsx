@@ -145,6 +145,7 @@ function ContentCardEditor({ content, onUpdate, isUpdating }: ContentCardEditorP
 export function ContentEditor({ selectedCityId, onCityChange }: ContentEditorProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [editingCtaLinks, setEditingCtaLinks] = useState<any[]>([]);
   
   // Fetch all cities for selection
   const { data: cities } = useQuery({
@@ -279,6 +280,15 @@ export function ContentEditor({ selectedCityId, onCityChange }: ContentEditorPro
   const city = (cityData as any)?.city;
   const content = (cityData as any)?.content || [];
 
+  // Update editing state when city changes
+  useEffect(() => {
+    if (city?.cityCtaLinks) {
+      setEditingCtaLinks([...city.cityCtaLinks]);
+    } else {
+      setEditingCtaLinks([]);
+    }
+  }, [city]);
+
   return (
     <div className="w-full space-y-6" id="content-editor">
       <Card className={`postcard-shadow ${selectedCityId ? 'ring-2 ring-accent/50' : ''}`} data-testid="content-editor-card">
@@ -395,8 +405,8 @@ export function ContentEditor({ selectedCityId, onCityChange }: ContentEditorPro
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-3">
-            {city.cityCtaLinks && Array.isArray(city.cityCtaLinks) ? 
-              city.cityCtaLinks.map((link: any, index: number) => (
+            {editingCtaLinks.length > 0 ? 
+              editingCtaLinks.map((link: any, index: number) => (
                 <div key={index} className="grid grid-cols-1 md:grid-cols-3 gap-3 p-3 border rounded-lg">
                   <div>
                     <Label htmlFor={`cta-text-${index}`}>Button Text</Label>
@@ -404,9 +414,9 @@ export function ContentEditor({ selectedCityId, onCityChange }: ContentEditorPro
                       id={`cta-text-${index}`}
                       value={link.text || ""}
                       onChange={(e) => {
-                        const newLinks = [...(city.cityCtaLinks || [])];
+                        const newLinks = [...editingCtaLinks];
                         newLinks[index] = { ...newLinks[index], text: e.target.value };
-                        // Update local state for real-time editing
+                        setEditingCtaLinks(newLinks);
                       }}
                       placeholder={`e.g., Book ${city.name} Hotels`}
                     />
@@ -417,9 +427,9 @@ export function ContentEditor({ selectedCityId, onCityChange }: ContentEditorPro
                       id={`cta-url-${index}`}
                       value={link.url || ""}
                       onChange={(e) => {
-                        const newLinks = [...(city.cityCtaLinks || [])];
+                        const newLinks = [...editingCtaLinks];
                         newLinks[index] = { ...newLinks[index], url: e.target.value };
-                        // Update local state for real-time editing
+                        setEditingCtaLinks(newLinks);
                       }}
                       placeholder={`https://booking.com/${city.name.toLowerCase()}`}
                     />
@@ -429,7 +439,8 @@ export function ContentEditor({ selectedCityId, onCityChange }: ContentEditorPro
                       variant="outline"
                       size="sm"
                       onClick={() => {
-                        const newLinks = (city.cityCtaLinks || []).filter((_: any, i: number) => i !== index);
+                        const newLinks = editingCtaLinks.filter((_: any, i: number) => i !== index);
+                        setEditingCtaLinks(newLinks);
                         updateCityMutation.mutate({ 
                           id: city.id, 
                           cityCtaLinks: newLinks 
@@ -447,11 +458,12 @@ export function ContentEditor({ selectedCityId, onCityChange }: ContentEditorPro
             <Button
               variant="outline"
               onClick={() => {
-                const newLinks = [...(city.cityCtaLinks || []), { 
+                const newLinks = [...editingCtaLinks, { 
                   text: `Book ${city.name} Hotels`, 
                   url: `https://booking.com/${city.name.toLowerCase()}`, 
                   type: "booking" 
                 }];
+                setEditingCtaLinks(newLinks);
                 updateCityMutation.mutate({ 
                   id: city.id, 
                   cityCtaLinks: newLinks 
@@ -464,9 +476,22 @@ export function ContentEditor({ selectedCityId, onCityChange }: ContentEditorPro
             </Button>
           </div>
           
-          {city.cityCtaLinks && city.cityCtaLinks.length > 0 && (
-            <div className="pt-4 border-t">
-              <div className="bg-muted/30 rounded-lg p-3 mb-3">
+          {editingCtaLinks.length > 0 && (
+            <div className="pt-4 border-t space-y-3">
+              <Button
+                onClick={() => {
+                  updateCityMutation.mutate({ 
+                    id: city.id, 
+                    cityCtaLinks: editingCtaLinks 
+                  });
+                }}
+                disabled={updateCityMutation.isPending}
+                className="w-full"
+              >
+                {updateCityMutation.isPending ? "Saving..." : "Save CTA Changes"}
+              </Button>
+              
+              <div className="bg-muted/30 rounded-lg p-3">
                 <p className="text-sm text-muted-foreground">
                   <strong>Preview:</strong> These buttons will appear in the "Ready to Visit {city.name}?" section
                 </p>
