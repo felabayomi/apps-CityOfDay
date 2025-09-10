@@ -13,12 +13,30 @@ import { apiRequest } from "@/lib/queryClient";
 import { CameraCapture } from "@/components/camera-capture";
 import Footer from "@/components/Footer";
 import { ShareButton } from "@/components/ShareButton";
+import { getCurrentCardType, formatTimeUntilNext, type CardDisplayType } from "@/lib/timeBasedContent";
 
 export default function Home() {
   const { user, isLoading, isAuthenticated } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [isCameraOpen, setIsCameraOpen] = useState(false);
+  
+  // Time-based content state
+  const [currentCardInfo, setCurrentCardInfo] = useState(getCurrentCardType());
+  const [timeUntilNext, setTimeUntilNext] = useState(formatTimeUntilNext());
+
+  // Time-based content update timer
+  useEffect(() => {
+    const updateCardInfo = () => {
+      setCurrentCardInfo(getCurrentCardType());
+      setTimeUntilNext(formatTimeUntilNext());
+    };
+
+    // Update every minute to keep time display fresh
+    const interval = setInterval(updateCardInfo, 60000);
+    
+    return () => clearInterval(interval);
+  }, []);
 
   // Redirect to login if not authenticated
   useEffect(() => {
@@ -133,6 +151,17 @@ export default function Home() {
   const todaysCity = todaysCityData?.city;
   const todaysContent = todaysCityData?.content || [];
 
+  // Get current card content based on time
+  const getCurrentContent = () => {
+    if (currentCardInfo.type === 'preview') {
+      return null; // Show city preview instead of content cards
+    }
+    
+    return todaysContent.find((content: any) => content.cardType === currentCardInfo.type);
+  };
+
+  const currentContent = getCurrentContent();
+
   return (
     <div className="min-h-screen bg-background">
       {/* Navigation Header */}
@@ -240,30 +269,88 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Today's Content Cards */}
-      {todaysContent.length > 0 && (
-        <section className="py-16" style={{backgroundColor: '#ffffff'}}>
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-12">
-              <h3 className="text-3xl font-bold mb-4" style={{color: 'var(--text-dark)'}}>Today's Discovery Cards</h3>
-              <p className="text-xl mb-4" style={{color: '#666'}}>Your daily dose of travel inspiration</p>
-              <div className="w-24 h-1 mx-auto rounded-full mt-4" style={{background: 'linear-gradient(135deg, #3A7CA5, #2A5B7A)'}}></div>
+      {/* Time-Based Content Display */}
+      <section className="py-16" style={{backgroundColor: '#ffffff'}}>
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <div className="flex items-center justify-center gap-4 mb-6">
+              <h3 className="text-3xl font-bold" style={{color: 'var(--text-dark)'}}>
+                {currentCardInfo.label}
+              </h3>
+              <Badge 
+                variant="secondary" 
+                className="text-sm font-medium bg-primary/10 text-primary border-primary/20"
+              >
+                {currentCardInfo.timeRange}
+              </Badge>
             </div>
+            
+            {/* Time indicator */}
+            <div className="mb-6 p-4 bg-gradient-to-r from-primary/5 to-accent/5 rounded-lg border border-primary/10 max-w-md mx-auto">
+              <p className="text-sm text-muted-foreground mb-1">Next content change in:</p>
+              <p className="text-lg font-semibold text-primary">{timeUntilNext}</p>
+            </div>
+            
+            <p className="text-xl mb-4" style={{color: '#666'}}>
+              {currentCardInfo.type === 'preview' 
+                ? 'Preview tomorrow\'s discovery destination' 
+                : 'Your current discovery moment'
+              }
+            </p>
+            <div className="w-24 h-1 mx-auto rounded-full mt-4" style={{background: 'linear-gradient(135deg, #3A7CA5, #2A5B7A)'}}></div>
+          </div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {todaysContent
-                .sort((a: any, b: any) => {
-                  const order = { morning: 0, afternoon: 1, evening: 2, bonus: 3 };
-                  return order[a.cardType as keyof typeof order] - order[b.cardType as keyof typeof order];
-                })
-                .map((content: any) => (
-                  <CityCard
-                    key={content.id}
-                    content={content}
-                    city={todaysCity}
-                  />
-                ))}
+          {/* Display current content or city preview */}
+          {currentCardInfo.type === 'preview' ? (
+            /* City Preview Mode */
+            <div className="max-w-2xl mx-auto">
+              <Card className="text-center border-2 border-primary/20 shadow-lg">
+                <CardContent className="p-8">
+                  <h4 className="text-2xl font-bold mb-4" style={{color: 'var(--text-dark)'}}>
+                    Tomorrow's Featured Destination
+                  </h4>
+                  <div className="text-4xl font-bold text-primary mb-6">
+                    {todaysCity?.name}, {todaysCity?.country}
+                  </div>
+                  <p className="text-lg text-muted-foreground mb-6">
+                    Get ready to discover amazing landmarks, local culture, and hidden gems. 
+                    Your morning discovery begins at 7:00 AM!
+                  </p>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
+                    <div className="text-center p-3 bg-primary/5 rounded-lg">
+                      <p className="text-sm text-muted-foreground">7:00 AM</p>
+                      <p className="font-semibold text-primary">Morning</p>
+                    </div>
+                    <div className="text-center p-3 bg-accent/5 rounded-lg">
+                      <p className="text-sm text-muted-foreground">11:00 AM</p>
+                      <p className="font-semibold text-accent">Afternoon</p>
+                    </div>
+                    <div className="text-center p-3 bg-secondary/5 rounded-lg">
+                      <p className="text-sm text-muted-foreground">3:00 PM</p>
+                      <p className="font-semibold text-secondary">Evening</p>
+                    </div>
+                    <div className="text-center p-3 bg-primary/5 rounded-lg">
+                      <p className="text-sm text-muted-foreground">7:00 PM</p>
+                      <p className="font-semibold text-primary">Bonus</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
+          ) : currentContent ? (
+            /* Current Time Card Display */
+            <div className="max-w-2xl mx-auto">
+              <CityCard
+                content={currentContent}
+                city={todaysCity}
+              />
+            </div>
+          ) : (
+            /* Loading or No Content */
+            <div className="text-center py-12">
+              <p className="text-muted-foreground">Loading today's {currentCardInfo.label.toLowerCase()}...</p>
+            </div>
+          )}
 
             {/* Affiliate CTA */}
             <div className="mt-12 text-center">
