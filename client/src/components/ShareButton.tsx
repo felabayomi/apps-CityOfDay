@@ -44,8 +44,9 @@ export function ShareButton({ city, content }: ShareButtonProps) {
   // Generate platform-specific content
   const generateContent = (platform: 'twitter' | 'facebook' | 'bluesky' | 'instagram' | 'copy') => {
     const baseText = `Wake up in ${city.name}, ${city.country}! ✈️`;
-    const hashtags = `#${city.name.replace(/\s+/g, '')} #Travel #CityDiscovery #DailyFelix`;
-    const url = `${window.location.origin}/cities/${encodeURIComponent(city.name)}`;
+    const hashtags = `#${city.name.replace(/\s+/g, '')} #Travel #CityDiscovery #CityDiscoverer`;
+    const primaryUrl = `https://daily.citydiscoverer.guide`;
+    const secondaryUrl = `https://cityoftheday.citydiscoverer.guide`;
     
     // Get interesting fact from content
     let fact = '';
@@ -62,29 +63,29 @@ export function ShareButton({ city, content }: ShareButtonProps) {
     switch (platform) {
       case 'twitter':
         // Twitter: 280 characters
-        const twitterText = `${baseText}\n\n${fact}\n\n${hashtags}\n\n${url}`;
+        const twitterText = `${baseText}\n\n${fact}\n\n${hashtags}\n\n${primaryUrl}\n${secondaryUrl}`;
         return twitterText.length <= 280 ? twitterText : 
-          `${baseText}\n\n${fact.substring(0, 200 - baseText.length - hashtags.length - url.length - 10)}...\n\n${hashtags}\n\n${url}`;
+          `${baseText}\n\n${fact.substring(0, 160 - baseText.length - hashtags.length - primaryUrl.length - secondaryUrl.length)}...\n\n${hashtags}\n\n${primaryUrl}`;
       
       case 'facebook':
         // Facebook: No strict limit, more descriptive
-        return `${baseText}\n\n${fact}\n\nDiscover amazing cities daily with Daily Felix! 🌍\n\n${hashtags}\n\n${url}`;
+        return `${baseText}\n\n${fact}\n\nDiscover amazing cities daily with City Discoverer! 🌍\n\n${hashtags}\n\n${primaryUrl}\n${secondaryUrl}`;
       
       case 'bluesky':
         // Bluesky: 300 characters
-        const blueskyText = `${baseText}\n\n${fact}\n\n${hashtags}\n\n${url}`;
+        const blueskyText = `${baseText}\n\n${fact}\n\n${hashtags}\n\n${primaryUrl}\n${secondaryUrl}`;
         return blueskyText.length <= 300 ? blueskyText :
-          `${baseText}\n\n${fact.substring(0, 220 - baseText.length - hashtags.length - url.length - 10)}...\n\n${hashtags}\n\n${url}`;
+          `${baseText}\n\n${fact.substring(0, 180 - baseText.length - hashtags.length - primaryUrl.length - secondaryUrl.length)}...\n\n${hashtags}\n\n${primaryUrl}`;
       
       case 'instagram':
         // Instagram: Caption for image post
-        return `${baseText}\n\n${fact}\n\n${hashtags}`;
+        return `${baseText}\n\n${fact}\n\n${hashtags}\n\n${primaryUrl}\n${secondaryUrl}`;
       
       case 'copy':
-        return `${baseText}\n\n${fact}\n\nDiscover amazing cities daily with Daily Felix! 🌍\n\n${hashtags}\n\n${url}`;
+        return `${baseText}\n\n${fact}\n\nDiscover amazing cities daily with City Discoverer! 🌍\n\n${hashtags}\n\n${primaryUrl}\n${secondaryUrl}`;
       
       default:
-        return `${baseText}\n\n${fact}\n\n${url}`;
+        return `${baseText}\n\n${fact}\n\n${primaryUrl}\n${secondaryUrl}`;
     }
   };
 
@@ -96,7 +97,7 @@ export function ShareButton({ city, content }: ShareButtonProps) {
 
   const shareToFacebook = () => {
     const text = generateContent('facebook');
-    const shareUrl = `${window.location.origin}/cities/${encodeURIComponent(city.name)}`;
+    const shareUrl = `https://daily.citydiscoverer.guide`;
     const url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(text)}`;
     window.open(url, '_blank');
   };
