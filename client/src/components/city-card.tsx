@@ -101,9 +101,6 @@ export function CityCard({
         <h4 className="text-lg font-semibold text-foreground mb-2" data-testid={`title-${content.cardType}`}>
           {content.title}
         </h4>
-        <div className="bg-red-500 text-white p-4 text-center font-bold text-xl mb-4">
-          🚨 TEST: CityCard is rendering! 🚨
-        </div>
         <div className="mb-4">
           <p className={`text-foreground/80 text-sm ${!isExpanded && shouldShowReadMore ? 'line-clamp-3' : ''}`} data-testid={`content-${content.cardType}`}>
             {content.content}
@@ -213,16 +210,18 @@ export function CityCard({
         ) : null}
       </CardContent>
       
-      {/* Time Indicator - TOP LEFT CORNER FOR TESTING */}
-      <div className="absolute top-4 left-4 bg-red-600 text-white border-4 border-yellow-400 rounded-xl shadow-2xl px-4 py-3 z-50">
-        <div className="flex items-center gap-2">
-          <Clock className="w-6 h-6 text-yellow-300" />
-          <div className="text-base font-bold">
-            <div className="text-white">⏰ {nextCardTitle || "Morning Discovery"}</div>
-            <div className="text-yellow-300 text-lg">⏱️ {timeUntilNext || "4h 38m"}</div>
+      {/* Time Indicator - Bottom Right Corner */}
+      {(nextCardTitle || timeUntilNext) && (
+        <div className="absolute bottom-4 right-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg shadow-lg px-3 py-2 z-10">
+          <div className="flex items-center gap-2">
+            <Clock className="w-4 h-4" />
+            <div className="text-sm font-medium">
+              <div className="text-white/90">{nextCardTitle || "Next Card"}</div>
+              <div className="text-blue-200 font-semibold">{timeUntilNext || "Loading..."}</div>
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </Card>
   );
 }
