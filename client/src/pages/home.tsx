@@ -246,7 +246,7 @@ export default function Home() {
       {/* User Stats */}
       <section className="py-8" style={{backgroundColor: '#F9F5EC'}}>
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
+          <div className="grid grid-cols-3 gap-2 md:gap-6">
             <UserStats
               icon={MapPin}
               value={(user as any)?.discoveredCities || 0}
