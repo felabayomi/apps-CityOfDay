@@ -258,7 +258,7 @@ export default function Landing() {
                 <Button 
                   size="lg"
                   className="bg-white text-blue-600 hover:bg-gray-100"
-                  onClick={handleSignIn}
+                  onClick={handleViewTodaysCity}
                   data-testid="button-join-now"
                 >
                   Join City Discoverer
