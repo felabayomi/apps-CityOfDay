@@ -17,7 +17,7 @@ import {
   type InsertUserTravelPhoto,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc, and, gte, lt, asc, isNull, isNotNull, sql } from "drizzle-orm";
+import { eq, desc, and, gte, lt, lte, asc, isNull, isNotNull, sql } from "drizzle-orm";
 
 export interface IStorage {
   // User operations (required for Replit Auth)
@@ -183,16 +183,19 @@ export class DatabaseStorage implements IStorage {
     }
     
     // Fallback: get the most recently published city (published today or in the past)
-    const allPublishedCities = await db
+    const [fallbackCity] = await db
       .select()
       .from(cities)
-      .where(eq(cities.isPublished, true))
-      .orderBy(desc(cities.publishedDate));
+      .where(
+        and(
+          eq(cities.isPublished, true),
+          lte(cities.publishedDate, today)
+        )
+      )
+      .orderBy(desc(cities.publishedDate))
+      .limit(1);
     
-    // Find the most recent city published in the past or today
-    const validCities = allPublishedCities.filter(city => city.publishedDate && city.publishedDate <= today);
-    
-    return validCities[0] || allPublishedCities[0]; // Return best option or any published city as fallback
+    return fallbackCity;
   }
 
   async getScheduledCities(): Promise<City[]> {
