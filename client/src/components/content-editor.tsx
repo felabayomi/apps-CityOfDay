@@ -170,6 +170,8 @@ export function ContentEditor({ selectedCityId, onCityChange }: ContentEditorPro
     queryKey: ["/api/cities", selectedCityId],
     enabled: !!selectedCityId,
     retry: false,
+    staleTime: 0, // Force fresh data fetch every time
+    gcTime: 0, // Don't cache the data (v5 syntax)
   });
 
   // Update content mutation
@@ -614,6 +616,9 @@ export function ContentEditor({ selectedCityId, onCityChange }: ContentEditorPro
                 id="luxury-link"
                 value={city.luxuryCtaLink || ""}
                 onChange={(e) => {
+                  console.log('Luxury field changed:', e.target.value);
+                  console.log('City object luxury field:', city.luxuryCtaLink);
+                  console.log('Full city object keys:', Object.keys(city));
                   updateCityMutation.mutate({ 
                     id: city.id, 
                     luxuryCtaLink: e.target.value 
@@ -633,6 +638,7 @@ export function ContentEditor({ selectedCityId, onCityChange }: ContentEditorPro
                 id="wildlife-link"
                 value={city.wildlifeCtaLink || ""}
                 onChange={(e) => {
+                  console.log('Wildlife field changed:', e.target.value);
                   updateCityMutation.mutate({ 
                     id: city.id, 
                     wildlifeCtaLink: e.target.value 
