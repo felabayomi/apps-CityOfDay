@@ -23,9 +23,8 @@ export default function Landing() {
   };
   
   const handleViewTodaysCity = () => {
-    if (city?.id) {
-      setLocation(`/cities/${city.id}`);
-    }
+    // Direct users to sign in, which will take them to the main home page
+    handleSignIn();
   };
 
 
