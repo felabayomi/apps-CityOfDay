@@ -258,13 +258,14 @@ export default function Home() {
                   <p className="text-white/90 mb-6 max-w-2xl mx-auto">
                     Turn today's inspiration into tomorrow's adventure. Book your experience now.
                   </p>
-                  <div className="flex flex-wrap justify-center gap-4">
+                  {/* Mobile-Optimized CTA Grid */}
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-4 max-w-4xl mx-auto">
                     {/* Custom City CTAs - Show first if they exist */}
                     {todaysCity?.cityCtaLinks && Array.isArray(todaysCity.cityCtaLinks) && todaysCity.cityCtaLinks.length > 0 && 
                       todaysCity.cityCtaLinks.map((link: any, index: number) => (
                         <Button 
                           key={`custom-${index}`}
-                          className="bg-white text-primary hover:bg-gray-100 border-2 border-primary/20" 
+                          className="bg-white text-primary hover:bg-gray-100 border-2 border-primary/20 text-xs md:text-sm px-2 md:px-4 py-2 md:py-2 h-auto min-h-[44px] whitespace-normal leading-tight"
                           onClick={() => window.open(link.url, '_blank')}
                           data-testid={`button-city-cta-${index}`}
                         >
@@ -275,46 +276,48 @@ export default function Home() {
                     
                     {/* Default Affiliate Buttons - Always show */}
                     <Button 
-                      className="bg-white text-primary hover:bg-gray-100" 
+                      className="bg-white text-primary hover:bg-gray-100 text-xs md:text-sm px-2 md:px-4 py-2 md:py-2 h-auto min-h-[44px] whitespace-normal leading-tight" 
                       data-testid="button-book-hotels"
                       onClick={() => window.open('https://resmax.globaltravel.net/?custom1=GT20038250&custom2=resmax', '_blank')}
                     >
                       Book Hotels
                     </Button>
                     <Button 
-                      className="bg-white text-primary hover:bg-gray-100" 
+                      className="bg-white text-primary hover:bg-gray-100 text-xs md:text-sm px-2 md:px-4 py-2 md:py-2 h-auto min-h-[44px] whitespace-normal leading-tight" 
                       data-testid="button-find-tours"
                       onClick={() => window.open('https://www.viator.com/?pid=P00113651&uid=U00350276&mcid=58086&currency=USD', '_blank')}
                     >
                       Find Tours
                     </Button>
                     <Button 
-                      className="bg-white text-primary hover:bg-gray-100" 
+                      className="bg-white text-primary hover:bg-gray-100 text-xs md:text-sm px-2 md:px-4 py-2 md:py-2 h-auto min-h-[44px] whitespace-normal leading-tight" 
                       data-testid="button-search-flights"
                       onClick={() => window.open('https://globaltravel.airfareassist.com/agentsearch?cmp=R400000', '_blank')}
                     >
                       Search Flights
                     </Button>
                     <Button 
-                      className="bg-white text-primary hover:bg-gray-100" 
+                      className="bg-white text-primary hover:bg-gray-100 text-xs md:text-sm px-2 md:px-4 py-2 md:py-2 h-auto min-h-[44px] whitespace-normal leading-tight" 
                       data-testid="button-car-rental"
                       onClick={() => window.open('https://rezervco.carhire-solutions.com/', '_blank')}
                     >
                       Car Rental
                     </Button>
                     <Button 
-                      className="bg-white text-primary hover:bg-gray-100" 
+                      className="bg-white text-primary hover:bg-gray-100 text-xs md:text-sm px-2 md:px-4 py-2 md:py-2 h-auto min-h-[44px] whitespace-normal leading-tight" 
                       data-testid="button-travel-companion"
                       onClick={() => window.open('https://detect.citydiscoverer.ai/', '_blank')}
                     >
-                      Smart Travel Companion
+                      <span className="hidden md:inline">Smart Travel Companion</span>
+                      <span className="md:hidden">Travel AI</span>
                     </Button>
                     <Button 
-                      className="bg-white text-primary hover:bg-gray-100" 
+                      className="bg-white text-primary hover:bg-gray-100 text-xs md:text-sm px-2 md:px-4 py-2 md:py-2 h-auto min-h-[44px] whitespace-normal leading-tight" 
                       data-testid="button-itinerary-planner"
                       onClick={() => window.open('https://plan.citydiscoverer.ai/', '_blank')}
                     >
-                      Itinerary Planner
+                      <span className="hidden md:inline">Itinerary Planner</span>
+                      <span className="md:hidden">Plan Trip</span>
                     </Button>
                   </div>
                 </CardContent>
