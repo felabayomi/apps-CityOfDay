@@ -7,6 +7,9 @@ import type { Express, RequestHandler } from "express";
 import memoize from "memoizee";
 import connectPg from "connect-pg-simple";
 import { storage } from "./storage";
+import { db } from "./db";
+import { users } from "../shared/schema";
+import { eq } from "drizzle-orm";
 
 if (!process.env.REPLIT_DOMAINS) {
   throw new Error("Environment variable REPLIT_DOMAINS not provided");
@@ -57,12 +60,41 @@ function updateUserSession(
 async function upsertUser(
   claims: any,
 ) {
-  await storage.upsertUser({
-    email: claims["email"],
-    firstName: claims["first_name"],
-    lastName: claims["last_name"],
-    profileImageUrl: claims["profile_image_url"],
-  });
+  // Check if user exists
+  const existingUser = await storage.getUser(claims["sub"]);
+  
+  if (existingUser) {
+    // User exists, update using manual SQL to include ID
+    const userData = {
+      id: claims["sub"],
+      email: claims["email"],
+      firstName: claims["first_name"] || claims["given_name"],
+      lastName: claims["last_name"] || claims["family_name"],
+      profileImageUrl: claims["profile_image_url"] || claims["picture"],
+    };
+    
+    await db.update(users)
+      .set({
+        email: userData.email,
+        firstName: userData.firstName,
+        lastName: userData.lastName,
+        profileImageUrl: userData.profileImageUrl,
+        updatedAt: new Date(),
+      })
+      .where(eq(users.id, userData.id));
+  } else {
+    // New user, insert with ID using manual SQL
+    await db.insert(users).values({
+      id: claims["sub"],
+      email: claims["email"],
+      firstName: claims["first_name"] || claims["given_name"],
+      lastName: claims["last_name"] || claims["family_name"],
+      profileImageUrl: claims["profile_image_url"] || claims["picture"],
+      discoveredCities: 0,
+      bucketListCities: 0,
+      currentStreak: 0,
+    });
+  }
 }
 
 export async function setupAuth(app: Express) {
