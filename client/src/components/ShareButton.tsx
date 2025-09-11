@@ -330,17 +330,12 @@ export function ShareButton({ city, content, shareType = 'page' }: ShareButtonPr
               <p className="text-xs text-muted-foreground mb-2">
                 📱 For Instagram: Save image below
               </p>
-              <div className="relative inline-block">
-                <img 
-                  src={getShareImage()!} 
-                  alt={`${city.name} share image`}
-                  className="w-32 h-20 object-cover rounded mx-auto cursor-pointer border-2 border-dashed border-gray-300 hover:border-blue-500 transition-colors"
-                  title="Save image for Instagram"
-                />
-                <div className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 hover:opacity-100 transition-opacity rounded text-white text-xs font-medium">
-                  Save Image
-                </div>
-              </div>
+              <img 
+                src={getShareImage()!} 
+                alt={`${city.name} share image`}
+                className="w-32 h-20 object-cover rounded mx-auto cursor-pointer border-2 border-dashed border-gray-300 hover:border-blue-500 transition-colors"
+                title="Save image for Instagram"
+              />
             </div>
           )}
         </div>
