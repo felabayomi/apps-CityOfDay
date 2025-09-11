@@ -132,6 +132,7 @@ export function CityCard({
                 card_type: content.cardType,
                 image_url: content.imageUrl || undefined
               }]}
+              shareType="card"
             />
           </div>
         )}

@@ -22,9 +22,10 @@ interface ShareButtonProps {
     card_type: string;
     image_url?: string;
   }[];
+  shareType?: 'page' | 'card'; // Distinguish between page vs card sharing
 }
 
-export function ShareButton({ city, content }: ShareButtonProps) {
+export function ShareButton({ city, content, shareType = 'page' }: ShareButtonProps) {
   const [copied, setCopied] = useState(false);
   const { toast } = useToast();
 
@@ -43,20 +44,34 @@ export function ShareButton({ city, content }: ShareButtonProps) {
 
   // Generate platform-specific content
   const generateContent = (platform: 'twitter' | 'facebook' | 'bluesky' | 'instagram' | 'copy') => {
-    const baseText = `Wake up in ${city.name}, ${city.country}! ✈️`;
+    const isCardShare = shareType === 'card' && content && content.length === 1;
+    
+    // Different base text for card vs page sharing
+    const baseText = isCardShare 
+      ? `Check out this ${content[0].card_type} discovery in ${city.name}, ${city.country}! ✈️`
+      : `Wake up in ${city.name}, ${city.country}! ✈️`;
+    
     const hashtags = `#${city.name.replace(/\s+/g, '')} #Travel #CityDiscovery #CityDiscoverer`;
     const primaryUrl = `https://daily.citydiscoverer.guide`;
     const secondaryUrl = `https://cityoftheday.citydiscoverer.guide`;
     
-    // Get interesting fact from content
+    // Get content based on share type
     let fact = '';
     if (content && content.length > 0) {
-      const factContent = content.find(c => c.card_type === 'bonus') || content[0];
-      if (factContent) {
-        // Extract first sentence or shorten content
-        const fullContent = factContent.content;
+      if (isCardShare) {
+        // For single card: use that card's content
+        const cardContent = content[0];
+        const fullContent = cardContent.content;
         const firstSentence = fullContent.split('.')[0] + '.';
         fact = firstSentence.length < 150 ? firstSentence : fullContent.substring(0, 147) + '...';
+      } else {
+        // For full page: prefer bonus content or fallback to first content
+        const factContent = content.find(c => c.card_type === 'bonus') || content[0];
+        if (factContent) {
+          const fullContent = factContent.content;
+          const firstSentence = fullContent.split('.')[0] + '.';
+          fact = firstSentence.length < 150 ? firstSentence : fullContent.substring(0, 147) + '...';
+        }
       }
     }
 
@@ -69,7 +84,10 @@ export function ShareButton({ city, content }: ShareButtonProps) {
       
       case 'facebook':
         // Facebook: No strict limit, more descriptive
-        return `${baseText}\n\n${fact}\n\nDiscover amazing cities daily with City Discoverer! 🌍\n\n${hashtags}\n\n${primaryUrl}\n${secondaryUrl}`;
+        const fbText = isCardShare 
+          ? `${baseText}\n\n${fact}\n\nExplore more discoveries at City Discoverer! 🌍\n\n${hashtags}\n\n${primaryUrl}\n${secondaryUrl}`
+          : `${baseText}\n\n${fact}\n\nDiscover amazing cities daily with City Discoverer! 🌍\n\n${hashtags}\n\n${primaryUrl}\n${secondaryUrl}`;
+        return fbText;
       
       case 'bluesky':
         // Bluesky: 300 characters
@@ -82,7 +100,10 @@ export function ShareButton({ city, content }: ShareButtonProps) {
         return `${baseText}\n\n${fact}\n\n${hashtags}\n\n${primaryUrl}\n${secondaryUrl}`;
       
       case 'copy':
-        return `${baseText}\n\n${fact}\n\nDiscover amazing cities daily with City Discoverer! 🌍\n\n${hashtags}\n\n${primaryUrl}\n${secondaryUrl}`;
+        const copyText = isCardShare 
+          ? `${baseText}\n\n${fact}\n\nExplore more discoveries at City Discoverer! 🌍\n\n${hashtags}\n\n${primaryUrl}\n${secondaryUrl}`
+          : `${baseText}\n\n${fact}\n\nDiscover amazing cities daily with City Discoverer! 🌍\n\n${hashtags}\n\n${primaryUrl}\n${secondaryUrl}`;
+        return copyText;
       
       default:
         return `${baseText}\n\n${fact}\n\n${primaryUrl}\n${secondaryUrl}`;
@@ -194,15 +215,28 @@ export function ShareButton({ city, content }: ShareButtonProps) {
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Share {city.name}</DialogTitle>
+          <DialogTitle>
+            {shareType === 'card' && content && content.length === 1
+              ? `Share ${content[0].card_type} discovery`
+              : `Share ${city.name}`
+            }
+          </DialogTitle>
         </DialogHeader>
         
         <div className="space-y-4">
           <div className="text-center p-4 bg-muted rounded-lg">
-            <h4 className="font-semibold mb-2">Wake up in {city.name}, {city.country}! ✈️</h4>
+            <h4 className="font-semibold mb-2">
+              {shareType === 'card' && content && content.length === 1
+                ? `${content[0].card_type.charAt(0).toUpperCase() + content[0].card_type.slice(1)} in ${city.name}, ${city.country}! ✈️`
+                : `Wake up in ${city.name}, ${city.country}! ✈️`
+              }
+            </h4>
             {content && content.length > 0 && (
               <p className="text-sm text-muted-foreground">
-                {content[0].content.split('.')[0]}...
+                {shareType === 'card' && content.length === 1
+                  ? content[0].content.split('.')[0] + '...'
+                  : (content.find(c => c.card_type === 'bonus') || content[0]).content.split('.')[0] + '...'
+                }
               </p>
             )}
           </div>
