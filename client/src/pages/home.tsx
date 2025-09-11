@@ -61,7 +61,7 @@ export default function Home() {
   const todaysContent = todaysCityData?.content || [];
 
   // Organize content by card type for display
-  const organizedContent = ['morning', 'afternoon', 'evening', 'bonus'].map(cardType => {
+  const organizedContent = ['morning', 'afternoon', 'evening', 'bonus', 'luxury', 'wildlife'].map(cardType => {
     const content = todaysContent.find((content: any) => content.cardType === cardType);
     return {
       cardType,
@@ -144,7 +144,7 @@ export default function Home() {
             
             
             <p className="text-xl mb-4" style={{color: '#666'}}>
-              Explore Morning Discovery, Afternoon Culture, Evening Experiences, and Did You Know? — all at once
+              Explore Morning Discovery, Afternoon Culture, Evening Experiences, Bonus Facts, Luxury Experiences, and Wildlife — all at once
             </p>
             <div className="w-24 h-1 mx-auto rounded-full mt-4" style={{background: 'linear-gradient(135deg, #3A7CA5, #2A5B7A)'}}></div>
           </div>
