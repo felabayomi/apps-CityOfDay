@@ -338,20 +338,6 @@ export function ShareButton({ city, content, shareType = 'page' }: ShareButtonPr
                   alt={`${city.name} share image`}
                   className="w-32 h-20 object-cover rounded mx-auto cursor-pointer border-2 border-dashed border-gray-300 hover:border-blue-500 transition-colors"
                   title="Tap and hold (mobile) or right-click (desktop) to save for Instagram"
-                  onContextMenu={(e) => {
-                    // Let the right-click happen naturally for saving
-                    toast({
-                      title: "Save Image 💾",
-                      description: "Image menu opened! Save the image and paste your caption in Instagram.",
-                    });
-                  }}
-                  onTouchEnd={(e) => {
-                    // Simple touch handler for mobile image save
-                    toast({
-                      title: "Save Image 💾", 
-                      description: "Touch and hold the image to save it for Instagram sharing!",
-                    });
-                  }}
                 />
                 <div className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 hover:opacity-100 transition-opacity rounded text-white text-xs font-medium">
                   <span className="hidden sm:inline">Right-click to save</span>
