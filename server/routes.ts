@@ -58,16 +58,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Get timezone offset from query parameter (JavaScript getTimezoneOffset returns minutes west of UTC)
       const tzOffsetMinutes = req.query.tzOffset ? parseInt(req.query.tzOffset as string) : undefined;
       
-      // Create cache key that includes timezone offset
-      const cacheKey = `today_${tzOffsetMinutes || 0}`;
+      // Add no-cache headers to prevent stale data in production
+      res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+      res.setHeader('Pragma', 'no-cache');
+      res.setHeader('Expires', '0');
       
-      // Check cache first
-      const cachedData = todaysCityCache.get();
-      if (cachedData && (cachedData as any).key === cacheKey) {
-        return res.json((cachedData as any).result);
-      }
-      
-      // Cache miss - fetch from database
+      // Fetch fresh data from database (no caching)
       const todaysCity = await storage.getTodaysCity(tzOffsetMinutes);
       if (!todaysCity) {
         return res.status(404).json({ message: "No city published for today" });
@@ -75,9 +71,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const content = await storage.getCityContent(todaysCity.id);
       const responseData = { city: todaysCity, content };
-      
-      // Cache the result with key
-      todaysCityCache.set({ key: cacheKey, result: responseData });
       
       res.json(responseData);
     } catch (error) {

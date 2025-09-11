@@ -163,7 +163,7 @@ export class DatabaseStorage implements IStorage {
   async getTodaysCity(tzOffsetMinutes?: number): Promise<City | undefined> {
     // Use client timezone offset to determine the correct local calendar date
     const offsetMs = (tzOffsetMinutes || 0) * 60 * 1000;
-    const clientNow = new Date(Date.now() - offsetMs); // Convert to client local time
+    const clientNow = new Date(Date.now() + offsetMs); // Convert to client local time
     
     // Get UTC midnight bounds for the client's current calendar date
     // This matches cities scheduled at 00:00:00Z for the target date
