@@ -45,7 +45,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!user) {
         return res.status(404).json({ message: "User not found" });
       }
-      res.json(user);
+      
+      // Add isAdmin flag based on server-side check
+      const adminEmail = process.env.ADMIN_EMAIL;
+      const userEmail = req.user.claims.email?.toLowerCase();
+      const isAdmin = adminEmail && userEmail === adminEmail.toLowerCase();
+      
+      res.json({
+        ...user,
+        isAdmin
+      });
     } catch (error) {
       console.error("Error fetching user:", error);
       res.status(500).json({ message: "Failed to fetch user" });

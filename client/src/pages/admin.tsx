@@ -35,8 +35,8 @@ export default function Admin() {
       return;
     }
     
-    // Check admin access
-    if (user && (user as any)?.email !== import.meta.env.VITE_ADMIN_EMAIL) {
+    // Check admin access using server-provided isAdmin flag
+    if (user && !(user as any)?.isAdmin) {
       toast({
         title: "Access Denied",
         description: "Admin access required.",
