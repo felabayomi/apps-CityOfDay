@@ -3,7 +3,7 @@
  * Determines which card type should be shown based on user's local time
  */
 
-export type CardDisplayType = 'preview' | 'morning' | 'afternoon' | 'evening' | 'bonus';
+export type CardDisplayType = 'preview' | 'morning' | 'afternoon' | 'evening' | 'bonus' | 'luxury' | 'wildlife';
 
 export interface TimeBasedCard {
   type: CardDisplayType;
@@ -14,13 +14,14 @@ export interface TimeBasedCard {
 
 /**
  * Get the current card type based on user's local time
- * Schedule:
- * - 12:01 AM - 7:00 AM: City Preview
- * - 7:00 AM - 11:00 AM: Morning Card  
- * - 11:00 AM - 3:00 PM: Afternoon Card
- * - 3:00 PM - 7:00 PM: Evening Card
- * - 7:00 PM - 11:00 PM: Bonus Card
- * - 11:00 PM - 12:01 AM: City Preview
+ * NEW 7-Segment Schedule for 6 Content Cards + Preview:
+ * - 12:01 AM - 6:00 AM: City Preview (6h)
+ * - 6:00 AM - 9:00 AM: Morning Card (3h)  
+ * - 9:00 AM - 12:00 PM: Afternoon Card (3h)
+ * - 12:00 PM - 3:00 PM: Evening Card (3h)
+ * - 3:00 PM - 6:00 PM: Bonus Card (3h)
+ * - 6:00 PM - 9:00 PM: Luxury Card (3h)
+ * - 9:00 PM - 12:01 AM: Wildlife Card (3h)
  */
 export function getCurrentCardType(): TimeBasedCard {
   const now = new Date();
@@ -30,14 +31,15 @@ export function getCurrentCardType(): TimeBasedCard {
   // Convert time to minutes for easier comparison
   const currentTimeInMinutes = hour * 60 + minutes;
   
-  // Define time ranges in minutes (24-hour format)
+  // Define time ranges in minutes (24-hour format) - 7 segments
   const timeRanges = [
-    { start: 0, end: 420, type: 'preview' as CardDisplayType, label: 'City Preview', timeRange: '12:01 AM - 7:00 AM', next: '7:00 AM' }, // 12:01 AM - 7:00 AM
-    { start: 420, end: 660, type: 'morning' as CardDisplayType, label: 'Morning Discovery', timeRange: '7:00 AM - 11:00 AM', next: '11:00 AM' }, // 7:00 AM - 11:00 AM  
-    { start: 660, end: 900, type: 'afternoon' as CardDisplayType, label: 'Afternoon Culture', timeRange: '11:00 AM - 3:00 PM', next: '3:00 PM' }, // 11:00 AM - 3:00 PM
-    { start: 900, end: 1140, type: 'evening' as CardDisplayType, label: 'Evening Experiences', timeRange: '3:00 PM - 7:00 PM', next: '7:00 PM' }, // 3:00 PM - 7:00 PM
-    { start: 1140, end: 1380, type: 'bonus' as CardDisplayType, label: 'Did You Know?', timeRange: '7:00 PM - 11:00 PM', next: '11:00 PM' }, // 7:00 PM - 11:00 PM
-    { start: 1380, end: 1440, type: 'preview' as CardDisplayType, label: 'City Preview', timeRange: '11:00 PM - 12:01 AM', next: '12:01 AM' }, // 11:00 PM - 11:59 PM
+    { start: 0, end: 360, type: 'preview' as CardDisplayType, label: 'City Preview', timeRange: '12:01 AM - 6:00 AM', next: '6:00 AM' }, // 12:01 AM - 6:00 AM (6h)
+    { start: 360, end: 540, type: 'morning' as CardDisplayType, label: 'Morning Discovery', timeRange: '6:00 AM - 9:00 AM', next: '9:00 AM' }, // 6:00 AM - 9:00 AM (3h)
+    { start: 540, end: 720, type: 'afternoon' as CardDisplayType, label: 'Afternoon Culture', timeRange: '9:00 AM - 12:00 PM', next: '12:00 PM' }, // 9:00 AM - 12:00 PM (3h)
+    { start: 720, end: 900, type: 'evening' as CardDisplayType, label: 'Evening Experiences', timeRange: '12:00 PM - 3:00 PM', next: '3:00 PM' }, // 12:00 PM - 3:00 PM (3h)
+    { start: 900, end: 1080, type: 'bonus' as CardDisplayType, label: 'Did You Know?', timeRange: '3:00 PM - 6:00 PM', next: '6:00 PM' }, // 3:00 PM - 6:00 PM (3h)
+    { start: 1080, end: 1260, type: 'luxury' as CardDisplayType, label: 'Luxury Experiences', timeRange: '6:00 PM - 9:00 PM', next: '9:00 PM' }, // 6:00 PM - 9:00 PM (3h)
+    { start: 1260, end: 1440, type: 'wildlife' as CardDisplayType, label: 'Nature & Wildlife', timeRange: '9:00 PM - 12:01 AM', next: '12:01 AM' }, // 9:00 PM - 12:01 AM (3h)
   ];
   
   // Find the current time range
@@ -56,8 +58,8 @@ export function getCurrentCardType(): TimeBasedCard {
   return {
     type: 'preview',
     label: 'City Preview', 
-    timeRange: '12:01 AM - 7:00 AM',
-    nextChangeTime: '7:00 AM'
+    timeRange: '12:01 AM - 6:00 AM',
+    nextChangeTime: '6:00 AM'
   };
 }
 
@@ -69,9 +71,9 @@ export function getTimeUntilNextChange(): { hours: number; minutes: number } {
   const currentHour = now.getHours();
   const currentMinutes = now.getMinutes();
   
-  // Next change times (in 24-hour format)
-  const changeTimes = [7, 11, 15, 19, 23]; // 7 AM, 11 AM, 3 PM, 7 PM, 11 PM
-  let nextChangeHour = 7; // Default to 7 AM next day
+  // Next change times (in 24-hour format) - NEW 7-segment schedule
+  const changeTimes = [6, 9, 12, 15, 18, 21]; // 6 AM, 9 AM, 12 PM, 3 PM, 6 PM, 9 PM
+  let nextChangeHour = 6; // Default to 6 AM next day
   
   // Find the next change time
   for (const changeTime of changeTimes) {
@@ -85,9 +87,9 @@ export function getTimeUntilNextChange(): { hours: number; minutes: number } {
   let targetHour = nextChangeHour;
   let targetDay = 0;
   
-  // If we passed all change times today, next change is 7 AM tomorrow
-  if (currentHour >= 23 || (currentHour === 0 && currentMinutes >= 1)) {
-    targetHour = 7;
+  // If we passed all change times today, next change is 6 AM tomorrow
+  if (currentHour >= 21 || (currentHour === 0 && currentMinutes >= 1)) {
+    targetHour = 6;
     targetDay = 1;
   }
   
@@ -113,14 +115,15 @@ export function getNextCardType(): TimeBasedCard {
   // Convert time to minutes for easier comparison
   const currentTimeInMinutes = hour * 60 + minutes;
   
-  // Define time ranges and what comes next
+  // Define time ranges and what comes next - NEW 7-segment schedule
   const timeRanges = [
-    { start: 0, end: 420, nextType: 'morning' as CardDisplayType, nextLabel: 'Morning Discovery' }, // Preview -> Morning
-    { start: 420, end: 660, nextType: 'afternoon' as CardDisplayType, nextLabel: 'Afternoon Culture' }, // Morning -> Afternoon
-    { start: 660, end: 900, nextType: 'evening' as CardDisplayType, nextLabel: 'Evening Experiences' }, // Afternoon -> Evening
-    { start: 900, end: 1140, nextType: 'bonus' as CardDisplayType, nextLabel: 'Did You Know?' }, // Evening -> Bonus
-    { start: 1140, end: 1380, nextType: 'preview' as CardDisplayType, nextLabel: 'City Preview' }, // Bonus -> Preview
-    { start: 1380, end: 1440, nextType: 'morning' as CardDisplayType, nextLabel: 'Morning Discovery' }, // Preview -> Morning (next day)
+    { start: 0, end: 360, nextType: 'morning' as CardDisplayType, nextLabel: 'Morning Discovery' }, // Preview -> Morning
+    { start: 360, end: 540, nextType: 'afternoon' as CardDisplayType, nextLabel: 'Afternoon Culture' }, // Morning -> Afternoon
+    { start: 540, end: 720, nextType: 'evening' as CardDisplayType, nextLabel: 'Evening Experiences' }, // Afternoon -> Evening
+    { start: 720, end: 900, nextType: 'bonus' as CardDisplayType, nextLabel: 'Did You Know?' }, // Evening -> Bonus
+    { start: 900, end: 1080, nextType: 'luxury' as CardDisplayType, nextLabel: 'Luxury Experiences' }, // Bonus -> Luxury
+    { start: 1080, end: 1260, nextType: 'wildlife' as CardDisplayType, nextLabel: 'Nature & Wildlife' }, // Luxury -> Wildlife
+    { start: 1260, end: 1440, nextType: 'preview' as CardDisplayType, nextLabel: 'City Preview' }, // Wildlife -> Preview (next day)
   ];
   
   // Find the current time range and return what's next

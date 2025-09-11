@@ -165,35 +165,39 @@ export class DatabaseStorage implements IStorage {
     const startOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate());
     const endOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1);
     
-    // Single optimized query: prioritize scheduled city for today, fallback to most recent published
-    const result = await db
+    // FIXED: First try to find a city specifically scheduled for today
+    let result = await db
       .select()
       .from(cities)
       .where(
         and(
           eq(cities.isPublished, true),
-          or(
-            // Priority 1: Scheduled for today
-            and(
-              gte(cities.scheduledDate, startOfDay),
-              lt(cities.scheduledDate, endOfDay)
-            ),
-            // Priority 2: Published today or earlier (fallback)
-            lte(cities.publishedDate, today)
-          )
+          gte(cities.scheduledDate, startOfDay),
+          lt(cities.scheduledDate, endOfDay)
         )
       )
-      .orderBy(
-        // Order by: scheduled for today first, then by most recent published date
-        desc(
-          sql`CASE 
-            WHEN scheduled_date >= ${startOfDay} AND scheduled_date < ${endOfDay} THEN 1 
-            ELSE 0 
-          END`
-        ),
-        desc(cities.publishedDate)
-      )
+      .orderBy(desc(cities.publishedDate))
       .limit(1);
+    
+    // If no city is scheduled for today, find published cities that are NOT scheduled for future dates
+    if (result.length === 0) {
+      result = await db
+        .select()
+        .from(cities)
+        .where(
+          and(
+            eq(cities.isPublished, true),
+            or(
+              // Cities with no scheduled date (general published content)
+              isNull(cities.scheduledDate),
+              // Cities scheduled for today or earlier (not future)
+              lte(cities.scheduledDate, today)
+            )
+          )
+        )
+        .orderBy(desc(cities.publishedDate))
+        .limit(1);
+    }
     
     return result[0];
   }

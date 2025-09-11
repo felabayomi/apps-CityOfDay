@@ -105,7 +105,8 @@ export default function Landing() {
                   weekday: 'long', 
                   year: 'numeric', 
                   month: 'long', 
-                  day: 'numeric' 
+                  day: 'numeric',
+                  timeZone: 'UTC'
                 }).toUpperCase()}
               </p>
               
