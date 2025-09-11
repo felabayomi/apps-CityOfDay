@@ -5,10 +5,11 @@ import {
   DialogContent, 
   DialogHeader, 
   DialogTitle, 
-  DialogTrigger 
+  DialogTrigger,
+  DialogClose
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { Share2, Copy, Check, ExternalLink } from "lucide-react";
+import { Share2, Copy, Check, ExternalLink, X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface ShareButtonProps {
@@ -112,92 +113,24 @@ export function ShareButton({ city, content, shareType = 'page' }: ShareButtonPr
 
   const shareToTwitter = () => {
     const text = generateContent('twitter');
-    const userAgent = navigator.userAgent || navigator.vendor;
-    const isMobile = /android|ipad|iphone|ipod/i.test(userAgent);
-    
-    if (isMobile) {
-      // Try native Twitter app first on mobile
-      try {
-        const twitterAppUrl = `twitter://post?message=${encodeURIComponent(text)}`;
-        window.location.href = twitterAppUrl;
-        
-        // Fallback to web if app doesn't open
-        setTimeout(() => {
-          const webUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
-          window.open(webUrl, '_blank');
-        }, 1000);
-      } catch (e) {
-        // Direct fallback to web
-        const webUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
-        window.open(webUrl, '_blank');
-      }
-    } else {
-      // Desktop - use web URL
-      const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
-      window.open(url, '_blank');
-    }
+    const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
+    window.open(url, '_blank');
   };
 
   const shareToFacebook = () => {
     const shareUrl = `https://daily.citydiscoverer.guide`;
     const content = generateContent('facebook');
-    const userAgent = navigator.userAgent || navigator.vendor;
-    const isMobile = /android|ipad|iphone|ipod/i.test(userAgent);
-    
-    // Extract hashtags for Facebook
     const hashtags = `#${city.name.replace(/\s+/g, '')} #Travel #CityDiscovery #CityDiscoverer`;
     const mainHashtag = hashtags.split(' ')[0].replace('#', ''); // First hashtag without #
     
-    if (isMobile) {
-      // Try native Facebook app first on mobile
-      try {
-        // Facebook app sharing with content
-        const fbAppUrl = `fb://sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(content)}&hashtag=${encodeURIComponent('#' + mainHashtag)}`;
-        window.location.href = fbAppUrl;
-        
-        // Fallback to web if app doesn't open
-        setTimeout(() => {
-          const webUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(content)}&hashtag=${encodeURIComponent('#' + mainHashtag)}`;
-          window.open(webUrl, '_blank');
-        }, 1000);
-      } catch (e) {
-        // Direct fallback to web
-        const webUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(content)}&hashtag=${encodeURIComponent('#' + mainHashtag)}`;
-        window.open(webUrl, '_blank');
-      }
-    } else {
-      // Desktop - use web URL with content
-      const url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(content)}&hashtag=${encodeURIComponent('#' + mainHashtag)}`;
-      window.open(url, '_blank', 'width=600,height=400,scrollbars=yes,resizable=yes');
-    }
+    const url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(content)}&hashtag=${encodeURIComponent('#' + mainHashtag)}`;
+    window.open(url, '_blank', 'width=600,height=400,scrollbars=yes,resizable=yes');
   };
 
   const shareToBluesky = () => {
     const text = generateContent('bluesky');
-    const userAgent = navigator.userAgent || navigator.vendor;
-    const isMobile = /android|ipad|iphone|ipod/i.test(userAgent);
-    
-    if (isMobile) {
-      // Try Bluesky app first on mobile
-      try {
-        const blueskyAppUrl = `bluesky://intent/compose?text=${encodeURIComponent(text)}`;
-        window.location.href = blueskyAppUrl;
-        
-        // Fallback to web if app doesn't open
-        setTimeout(() => {
-          const webUrl = `https://bsky.app/intent/compose?text=${encodeURIComponent(text)}`;
-          window.open(webUrl, '_blank');
-        }, 1000);
-      } catch (e) {
-        // Direct fallback to web
-        const webUrl = `https://bsky.app/intent/compose?text=${encodeURIComponent(text)}`;
-        window.open(webUrl, '_blank');
-      }
-    } else {
-      // Desktop - use web URL
-      const url = `https://bsky.app/intent/compose?text=${encodeURIComponent(text)}`;
-      window.open(url, '_blank');
-    }
+    const url = `https://bsky.app/intent/compose?text=${encodeURIComponent(text)}`;
+    window.open(url, '_blank');
   };
 
   const shareToInstagram = () => {
@@ -292,6 +225,17 @@ export function ShareButton({ city, content, shareType = 'page' }: ShareButtonPr
               : `Share ${city.name}`
             }
           </DialogTitle>
+          <DialogClose asChild>
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="absolute right-4 top-4 h-6 w-6"
+              data-testid="button-close-dialog"
+            >
+              <X className="h-4 w-4" />
+              <span className="sr-only">Close</span>
+            </Button>
+          </DialogClose>
         </DialogHeader>
         
         <div className="space-y-4">
@@ -401,28 +345,12 @@ export function ShareButton({ city, content, shareType = 'page' }: ShareButtonPr
                       description: "Image menu opened! Save the image and paste your caption in Instagram.",
                     });
                   }}
-                  onTouchStart={(e) => {
-                    // For mobile long press detection
-                    const touchStartTime = Date.now();
-                    const img = e.currentTarget;
-                    
-                    const longPressTimer = setTimeout(() => {
-                      toast({
-                        title: "Save Image 💾", 
-                        description: "Long press detected! Save the image from the menu that appears and paste your caption in Instagram.",
-                      });
-                    }, 800); // 800ms for long press
-                    
-                    const clearTimer = () => {
-                      clearTimeout(longPressTimer);
-                      img.removeEventListener('touchend', clearTimer);
-                      img.removeEventListener('touchcancel', clearTimer);
-                      img.removeEventListener('touchmove', clearTimer);
-                    };
-                    
-                    img.addEventListener('touchend', clearTimer);
-                    img.addEventListener('touchcancel', clearTimer);
-                    img.addEventListener('touchmove', clearTimer);
+                  onTouchEnd={(e) => {
+                    // Simple touch handler for mobile image save
+                    toast({
+                      title: "Save Image 💾", 
+                      description: "Touch and hold the image to save it for Instagram sharing!",
+                    });
                   }}
                 />
                 <div className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 hover:opacity-100 transition-opacity rounded text-white text-xs font-medium">
