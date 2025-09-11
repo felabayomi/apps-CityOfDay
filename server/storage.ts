@@ -161,17 +161,17 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getTodaysCity(tzOffsetMinutes?: number): Promise<City | undefined> {
-    // Use client timezone offset to determine the correct local day
+    // Use client timezone offset to determine the correct local calendar date
     const offsetMs = (tzOffsetMinutes || 0) * 60 * 1000;
     const clientNow = new Date(Date.now() - offsetMs); // Convert to client local time
     
-    // Get start and end of client's local day
-    const localStart = new Date(clientNow.getFullYear(), clientNow.getMonth(), clientNow.getDate());
-    const localEnd = new Date(localStart.getTime() + 24 * 60 * 60 * 1000);
-    
-    // Convert back to UTC for database query
-    const startOfDay = new Date(localStart.getTime() + offsetMs);
-    const endOfDay = new Date(localEnd.getTime() + offsetMs);
+    // Get UTC midnight bounds for the client's current calendar date
+    // This matches cities scheduled at 00:00:00Z for the target date
+    const year = clientNow.getFullYear();
+    const month = clientNow.getMonth(); 
+    const date = clientNow.getDate();
+    const startOfDay = new Date(Date.UTC(year, month, date, 0, 0, 0));
+    const endOfDay = new Date(Date.UTC(year, month, date + 1, 0, 0, 0));
     
     // FIXED: First try to find a city specifically scheduled for today
     let result = await db

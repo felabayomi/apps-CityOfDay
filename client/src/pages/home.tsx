@@ -33,9 +33,15 @@ export default function Home() {
   }, []);
 
 
+  // Get timezone offset for accurate city scheduling
+  const tzOffset = -new Date().getTimezoneOffset(); // Convert to minutes east of UTC
+  
   // Fetch today's city
   const { data: todaysCityData, isLoading: loadingToday } = useQuery<{city: any, content: any[]}>({
-    queryKey: ["/api/cities/today"],
+    queryKey: ["/api/cities/today", tzOffset],
+    queryFn: () => 
+      fetch(`/api/cities/today?tzOffset=${tzOffset}`)
+        .then(res => res.json()),
     retry: false,
   });
 
