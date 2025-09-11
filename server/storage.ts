@@ -161,9 +161,12 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getTodaysCity(): Promise<City | undefined> {
-    const today = new Date();
-    const startOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-    const endOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1);
+    // FIXED: Use consistent timezone (UTC) for city scheduling to avoid dev/prod differences
+    // This ensures the same city shows regardless of server timezone
+    const now = new Date();
+    const today = new Date(now.toISOString().split('T')[0] + 'T00:00:00.000Z'); // Start of today in UTC
+    const startOfDay = today;
+    const endOfDay = new Date(today.getTime() + 24 * 60 * 60 * 1000); // Add 24 hours
     
     // FIXED: First try to find a city specifically scheduled for today
     let result = await db
