@@ -312,23 +312,51 @@ export function ShareButton({ city, content, shareType = 'page' }: ShareButtonPr
 
           {getShareImage() && (
             <div className="text-center">
-              <p className="text-xs text-muted-foreground mb-2">📱 For Instagram: Right-click to save image</p>
+              <p className="text-xs text-muted-foreground mb-2">
+                📱 For Instagram: 
+                <span className="hidden sm:inline"> Right-click to save image</span>
+                <span className="sm:hidden"> Tap and hold to save image</span>
+              </p>
               <div className="relative inline-block">
                 <img 
                   src={getShareImage()!} 
                   alt={`${city.name} share image`}
                   className="w-32 h-20 object-cover rounded mx-auto cursor-pointer border-2 border-dashed border-gray-300 hover:border-blue-500 transition-colors"
-                  title="Right-click to save for Instagram"
+                  title="Tap and hold (mobile) or right-click (desktop) to save for Instagram"
                   onContextMenu={(e) => {
                     // Let the right-click happen naturally for saving
                     toast({
                       title: "Save Image 💾",
-                      description: "Right-click completed! Now save the image and paste your caption in Instagram.",
+                      description: "Image menu opened! Save the image and paste your caption in Instagram.",
                     });
+                  }}
+                  onTouchStart={(e) => {
+                    // For mobile long press detection
+                    const touchStartTime = Date.now();
+                    const img = e.currentTarget;
+                    
+                    const longPressTimer = setTimeout(() => {
+                      toast({
+                        title: "Save Image 💾", 
+                        description: "Long press detected! Save the image from the menu that appears and paste your caption in Instagram.",
+                      });
+                    }, 800); // 800ms for long press
+                    
+                    const clearTimer = () => {
+                      clearTimeout(longPressTimer);
+                      img.removeEventListener('touchend', clearTimer);
+                      img.removeEventListener('touchcancel', clearTimer);
+                      img.removeEventListener('touchmove', clearTimer);
+                    };
+                    
+                    img.addEventListener('touchend', clearTimer);
+                    img.addEventListener('touchcancel', clearTimer);
+                    img.addEventListener('touchmove', clearTimer);
                   }}
                 />
                 <div className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 hover:opacity-100 transition-opacity rounded text-white text-xs font-medium">
-                  Right-click to save
+                  <span className="hidden sm:inline">Right-click to save</span>
+                  <span className="sm:hidden">Tap & hold to save</span>
                 </div>
               </div>
             </div>
