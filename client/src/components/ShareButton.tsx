@@ -112,21 +112,92 @@ export function ShareButton({ city, content, shareType = 'page' }: ShareButtonPr
 
   const shareToTwitter = () => {
     const text = generateContent('twitter');
-    const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
-    window.open(url, '_blank');
+    const userAgent = navigator.userAgent || navigator.vendor;
+    const isMobile = /android|ipad|iphone|ipod/i.test(userAgent);
+    
+    if (isMobile) {
+      // Try native Twitter app first on mobile
+      try {
+        const twitterAppUrl = `twitter://post?message=${encodeURIComponent(text)}`;
+        window.location.href = twitterAppUrl;
+        
+        // Fallback to web if app doesn't open
+        setTimeout(() => {
+          const webUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
+          window.open(webUrl, '_blank');
+        }, 1000);
+      } catch (e) {
+        // Direct fallback to web
+        const webUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
+        window.open(webUrl, '_blank');
+      }
+    } else {
+      // Desktop - use web URL
+      const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
+      window.open(url, '_blank');
+    }
   };
 
   const shareToFacebook = () => {
-    // Facebook deprecated the quote parameter - only URL is supported now
     const shareUrl = `https://daily.citydiscoverer.guide`;
-    const url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`;
-    window.open(url, '_blank', 'width=600,height=400,scrollbars=yes,resizable=yes');
+    const content = generateContent('facebook');
+    const userAgent = navigator.userAgent || navigator.vendor;
+    const isMobile = /android|ipad|iphone|ipod/i.test(userAgent);
+    
+    // Extract hashtags for Facebook
+    const hashtags = `#${city.name.replace(/\s+/g, '')} #Travel #CityDiscovery #CityDiscoverer`;
+    const mainHashtag = hashtags.split(' ')[0].replace('#', ''); // First hashtag without #
+    
+    if (isMobile) {
+      // Try native Facebook app first on mobile
+      try {
+        // Facebook app sharing with content
+        const fbAppUrl = `fb://sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(content)}&hashtag=${encodeURIComponent('#' + mainHashtag)}`;
+        window.location.href = fbAppUrl;
+        
+        // Fallback to web if app doesn't open
+        setTimeout(() => {
+          const webUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(content)}&hashtag=${encodeURIComponent('#' + mainHashtag)}`;
+          window.open(webUrl, '_blank');
+        }, 1000);
+      } catch (e) {
+        // Direct fallback to web
+        const webUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(content)}&hashtag=${encodeURIComponent('#' + mainHashtag)}`;
+        window.open(webUrl, '_blank');
+      }
+    } else {
+      // Desktop - use web URL with content
+      const url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(content)}&hashtag=${encodeURIComponent('#' + mainHashtag)}`;
+      window.open(url, '_blank', 'width=600,height=400,scrollbars=yes,resizable=yes');
+    }
   };
 
   const shareToBluesky = () => {
     const text = generateContent('bluesky');
-    const url = `https://bsky.app/intent/compose?text=${encodeURIComponent(text)}`;
-    window.open(url, '_blank');
+    const userAgent = navigator.userAgent || navigator.vendor;
+    const isMobile = /android|ipad|iphone|ipod/i.test(userAgent);
+    
+    if (isMobile) {
+      // Try Bluesky app first on mobile
+      try {
+        const blueskyAppUrl = `bluesky://intent/compose?text=${encodeURIComponent(text)}`;
+        window.location.href = blueskyAppUrl;
+        
+        // Fallback to web if app doesn't open
+        setTimeout(() => {
+          const webUrl = `https://bsky.app/intent/compose?text=${encodeURIComponent(text)}`;
+          window.open(webUrl, '_blank');
+        }, 1000);
+      } catch (e) {
+        // Direct fallback to web
+        const webUrl = `https://bsky.app/intent/compose?text=${encodeURIComponent(text)}`;
+        window.open(webUrl, '_blank');
+      }
+    } else {
+      // Desktop - use web URL
+      const url = `https://bsky.app/intent/compose?text=${encodeURIComponent(text)}`;
+      window.open(url, '_blank');
+    }
   };
 
   const shareToInstagram = () => {
