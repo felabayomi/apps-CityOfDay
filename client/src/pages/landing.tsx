@@ -10,8 +10,14 @@ import { getCurrentCardType, getNextCardType, formatTimeUntilNext } from "@/lib/
 export default function Landing() {
   const [, setLocation] = useLocation();
   
+  // Get timezone offset for accurate city scheduling
+  const tzOffset = -new Date().getTimezoneOffset(); // Convert to minutes east of UTC
+  
   const { data: todaysCityData, isLoading } = useQuery({
-    queryKey: ['/api/cities/today'],
+    queryKey: ['/api/cities/today', tzOffset],
+    queryFn: () => 
+      fetch(`/api/cities/today?tzOffset=${tzOffset}`)
+        .then(res => res.json()),
     retry: false,
   });
 

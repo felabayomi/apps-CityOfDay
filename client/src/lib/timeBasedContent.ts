@@ -68,34 +68,32 @@ export function getCurrentCardType(): TimeBasedCard {
  */
 export function getTimeUntilNextChange(): { hours: number; minutes: number } {
   const now = new Date();
-  const currentHour = now.getHours();
-  const currentMinutes = now.getMinutes();
+  const currentTimeInMinutes = now.getHours() * 60 + now.getMinutes();
   
-  // Next change times (in 24-hour format) - NEW 7-segment schedule
-  const changeTimes = [6, 9, 12, 15, 18, 21]; // 6 AM, 9 AM, 12 PM, 3 PM, 6 PM, 9 PM
-  let nextChangeHour = 6; // Default to 6 AM next day
+  // Next change thresholds in minutes: 6:00, 9:00, 12:00, 15:00, 18:00, 21:00
+  const thresholds = [360, 540, 720, 900, 1080, 1260];
   
-  // Find the next change time
-  for (const changeTime of changeTimes) {
-    if (currentHour < changeTime || (currentHour === changeTime && currentMinutes < 1)) {
-      nextChangeHour = changeTime;
-      break;
-    }
-  }
-  
-  // Calculate time difference
-  let targetHour = nextChangeHour;
+  // Find first threshold greater than current time
+  let targetMinutes: number;
   let targetDay = 0;
   
-  // If we passed all change times today, next change is 6 AM tomorrow
-  if (currentHour >= 21 || (currentHour === 0 && currentMinutes >= 1)) {
-    targetHour = 6;
+  const nextThreshold = thresholds.find(threshold => threshold > currentTimeInMinutes);
+  
+  if (nextThreshold) {
+    // Next change is today
+    targetMinutes = nextThreshold;
+  } else {
+    // No more changes today, next change is 6:00 AM tomorrow
+    targetMinutes = 360; // 6:00 AM
     targetDay = 1;
   }
   
+  // Calculate time difference
+  const targetHour = Math.floor(targetMinutes / 60);
+  const targetMinute = targetMinutes % 60;
   const target = new Date(now);
   target.setDate(target.getDate() + targetDay);
-  target.setHours(targetHour, 0, 0, 0);
+  target.setHours(targetHour, targetMinute, 0, 0);
   
   const diff = target.getTime() - now.getTime();
   const diffHours = Math.floor(diff / (1000 * 60 * 60));

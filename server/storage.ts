@@ -160,13 +160,18 @@ export class DatabaseStorage implements IStorage {
     await db.delete(cities).where(eq(cities.id, id));
   }
 
-  async getTodaysCity(): Promise<City | undefined> {
-    // FIXED: Use consistent timezone (UTC) for city scheduling to avoid dev/prod differences
-    // This ensures the same city shows regardless of server timezone
-    const now = new Date();
-    const today = new Date(now.toISOString().split('T')[0] + 'T00:00:00.000Z'); // Start of today in UTC
-    const startOfDay = today;
-    const endOfDay = new Date(today.getTime() + 24 * 60 * 60 * 1000); // Add 24 hours
+  async getTodaysCity(tzOffsetMinutes?: number): Promise<City | undefined> {
+    // Use client timezone offset to determine the correct local day
+    const offsetMs = (tzOffsetMinutes || 0) * 60 * 1000;
+    const clientNow = new Date(Date.now() - offsetMs); // Convert to client local time
+    
+    // Get start and end of client's local day
+    const localStart = new Date(clientNow.getFullYear(), clientNow.getMonth(), clientNow.getDate());
+    const localEnd = new Date(localStart.getTime() + 24 * 60 * 60 * 1000);
+    
+    // Convert back to UTC for database query
+    const startOfDay = new Date(localStart.getTime() + offsetMs);
+    const endOfDay = new Date(localEnd.getTime() + offsetMs);
     
     // FIXED: First try to find a city specifically scheduled for today
     let result = await db
@@ -194,7 +199,7 @@ export class DatabaseStorage implements IStorage {
               // Cities with no scheduled date (general published content)
               isNull(cities.scheduledDate),
               // Cities scheduled for today or earlier (not future)
-              lte(cities.scheduledDate, today)
+              lte(cities.scheduledDate, clientNow)
             )
           )
         )
