@@ -1,4 +1,4 @@
-const CACHE_NAME = 'city-discoverer-v1';
+const CACHE_NAME = 'city-discoverer-v2-force-update';
 const urlsToCache = [
   '/',
   '/static/css/index.css',
@@ -8,6 +8,7 @@ const urlsToCache = [
 
 // Install service worker
 self.addEventListener('install', (event) => {
+  console.log('SW: Installing new version');
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
@@ -15,22 +16,46 @@ self.addEventListener('install', (event) => {
         return cache.addAll(urlsToCache);
       })
   );
+  // Force immediate activation of new service worker
+  self.skipWaiting();
 });
 
-// Fetch event
+// Fetch event - Network first for JS/HTML files to get updates immediately
 self.addEventListener('fetch', (event) => {
-  event.respondWith(
-    caches.match(event.request)
-      .then((response) => {
-        // Return cached version or fetch from network
-        return response || fetch(event.request);
-      }
-    )
-  );
+  const url = event.request.url;
+  
+  // Network-first for HTML, JS files, and API calls to always get updates
+  if (url.includes('.js') || url.includes('.html') || url.includes('/api') || url.endsWith('/')) {
+    event.respondWith(
+      fetch(event.request)
+        .then((response) => {
+          // Cache the new response
+          const responseClone = response.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, responseClone);
+          });
+          return response;
+        })
+        .catch(() => {
+          // Fallback to cache if network fails
+          return caches.match(event.request);
+        })
+    );
+  } else {
+    // Cache-first for other static assets (images, CSS)
+    event.respondWith(
+      caches.match(event.request)
+        .then((response) => {
+          return response || fetch(event.request);
+        }
+      )
+    );
+  }
 });
 
 // Activate service worker
 self.addEventListener('activate', (event) => {
+  console.log('SW: Activating new version');
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
@@ -41,6 +66,9 @@ self.addEventListener('activate', (event) => {
           }
         })
       );
+    }).then(() => {
+      // Take control of all clients immediately
+      return self.clients.claim();
     })
   );
 });
