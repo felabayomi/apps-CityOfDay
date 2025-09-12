@@ -129,9 +129,18 @@ export function CityCard({
         
         {/* Individual Share Button for this card */}
         {city && (
-          <div className="absolute top-4 right-4">
+          <div className="absolute top-4 right-4 z-10">
             <ShareButton 
-              city={{ name: city.name, country: city.country }}
+              city={{ 
+                name: city.name, 
+                country: city.country,
+                morningShareTemplate: city.morningShareTemplate,
+                afternoonShareTemplate: city.afternoonShareTemplate,
+                eveningShareTemplate: city.eveningShareTemplate,
+                bonusShareTemplate: city.bonusShareTemplate,
+                luxuryShareTemplate: city.luxuryShareTemplate,
+                wildlifeShareTemplate: city.wildlifeShareTemplate,
+              }}
               content={[{
                 title: content.title,
                 content: content.content,

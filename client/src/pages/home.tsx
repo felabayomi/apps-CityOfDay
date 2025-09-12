@@ -113,7 +113,16 @@ export default function Home() {
                   {/* User interaction buttons removed - app is now fully public */}
                   <div className="flex">
                     <ShareButton 
-                      city={{ name: todaysCity.name, country: todaysCity.country }}
+                      city={{ 
+                        name: todaysCity.name, 
+                        country: todaysCity.country,
+                        morningShareTemplate: todaysCity.morningShareTemplate,
+                        afternoonShareTemplate: todaysCity.afternoonShareTemplate,
+                        eveningShareTemplate: todaysCity.eveningShareTemplate,
+                        bonusShareTemplate: todaysCity.bonusShareTemplate,
+                        luxuryShareTemplate: todaysCity.luxuryShareTemplate,
+                        wildlifeShareTemplate: todaysCity.wildlifeShareTemplate,
+                      }}
                       content={todaysContent.map((c: any) => ({
                         title: c.title,
                         content: c.content,
