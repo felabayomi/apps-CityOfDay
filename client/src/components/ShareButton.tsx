@@ -47,10 +47,35 @@ export function ShareButton({ city, content, shareType = 'page' }: ShareButtonPr
   const generateContent = (platform: 'twitter' | 'facebook' | 'bluesky' | 'instagram' | 'copy') => {
     const isCardShare = shareType === 'card' && content && content.length === 1;
     
-    // Different base text for card vs page sharing
-    const baseText = isCardShare 
-      ? `Check out this ${content[0].card_type} discovery in ${city.name}, ${city.country}! ✈️`
-      : `Wake up in ${city.name}, ${city.country}! 🌄`;
+    // Generate engaging time-based text for both card and page sharing
+    let baseText = '';
+    if (isCardShare) {
+      const cardType = content[0].card_type;
+      switch (cardType) {
+        case 'morning':
+          baseText = `Wake up in ${city.name}! 🌄`;
+          break;
+        case 'afternoon':
+          baseText = `Spend the afternoon in ${city.name}! 🏙️`;
+          break;
+        case 'evening':
+          baseText = `Evening vibes in ${city.name}! 🌆`;
+          break;
+        case 'bonus':
+          baseText = `Hidden gem in ${city.name}! 💎`;
+          break;
+        case 'luxury':
+          baseText = `Luxury awaits in ${city.name}! ✨`;
+          break;
+        case 'wildlife':
+          baseText = `Wild side of ${city.name}! 🦎`;
+          break;
+        default:
+          baseText = `Discover ${city.name}! ✈️`;
+      }
+    } else {
+      baseText = `Wake up in ${city.name}! 🌄`;
+    }
     
     const hashtags = `#${city.name.replace(/\s+/g, '')} #Travel #CityDiscovery #CityDiscoverer`;
     const primaryUrl = `https://daily.citydiscoverer.guide`;
@@ -243,8 +268,19 @@ export function ShareButton({ city, content, shareType = 'page' }: ShareButtonPr
           <div className="text-center p-4 bg-muted rounded-lg">
             <h4 className="font-semibold mb-2">
               {shareType === 'card' && content && content.length === 1
-                ? `${content[0].card_type.charAt(0).toUpperCase() + content[0].card_type.slice(1)} in ${city.name}, ${city.country}! ✈️`
-                : `Wake up in ${city.name}, ${city.country}! ✈️`
+                ? (() => {
+                    const cardType = content[0].card_type;
+                    switch (cardType) {
+                      case 'morning': return `Wake up in ${city.name}! 🌄`;
+                      case 'afternoon': return `Spend the afternoon in ${city.name}! 🏙️`;
+                      case 'evening': return `Evening vibes in ${city.name}! 🌆`;
+                      case 'bonus': return `Hidden gem in ${city.name}! 💎`;
+                      case 'luxury': return `Luxury awaits in ${city.name}! ✨`;
+                      case 'wildlife': return `Wild side of ${city.name}! 🦎`;
+                      default: return `Discover ${city.name}! ✈️`;
+                    }
+                  })()
+                : `Wake up in ${city.name}! 🌄`
               }
             </h4>
             {content && content.length > 0 && (
