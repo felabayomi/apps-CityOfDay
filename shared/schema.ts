@@ -59,6 +59,13 @@ export const cities = pgTable("cities", {
   bonusCtaLink: varchar("bonus_cta_link"), // Link for "Learn More" button
   luxuryCtaLink: varchar("luxury_cta_link"), // Link for "Book Luxury" button
   wildlifeCtaLink: varchar("wildlife_cta_link"), // Link for "Explore Nature" button
+  // Social media share templates - NEW FIELDS
+  morningShareTemplate: varchar("morning_share_template").default("Wake up in {CITY}! 🌄"),
+  afternoonShareTemplate: varchar("afternoon_share_template").default("Spend the afternoon in {CITY}! 🏙️"), 
+  eveningShareTemplate: varchar("evening_share_template").default("Evening vibes in {CITY}! 🌆"),
+  bonusShareTemplate: varchar("bonus_share_template").default("Hidden gem in {CITY}! 💎"),
+  luxuryShareTemplate: varchar("luxury_share_template").default("Luxury awaits in {CITY}! ✨"),
+  wildlifeShareTemplate: varchar("wildlife_share_template").default("Wild side of {CITY}! 🦎"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });

@@ -16,6 +16,12 @@ interface ShareButtonProps {
   city: {
     name: string;
     country: string;
+    morningShareTemplate?: string;
+    afternoonShareTemplate?: string;
+    eveningShareTemplate?: string;
+    bonusShareTemplate?: string;
+    luxuryShareTemplate?: string;
+    wildlifeShareTemplate?: string;
   };
   content?: {
     title: string;
@@ -47,34 +53,34 @@ export function ShareButton({ city, content, shareType = 'page' }: ShareButtonPr
   const generateContent = (platform: 'twitter' | 'facebook' | 'bluesky' | 'instagram' | 'copy') => {
     const isCardShare = shareType === 'card' && content && content.length === 1;
     
-    // Generate engaging time-based text for both card and page sharing
+    // Generate engaging time-based text using database templates
     let baseText = '';
     if (isCardShare) {
       const cardType = content[0].card_type;
       switch (cardType) {
         case 'morning':
-          baseText = `Wake up in ${city.name}! 🌄`;
+          baseText = (city.morningShareTemplate || "Wake up in {CITY}! 🌄").replace('{CITY}', city.name);
           break;
         case 'afternoon':
-          baseText = `Spend the afternoon in ${city.name}! 🏙️`;
+          baseText = (city.afternoonShareTemplate || "Spend the afternoon in {CITY}! 🏙️").replace('{CITY}', city.name);
           break;
         case 'evening':
-          baseText = `Evening vibes in ${city.name}! 🌆`;
+          baseText = (city.eveningShareTemplate || "Evening vibes in {CITY}! 🌆").replace('{CITY}', city.name);
           break;
         case 'bonus':
-          baseText = `Hidden gem in ${city.name}! 💎`;
+          baseText = (city.bonusShareTemplate || "Hidden gem in {CITY}! 💎").replace('{CITY}', city.name);
           break;
         case 'luxury':
-          baseText = `Luxury awaits in ${city.name}! ✨`;
+          baseText = (city.luxuryShareTemplate || "Luxury awaits in {CITY}! ✨").replace('{CITY}', city.name);
           break;
         case 'wildlife':
-          baseText = `Wild side of ${city.name}! 🦎`;
+          baseText = (city.wildlifeShareTemplate || "Wild side of {CITY}! 🦎").replace('{CITY}', city.name);
           break;
         default:
           baseText = `Discover ${city.name}! ✈️`;
       }
     } else {
-      baseText = `Wake up in ${city.name}! 🌄`;
+      baseText = (city.morningShareTemplate || "Wake up in {CITY}! 🌄").replace('{CITY}', city.name);
     }
     
     const hashtags = `#${city.name.replace(/\s+/g, '')} #Travel #CityDiscovery #CityDiscoverer`;
@@ -271,16 +277,16 @@ export function ShareButton({ city, content, shareType = 'page' }: ShareButtonPr
                 ? (() => {
                     const cardType = content[0].card_type;
                     switch (cardType) {
-                      case 'morning': return `Wake up in ${city.name}! 🌄`;
-                      case 'afternoon': return `Spend the afternoon in ${city.name}! 🏙️`;
-                      case 'evening': return `Evening vibes in ${city.name}! 🌆`;
-                      case 'bonus': return `Hidden gem in ${city.name}! 💎`;
-                      case 'luxury': return `Luxury awaits in ${city.name}! ✨`;
-                      case 'wildlife': return `Wild side of ${city.name}! 🦎`;
+                      case 'morning': return (city.morningShareTemplate || "Wake up in {CITY}! 🌄").replace('{CITY}', city.name);
+                      case 'afternoon': return (city.afternoonShareTemplate || "Spend the afternoon in {CITY}! 🏙️").replace('{CITY}', city.name);
+                      case 'evening': return (city.eveningShareTemplate || "Evening vibes in {CITY}! 🌆").replace('{CITY}', city.name);
+                      case 'bonus': return (city.bonusShareTemplate || "Hidden gem in {CITY}! 💎").replace('{CITY}', city.name);
+                      case 'luxury': return (city.luxuryShareTemplate || "Luxury awaits in {CITY}! ✨").replace('{CITY}', city.name);
+                      case 'wildlife': return (city.wildlifeShareTemplate || "Wild side of {CITY}! 🦎").replace('{CITY}', city.name);
                       default: return `Discover ${city.name}! ✈️`;
                     }
                   })()
-                : `Wake up in ${city.name}! 🌄`
+                : (city.morningShareTemplate || "Wake up in {CITY}! 🌄").replace('{CITY}', city.name)
               }
             </h4>
             {content && content.length > 0 && (
