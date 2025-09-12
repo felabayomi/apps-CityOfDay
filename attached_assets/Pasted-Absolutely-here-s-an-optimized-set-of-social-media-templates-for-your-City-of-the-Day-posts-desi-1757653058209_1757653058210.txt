@@ -1,0 +1,131 @@
+Absolutely — here’s an optimized set of social media templates for your City of the Day™ posts, designed to improve engagement and feel more natural on each platform while still respecting character limits and format logic.
+
+⸻
+
+✅ GENERAL STRATEGY
+	•	Tone: Friendly, curious, punchy — like a travel-savvy friend sharing a great find
+	•	Structure: Lead with intrigue, not just city name; make {fact} pop
+	•	CTA embedded where relevant: “Explore,” “Discover,” “Start planning,” etc.
+	•	Hashtags streamlined for SEO + vibe
+	•	URL placement = user flow smart (primary then secondary)
+
+⸻
+
+🐦 1. TWITTER / X (280 chars)
+
+Wake up in {city.name}, {city.country}! 🌄
+
+{fact}
+
+Start your day with a new city — every day.  
+{hashtags}
+
+{primaryUrl}
+{secondaryUrl}
+
+✔️ Engaging, under 280 characters. Emphasizes daily habit + discovery.
+
+⸻
+
+📘 2. FACEBOOK (no limit)
+
+For Card Sharing:
+
+Check out this {card_type} discovery in {city.name}, {city.country}! ✈️
+
+{fact}
+
+Start planning your next city adventure — one day at a time.  
+Explore more with City Discoverer! 🌍
+
+{hashtags}
+
+{primaryUrl}
+{secondaryUrl}
+
+For Page Sharing:
+
+Wake up in {city.name}, {city.country}! 🌄
+
+{fact}
+
+We spotlight a new city every day — rich with culture, food, and hidden gems.  
+Discover your next favorite place with City Discoverer. 🌍
+
+{hashtags}
+
+{primaryUrl}
+{secondaryUrl}
+
+
+⸻
+
+🌐 3. BLUESKY (300 chars)
+
+New city drop! {city.name}, {city.country} is today’s spotlight. ✈️
+
+{fact}
+
+Fresh travel inspo hits daily — food, sights, nature & history.  
+Follow the discovery:  
+{hashtags}
+
+{primaryUrl}
+{secondaryUrl}
+
+
+⸻
+
+📸 4. INSTAGRAM (Post Caption)
+
+🏙️ Today’s City: {city.name}, {city.country}
+
+{fact}
+
+Save for your next trip ✈️  
+👇 Daily drops on travel, culture & hidden gems.
+
+{hashtags}
+
+🔗 Link in bio or visit:  
+{primaryUrl}
+{secondaryUrl}
+
+✔️ Keeps clean for visual-first platform, invites saves/shares.
+
+⸻
+
+📋 5. COPY/GENERAL TEMPLATE
+
+For Card Sharing:
+
+Check out this {card_type} discovery in {city.name}, {city.country}! ✈️
+
+{fact}
+
+Start planning your next adventure — one city at a time.  
+Explore more discoveries at City Discoverer! 🌍
+
+{hashtags}
+
+{primaryUrl}
+{secondaryUrl}
+
+For Page Sharing:
+
+Wake up in {city.name}, {city.country}! 🌄
+
+{fact}
+
+New city, new story — every single day.  
+Discover amazing destinations with City Discoverer. 🌍
+
+{hashtags}
+
+{primaryUrl}
+{secondaryUrl}
+
+
+⸻
+
+Want me to plug in a sample post using San Antonio or Louisville to show how this sounds live across each platform?
