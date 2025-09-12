@@ -53,34 +53,13 @@ export function ShareButton({ city, content, shareType = 'page' }: ShareButtonPr
   const generateContent = (platform: 'twitter' | 'facebook' | 'bluesky' | 'instagram' | 'copy') => {
     const isCardShare = shareType === 'card' && content && content.length === 1;
     
-    // Generate engaging time-based text using database templates
+    // Generate baseText using your new format
     let baseText = '';
     if (isCardShare) {
       const cardType = content[0].card_type;
-      switch (cardType) {
-        case 'morning':
-          baseText = (city.morningShareTemplate || "Wake up in {CITY}! 🌄").replace('{CITY}', city.name);
-          break;
-        case 'afternoon':
-          baseText = (city.afternoonShareTemplate || "Spend the afternoon in {CITY}! 🏙️").replace('{CITY}', city.name);
-          break;
-        case 'evening':
-          baseText = (city.eveningShareTemplate || "Evening vibes in {CITY}! 🌆").replace('{CITY}', city.name);
-          break;
-        case 'bonus':
-          baseText = (city.bonusShareTemplate || "Hidden gem in {CITY}! 💎").replace('{CITY}', city.name);
-          break;
-        case 'luxury':
-          baseText = (city.luxuryShareTemplate || "Luxury awaits in {CITY}! ✨").replace('{CITY}', city.name);
-          break;
-        case 'wildlife':
-          baseText = (city.wildlifeShareTemplate || "Wild side of {CITY}! 🦎").replace('{CITY}', city.name);
-          break;
-        default:
-          baseText = `Discover ${city.name}! ✈️`;
-      }
+      baseText = `Check out this ${cardType} discovery in ${city.name}, ${city.country}! ✈️`;
     } else {
-      baseText = (city.morningShareTemplate || "Wake up in {CITY}! 🌄").replace('{CITY}', city.name);
+      baseText = `Wake up in ${city.name}, ${city.country}! ✈️`;
     }
     
     const hashtags = `#${city.name.replace(/\s+/g, '')} #Travel #CityDiscovery #CityDiscoverer`;
@@ -109,34 +88,30 @@ export function ShareButton({ city, content, shareType = 'page' }: ShareButtonPr
 
     switch (platform) {
       case 'twitter':
-        // Twitter: 280 characters
-        const twitterText = `${baseText}\n\n${fact}\n\nStart your day with a new city — every day.\n${hashtags}\n\n${primaryUrl}\n${secondaryUrl}`;
-        return twitterText.length <= 280 ? twitterText : 
-          `${baseText}\n\n${fact.substring(0, 120 - baseText.length - hashtags.length - primaryUrl.length)}...\n\nStart your day with a new city — every day.\n${hashtags}\n\n${primaryUrl}`;
+        // TWITTER TEMPLATE (280 character limit)
+        return `${baseText}\n\n${fact}\n\n${hashtags}\n\n${primaryUrl}\n${secondaryUrl}`;
       
       case 'facebook':
-        // Facebook: No strict limit, more descriptive
-        const fbText = isCardShare 
-          ? `${baseText}\n\n${fact}\n\nStart planning your next city adventure — one day at a time.\nExplore more with City Discoverer! 🌍\n\n${hashtags}\n\n${primaryUrl}\n${secondaryUrl}`
-          : `${baseText}\n\n${fact}\n\nWe spotlight a new city every day — rich with culture, food, and hidden gems.\nDiscover your next favorite place with City Discoverer. 🌍\n\n${hashtags}\n\n${primaryUrl}\n${secondaryUrl}`;
-        return fbText;
+        // FACEBOOK TEMPLATE (No limit, more descriptive)
+        const fbDescription = isCardShare 
+          ? "Explore more discoveries at City Discoverer! 🌍"
+          : "Discover amazing cities daily with City Discoverer! 🌍";
+        return `${baseText}\n\n${fact}\n\n${fbDescription}\n\n${hashtags}\n\n${primaryUrl}\n${secondaryUrl}`;
       
       case 'bluesky':
-        // Bluesky: 300 characters
-        const blueskyBaseText = `New city drop! ${city.name}, ${city.country} is today's spotlight. ✈️`;
-        const blueskyText = `${blueskyBaseText}\n\n${fact}\n\nFresh travel inspo hits daily — food, sights, nature & history.\nFollow the discovery:\n${hashtags}\n\n${primaryUrl}\n${secondaryUrl}`;
-        return blueskyText.length <= 300 ? blueskyText :
-          `${blueskyBaseText}\n\n${fact.substring(0, 120)}...\n\nFresh travel inspo hits daily — food, sights, nature & history.\n${hashtags}\n\n${primaryUrl}`;
+        // BLUESKY TEMPLATE (300 character limit)
+        return `${baseText}\n\n${fact}\n\n${hashtags}\n\n${primaryUrl}\n${secondaryUrl}`;
       
       case 'instagram':
-        // Instagram: Caption for image post
-        return `🏙️ Today's City: ${city.name}, ${city.country}\n\n${fact}\n\nSave for your next trip ✈️\n👇 Daily drops on travel, culture & hidden gems.\n\n${hashtags}\n\n🔗 Link in bio or visit:\n${primaryUrl}\n${secondaryUrl}`;
+        // INSTAGRAM TEMPLATE (Caption for image post)
+        return `${baseText}\n\n${fact}\n\n${hashtags}\n\n${primaryUrl}\n${secondaryUrl}`;
       
       case 'copy':
-        const copyText = isCardShare 
-          ? `${baseText}\n\n${fact}\n\nStart planning your next adventure — one city at a time.\nExplore more discoveries at City Discoverer! 🌍\n\n${hashtags}\n\n${primaryUrl}\n${secondaryUrl}`
-          : `${baseText}\n\n${fact}\n\nNew city, new story — every single day.\nDiscover amazing destinations with City Discoverer. 🌍\n\n${hashtags}\n\n${primaryUrl}\n${secondaryUrl}`;
-        return copyText;
+        // COPY/GENERAL TEMPLATE (Clipboard text)
+        const copyDescription = isCardShare 
+          ? "Explore more discoveries at City Discoverer! 🌍"
+          : "Discover amazing cities daily with City Discoverer! 🌍";
+        return `${baseText}\n\n${fact}\n\n${copyDescription}\n\n${hashtags}\n\n${primaryUrl}\n${secondaryUrl}`;
       
       default:
         return `${baseText}\n\n${fact}\n\n${primaryUrl}\n${secondaryUrl}`;
