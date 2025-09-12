@@ -4,11 +4,11 @@ const urlsToCache = [];
 
 // Install service worker
 self.addEventListener('install', (event) => {
-  console.log('SW: Installing new version');
+  console.log('SW: Installing new version v3');
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
-        console.log('Opened cache');
+        console.log('Opened cache v3');
         return cache.addAll(urlsToCache);
       })
   );
@@ -51,7 +51,7 @@ self.addEventListener('fetch', (event) => {
 
 // Activate service worker
 self.addEventListener('activate', (event) => {
-  console.log('SW: Activating new version');
+  console.log('SW: Activating new version v3');
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(

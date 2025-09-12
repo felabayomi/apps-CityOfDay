@@ -56,7 +56,7 @@ export function ShareButton({ city, content, shareType = 'page' }: ShareButtonPr
           baseText = `Wake up in ${city.name}! 🌄`;
           break;
         case 'afternoon':
-          baseText = `🚨 TEST - Spend the afternoon in ${city.name}! 🏙️`;
+          baseText = `Spend the afternoon in ${city.name}! 🏙️`;
           break;
         case 'evening':
           baseText = `Evening vibes in ${city.name}! 🌆`;
