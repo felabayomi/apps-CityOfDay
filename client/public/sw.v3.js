@@ -1,4 +1,4 @@
-const CACHE_NAME = 'city-discoverer-v3-production-fix-20250912';
+const CACHE_NAME = 'city-discoverer-v4-cache-refresh-20250912';
 // Remove pre-caching - Vite uses /assets/* not /static/*
 const urlsToCache = [];
 
@@ -20,8 +20,27 @@ self.addEventListener('install', (event) => {
 self.addEventListener('fetch', (event) => {
   const url = event.request.url;
   
-  // Network-first for HTML, JS files, and API calls to always get updates
-  if (url.includes('.js') || url.includes('.html') || url.includes('/api') || url.endsWith('/')) {
+  // For API calls, always bypass cache for fresh database data
+  if (url.includes('/api')) {
+    event.respondWith(
+      fetch(event.request)
+        .then(async (response) => {
+          // For API calls, delete old cached version first, then cache new response
+          const cache = await caches.open(CACHE_NAME);
+          await cache.delete(event.request);
+          
+          const responseClone = response.clone();
+          cache.put(event.request, responseClone);
+          return response;
+        })
+        .catch(() => {
+          // Fallback to cache if network fails
+          return caches.match(event.request);
+        })
+    );
+  }
+  // Network-first for HTML, JS files to get updates immediately  
+  else if (url.includes('.js') || url.includes('.html') || url.endsWith('/')) {
     event.respondWith(
       fetch(event.request)
         .then((response) => {
@@ -51,7 +70,7 @@ self.addEventListener('fetch', (event) => {
 
 // Activate service worker
 self.addEventListener('activate', (event) => {
-  console.log('SW: Activating new version v3');
+  console.log('SW: Activating new version v4 - Enhanced cache refresh');
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
