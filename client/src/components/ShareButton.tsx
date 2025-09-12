@@ -50,7 +50,7 @@ export function ShareButton({ city, content, shareType = 'page' }: ShareButtonPr
     // Different base text for card vs page sharing
     const baseText = isCardShare 
       ? `Check out this ${content[0].card_type} discovery in ${city.name}, ${city.country}! ✈️`
-      : `Wake up in ${city.name}, ${city.country}! ✈️`;
+      : `Wake up in ${city.name}, ${city.country}! 🌄`;
     
     const hashtags = `#${city.name.replace(/\s+/g, '')} #Travel #CityDiscovery #CityDiscoverer`;
     const primaryUrl = `https://daily.citydiscoverer.guide`;
@@ -79,31 +79,32 @@ export function ShareButton({ city, content, shareType = 'page' }: ShareButtonPr
     switch (platform) {
       case 'twitter':
         // Twitter: 280 characters
-        const twitterText = `${baseText}\n\n${fact}\n\n${hashtags}\n\n${primaryUrl}\n${secondaryUrl}`;
+        const twitterText = `${baseText}\n\n${fact}\n\nStart your day with a new city — every day.\n${hashtags}\n\n${primaryUrl}\n${secondaryUrl}`;
         return twitterText.length <= 280 ? twitterText : 
-          `${baseText}\n\n${fact.substring(0, 160 - baseText.length - hashtags.length - primaryUrl.length - secondaryUrl.length)}...\n\n${hashtags}\n\n${primaryUrl}`;
+          `${baseText}\n\n${fact.substring(0, 120 - baseText.length - hashtags.length - primaryUrl.length)}...\n\nStart your day with a new city — every day.\n${hashtags}\n\n${primaryUrl}`;
       
       case 'facebook':
         // Facebook: No strict limit, more descriptive
         const fbText = isCardShare 
-          ? `${baseText}\n\n${fact}\n\nExplore more discoveries at City Discoverer! 🌍\n\n${hashtags}\n\n${primaryUrl}\n${secondaryUrl}`
-          : `${baseText}\n\n${fact}\n\nDiscover amazing cities daily with City Discoverer! 🌍\n\n${hashtags}\n\n${primaryUrl}\n${secondaryUrl}`;
+          ? `${baseText}\n\n${fact}\n\nStart planning your next city adventure — one day at a time.\nExplore more with City Discoverer! 🌍\n\n${hashtags}\n\n${primaryUrl}\n${secondaryUrl}`
+          : `${baseText}\n\n${fact}\n\nWe spotlight a new city every day — rich with culture, food, and hidden gems.\nDiscover your next favorite place with City Discoverer. 🌍\n\n${hashtags}\n\n${primaryUrl}\n${secondaryUrl}`;
         return fbText;
       
       case 'bluesky':
         // Bluesky: 300 characters
-        const blueskyText = `${baseText}\n\n${fact}\n\n${hashtags}\n\n${primaryUrl}\n${secondaryUrl}`;
+        const blueskyBaseText = `New city drop! ${city.name}, ${city.country} is today's spotlight. ✈️`;
+        const blueskyText = `${blueskyBaseText}\n\n${fact}\n\nFresh travel inspo hits daily — food, sights, nature & history.\nFollow the discovery:\n${hashtags}\n\n${primaryUrl}\n${secondaryUrl}`;
         return blueskyText.length <= 300 ? blueskyText :
-          `${baseText}\n\n${fact.substring(0, 180 - baseText.length - hashtags.length - primaryUrl.length - secondaryUrl.length)}...\n\n${hashtags}\n\n${primaryUrl}`;
+          `${blueskyBaseText}\n\n${fact.substring(0, 120)}...\n\nFresh travel inspo hits daily — food, sights, nature & history.\n${hashtags}\n\n${primaryUrl}`;
       
       case 'instagram':
         // Instagram: Caption for image post
-        return `${baseText}\n\n${fact}\n\n${hashtags}\n\n${primaryUrl}\n${secondaryUrl}`;
+        return `🏙️ Today's City: ${city.name}, ${city.country}\n\n${fact}\n\nSave for your next trip ✈️\n👇 Daily drops on travel, culture & hidden gems.\n\n${hashtags}\n\n🔗 Link in bio or visit:\n${primaryUrl}\n${secondaryUrl}`;
       
       case 'copy':
         const copyText = isCardShare 
-          ? `${baseText}\n\n${fact}\n\nExplore more discoveries at City Discoverer! 🌍\n\n${hashtags}\n\n${primaryUrl}\n${secondaryUrl}`
-          : `${baseText}\n\n${fact}\n\nDiscover amazing cities daily with City Discoverer! 🌍\n\n${hashtags}\n\n${primaryUrl}\n${secondaryUrl}`;
+          ? `${baseText}\n\n${fact}\n\nStart planning your next adventure — one city at a time.\nExplore more discoveries at City Discoverer! 🌍\n\n${hashtags}\n\n${primaryUrl}\n${secondaryUrl}`
+          : `${baseText}\n\n${fact}\n\nNew city, new story — every single day.\nDiscover amazing destinations with City Discoverer. 🌍\n\n${hashtags}\n\n${primaryUrl}\n${secondaryUrl}`;
         return copyText;
       
       default:
