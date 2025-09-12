@@ -24,42 +24,42 @@ const cardTypeConfig = {
   morning: {
     icon: Sun,
     badge: "Morning",
-    color: "bg-accent text-accent-foreground",
+    color: "text-white",
     buttonText: "Explore Landmark",
     buttonColor: "text-amber-600 hover:text-amber-700",
   },
   afternoon: {
     icon: Utensils,
     badge: "Afternoon", 
-    color: "bg-secondary text-secondary-foreground",
+    color: "text-white",
     buttonText: "Find Cafés",
     buttonColor: "text-orange-600 hover:text-orange-700",
   },
   evening: {
     icon: Moon,
     badge: "Evening",
-    color: "bg-destructive text-destructive-foreground",
+    color: "text-white",
     buttonText: "Explore Evening", 
     buttonColor: "text-purple-600 hover:text-purple-700",
   },
   bonus: {
     icon: Lightbulb,
     badge: "Fun Fact",
-    color: "bg-primary text-primary-foreground",
+    color: "text-white",
     buttonText: "Learn More",
     buttonColor: "text-purple-600 hover:text-purple-700",
   },
   luxury: {
     icon: Crown,
     badge: "Luxury",
-    color: "bg-gradient-to-r from-yellow-500 to-amber-600 text-white",
+    color: "text-white",
     buttonText: "Book Luxury",
     buttonColor: "text-yellow-600 hover:text-yellow-700",
   },
   wildlife: {
     icon: Trees,
     badge: "Nature",
-    color: "bg-gradient-to-r from-green-500 to-emerald-600 text-white",
+    color: "text-white",
     buttonText: "Explore Nature",
     buttonColor: "text-green-600 hover:text-green-700",
   },
@@ -116,7 +116,13 @@ export function CityCard({
           <Globe className="w-16 h-16 text-primary opacity-50" />
         </div>
         
-        <Badge className={`absolute top-4 left-4 ${color}`} data-testid={`badge-${content.cardType}`}>
+        <Badge 
+          className={`absolute top-4 left-4 ${color}`}
+          style={{
+            backgroundColor: content.cardType === 'morning' || content.cardType === 'afternoon' || content.cardType === 'bonus' ? '#0033A0' : '#C8102E'
+          }}
+          data-testid={`badge-${content.cardType}`}
+        >
           <IconComponent className="w-3 h-3 mr-1" />
           {badge}
         </Badge>
