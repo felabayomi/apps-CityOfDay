@@ -8,6 +8,11 @@ Daily Felix - City of the Day is a modern travel companion web application that 
 
 Preferred communication style: Simple, everyday language.
 
+**Design Preferences:**
+- Time card colors will be changed daily
+- Currently using Texas flag colors: PMS 286 (deep blue #0033A0) and PMS 200 (vibrant red #C8102E) with white text
+- Applied to both hero section gradient and city preview card backgrounds
+
 ## System Architecture
 
 ### Frontend Architecture
