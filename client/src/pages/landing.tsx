@@ -66,7 +66,7 @@ export default function Landing() {
 
       {/* Hero Section */}
       <section id="discover" className="relative">
-        <div className="h-96 relative overflow-hidden" style={{background: 'linear-gradient(135deg, #3A7CA5, #2A5B7A)'}}>
+        <div className="h-96 relative overflow-hidden" style={{background: 'linear-gradient(135deg, #0033A0, #C8102E)'}}>
           <div className="absolute inset-0 flex items-center justify-center text-center">
             <div className="max-w-4xl mx-auto px-4">
               <h2 className="text-4xl md:text-6xl font-bold text-white mb-4">
