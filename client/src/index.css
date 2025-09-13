@@ -4,11 +4,11 @@
 
 /* LIGHT MODE */
 :root {
-  --primary-yellow: #FEB70D;
-  --accent-blue: #279989;
-  --text-dark: #18252A;
+  --primary-yellow: #FFD33D;
+  --accent-blue: #3A7CA5;
+  --text-dark: #1F1F1F;
   --text-light: #FAFAFA;
-  --bg-sand: #9FD5B3;
+  --bg-sand: #F9F5EC;
   --shadow-card: rgba(0, 0, 0, 0.05);
   --radius-lg: 12px;
   --font-main: 'Inter', sans-serif;
