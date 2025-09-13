@@ -168,7 +168,19 @@ export async function setupAuth(app: Express) {
 export const isAuthenticated: RequestHandler = async (req, res, next) => {
   const user = req.user as any;
 
-  if (!req.isAuthenticated() || !user.expires_at) {
+  // Primary check: Is the session valid and user authenticated?
+  if (!req.isAuthenticated() || !user) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+
+  // If user has basic session data, allow access
+  // This relies on the 7-day session TTL rather than short-lived JWT tokens
+  if (user.claims && user.claims.sub) {
+    return next();
+  }
+
+  // Fallback: If no claims, check token expiration and try refresh
+  if (!user.expires_at) {
     return res.status(401).json({ message: "Unauthorized" });
   }
 
@@ -189,7 +201,9 @@ export const isAuthenticated: RequestHandler = async (req, res, next) => {
     updateUserSession(user, tokenResponse);
     return next();
   } catch (error) {
-    res.status(401).json({ message: "Unauthorized" });
-    return;
+    // If token refresh fails, still allow access if session is valid
+    // This prevents daily logouts due to token expiration
+    console.log("Token refresh failed, but session is still valid:", error);
+    return next();
   }
 };

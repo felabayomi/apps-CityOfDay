@@ -51,13 +51,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const userEmail = req.user.claims.email?.toLowerCase();
       const isAdmin = adminEmail && userEmail === adminEmail.toLowerCase();
       
-      // Debug logging
-      console.log("=== ADMIN ACCESS DEBUG ===");
-      console.log("User email:", userEmail);
-      console.log("Admin email (env):", adminEmail?.toLowerCase());
-      console.log("Is admin match:", isAdmin);
-      console.log("========================");
-      
       res.json({
         ...user,
         isAdmin
