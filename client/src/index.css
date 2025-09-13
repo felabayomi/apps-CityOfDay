@@ -4,11 +4,11 @@
 
 /* LIGHT MODE */
 :root {
-  --primary-yellow: #FFD33D;
-  --accent-blue: #3A7CA5;
-  --text-dark: #1F1F1F;
+  --primary-yellow: #FEB70D;
+  --accent-blue: #279989;
+  --text-dark: #18252A;
   --text-light: #FAFAFA;
-  --bg-sand: #F9F5EC;
+  --bg-sand: #9FD5B3;
   --shadow-card: rgba(0, 0, 0, 0.05);
   --radius-lg: 12px;
   --font-main: 'Inter', sans-serif;
@@ -31,39 +31,39 @@
   --card-foreground: 0 0% 12%;
   --card-border: 42 30% 88%;
   
-  --sidebar: 42 56% 94%;
-  --sidebar-foreground: 0 0% 12%;
-  --sidebar-border: 42 30% 88%;
-  --sidebar-primary: 204 47% 35%;
+  --sidebar: 142 43% 73%;
+  --sidebar-foreground: 200 27% 13%;
+  --sidebar-border: 142 43% 60%;
+  --sidebar-primary: 181 100% 13%;
   --sidebar-primary-foreground: 0 0% 98%;
-  --sidebar-accent: 48 100% 50%;
-  --sidebar-accent-foreground: 0 0% 12%;
-  --sidebar-ring: 204 47% 35%;
+  --sidebar-accent: 43 99% 52%;
+  --sidebar-accent-foreground: 200 27% 13%;
+  --sidebar-ring: 181 100% 13%;
   
   --popover: 0 0% 100%;
   --popover-foreground: 0 0% 12%;
   --popover-border: 42 30% 88%;
   
-  --primary: 204 47% 35%;
+  --primary: 181 100% 13%;
   --primary-foreground: 0 0% 98%;
   
-  --secondary: 42 56% 94%;
-  --secondary-foreground: 0 0% 12%;
+  --secondary: 142 43% 73%;
+  --secondary-foreground: 200 27% 13%;
   
-  --muted: 42 56% 94%;
-  --muted-foreground: 0 0% 60%;
+  --muted: 142 43% 73%;
+  --muted-foreground: 200 27% 40%;
   
-  --accent: 48 100% 50%;
-  --accent-foreground: 0 0% 12%;
+  --accent: 43 99% 52%;
+  --accent-foreground: 200 27% 13%;
   
   --destructive: 0 84% 60%;
   --destructive-foreground: 0 0% 98%;
 
   --input: 42 30% 88%;
-  --ring: 204 47% 35%;
-  --chart-1: 204 47% 35%;
-  --chart-2: 48 100% 50%;
-  --chart-3: 42 56% 94%;
+  --ring: 181 100% 13%;
+  --chart-1: 181 100% 13%;
+  --chart-2: 43 99% 52%;
+  --chart-3: 142 43% 73%;
   --chart-4: 280 65% 60%;
   --chart-5: 340 75% 55%;
 
@@ -193,7 +193,7 @@
 
 /* Custom travel-themed styles */
 .gradient-travel { 
-  background: linear-gradient(135deg, hsl(48, 100%, 61%), hsl(204, 47%, 45%)); 
+  background: linear-gradient(135deg, hsl(172, 59%, 38%), hsl(181, 100%, 13%)); 
 }
 
 .postcard-shadow { 
