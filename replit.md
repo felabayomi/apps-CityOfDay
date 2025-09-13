@@ -10,7 +10,7 @@ Preferred communication style: Simple, everyday language.
 
 **Design Preferences:**
 - Time card colors will be changed daily
-- Currently using Texas flag colors: PMS 286 (deep blue #0033A0) and PMS 200 (vibrant red #C8102E) with white text
+- Currently using Detroit official brand colors: City Green (#004445) and Spirit Green (#279989) with white text
 - Applied to both hero section gradient and city preview card backgrounds
 
 ## System Architecture
