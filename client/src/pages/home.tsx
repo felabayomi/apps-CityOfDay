@@ -182,8 +182,11 @@ export default function Home() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-8">
             <h4 className="text-2xl font-bold mb-4">Ready to Explore the World?</h4>
-            <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
+            <p className="text-muted-foreground mb-4 max-w-2xl mx-auto">
               Turn today's inspiration into tomorrow's adventure. Book your experience now.
+            </p>
+            <p className="text-sm text-muted-foreground mb-6 max-w-2xl mx-auto">
+              Agent Support: Send us your booking confirmation for tracking and assistance.
             </p>
           </div>
           
