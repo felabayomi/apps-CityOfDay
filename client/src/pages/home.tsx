@@ -180,6 +180,28 @@ export default function Home() {
       {/* Travel Booking Hub - Always visible */}
       <section className="py-16" style={{backgroundColor: '#f8f9fa'}}>
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* City-Specific CTAs - Show first when available */}
+          {todaysCity?.cityCtaLinks && Array.isArray(todaysCity.cityCtaLinks) && todaysCity.cityCtaLinks.length > 0 && (
+            <div className="mb-12">
+              <div className="text-center mb-6">
+                <h5 className="text-lg font-semibold">Today's {todaysCity.name} Specials</h5>
+                <p className="text-muted-foreground text-sm">City-specific recommendations and deals</p>
+              </div>
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 max-w-3xl mx-auto">
+                {todaysCity.cityCtaLinks.map((link: any, index: number) => (
+                  <Button 
+                    key={`custom-${index}`}
+                    className="bg-white text-primary hover:bg-gray-100 border-2 border-primary/20 text-xs md:text-sm px-2 md:px-4 py-2 md:py-2 h-auto min-h-[44px] whitespace-normal leading-tight"
+                    onClick={() => window.open(link.url, '_blank')}
+                    data-testid={`button-city-cta-${index}`}
+                  >
+                    {link.text}
+                  </Button>
+                ))}
+              </div>
+            </div>
+          )}
+
           <div className="text-center mb-8">
             <h4 className="text-2xl font-bold mb-4">Ready to Explore {todaysCity?.name || "the World"}?</h4>
             <p className="text-muted-foreground mb-4 max-w-2xl mx-auto">
@@ -284,28 +306,6 @@ export default function Home() {
             </Card>
 
           </div>
-
-          {/* City-Specific CTAs - Conditional, only show when available */}
-          {todaysCity?.cityCtaLinks && Array.isArray(todaysCity.cityCtaLinks) && todaysCity.cityCtaLinks.length > 0 && (
-            <div className="mt-8">
-              <div className="text-center mb-6">
-                <h5 className="text-lg font-semibold">Today's {todaysCity.name} Specials</h5>
-                <p className="text-muted-foreground text-sm">City-specific recommendations and deals</p>
-              </div>
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 max-w-3xl mx-auto">
-                {todaysCity.cityCtaLinks.map((link: any, index: number) => (
-                  <Button 
-                    key={`custom-${index}`}
-                    className="bg-white text-primary hover:bg-gray-100 border-2 border-primary/20 text-xs md:text-sm px-2 md:px-4 py-2 md:py-2 h-auto min-h-[44px] whitespace-normal leading-tight"
-                    onClick={() => window.open(link.url, '_blank')}
-                    data-testid={`button-city-cta-${index}`}
-                  >
-                    {link.text}
-                  </Button>
-                ))}
-              </div>
-            </div>
-          )}
         </div>
       </section>
 
