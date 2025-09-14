@@ -185,7 +185,7 @@ export default function Home() {
             <p className="text-muted-foreground mb-4 max-w-2xl mx-auto">
               Turn today's inspiration into tomorrow's adventure. Book your experience now.
             </p>
-            <p className="text-sm text-muted-foreground mb-6 max-w-2xl mx-auto">
+            <p className="text-sm font-bold bg-yellow-100 border border-yellow-300 rounded-md px-4 py-2 mb-6 max-w-2xl mx-auto text-yellow-800">
               Agent Support: Send us your booking confirmation for tracking and assistance.
             </p>
           </div>
