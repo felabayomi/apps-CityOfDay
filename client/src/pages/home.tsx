@@ -155,7 +155,7 @@ export default function Home() {
             <p className="text-xl mb-4" style={{color: '#666'}}>
               Explore Morning Discovery, Afternoon Culture, Evening Experiences, Bonus Facts, Luxury Experiences, and Wildlife — all at once
             </p>
-            <div className="w-24 h-1 mx-auto rounded-full mt-4" style={{background: 'linear-gradient(135deg, #004445, #279989)'}}></div>
+            <div className="w-24 h-1 mx-auto rounded-full mt-4" style={{background: 'linear-gradient(135deg, #DC4405, #69B3E7)'}}></div>
           </div>
 
           {/* Display all content cards */}
