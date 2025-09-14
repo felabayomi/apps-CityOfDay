@@ -181,7 +181,7 @@ export default function Home() {
       <section className="py-16" style={{backgroundColor: '#f8f9fa'}}>
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-8">
-            <h4 className="text-2xl font-bold mb-4">Ready to Explore the World?</h4>
+            <h4 className="text-2xl font-bold mb-4">Ready to Explore {todaysCity?.name || "the World"}?</h4>
             <p className="text-muted-foreground mb-4 max-w-2xl mx-auto">
               Turn today's inspiration into tomorrow's adventure. Book your experience now.
             </p>
