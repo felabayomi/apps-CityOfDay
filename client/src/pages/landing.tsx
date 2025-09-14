@@ -66,7 +66,7 @@ export default function Landing() {
 
       {/* Hero Section */}
       <section id="discover" className="relative">
-        <div className="h-96 relative overflow-hidden" style={{background: 'linear-gradient(135deg, #004445, #279989)'}}>
+        <div className="h-96 relative overflow-hidden" style={{background: 'linear-gradient(135deg, #DC4405, #69B3E7)'}}>
           <div className="absolute inset-0 flex items-center justify-center text-center">
             <div className="max-w-4xl mx-auto px-4">
               <h2 className="text-4xl md:text-6xl font-bold text-white mb-4">
@@ -157,7 +157,7 @@ export default function Landing() {
               </div>
             </div>
           ) : (
-            <div className="bg-gradient-to-br rounded-2xl p-8 text-center text-white shadow-2xl" style={{background: 'linear-gradient(135deg, #004445, #279989)'}}>
+            <div className="bg-gradient-to-br rounded-2xl p-8 text-center text-white shadow-2xl" style={{background: 'linear-gradient(135deg, #DC4405, #69B3E7)'}}>
               <p className="text-lg">No city available for today</p>
             </div>
           )}
