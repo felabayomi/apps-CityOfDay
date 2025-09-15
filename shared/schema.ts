@@ -66,6 +66,8 @@ export const cities = pgTable("cities", {
   bonusShareTemplate: varchar("bonus_share_template").default("Hidden gem in {CITY}! 💎"),
   luxuryShareTemplate: varchar("luxury_share_template").default("Luxury awaits in {CITY}! ✨"),
   wildlifeShareTemplate: varchar("wildlife_share_template").default("Wild side of {CITY}! 🦎"),
+  // Custom HTML content for sample itinerary
+  sampleItinerary: text("sample_itinerary"), // HTML content for custom itinerary section
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
