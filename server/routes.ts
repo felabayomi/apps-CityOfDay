@@ -193,7 +193,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/admin/cities/generate", isAuthenticated, isAdmin, async (req, res) => {
     try {
-      const { cityName, country, focus = "balanced", autoPublish = false, scheduledDate } = req.body;
+      const { cityName, country, focus = "balanced", autoPublish = false, scheduledDate, sampleItinerary } = req.body;
       
       if (!cityName) {
         return res.status(400).json({ message: "City name is required" });
@@ -239,6 +239,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         isPublished: autoPublish,
         publishedDate: autoPublish ? new Date() : null,
         scheduledDate: scheduledDate ? new Date(scheduledDate) : null,
+        sampleItinerary: sampleItinerary || null,
       };
       
       const city = await storage.createCity(cityData);
@@ -345,7 +346,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.put("/api/admin/cities/:id", isAuthenticated, isAdmin, async (req, res) => {
     try {
       // Only allow specific fields to be updated to avoid timestamp field conflicts
-      const allowedFields = ['name', 'country', 'isPublished', 'isPinned', 'publishedDate', 'scheduledDate', 'cityCtaLinks', 'morningCtaLink', 'afternoonCtaLink', 'eveningCtaLink', 'bonusCtaLink', 'luxuryCtaLink', 'wildlifeCtaLink'];
+      const allowedFields = ['name', 'country', 'isPublished', 'isPinned', 'publishedDate', 'scheduledDate', 'cityCtaLinks', 'morningCtaLink', 'afternoonCtaLink', 'eveningCtaLink', 'bonusCtaLink', 'luxuryCtaLink', 'wildlifeCtaLink', 'sampleItinerary'];
       const updateData: any = {};
       
       // Only copy allowed fields
