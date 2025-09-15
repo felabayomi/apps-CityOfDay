@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Edit, Save, Eye, Sun, Utensils, Moon, Lightbulb, Globe, Trash2, Plus, Crown, Trees } from "lucide-react";
+import { Edit, Save, Eye, Sun, Utensils, Moon, Lightbulb, Globe, Trash2, Plus, Crown, Trees, FileText } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { isUnauthorizedError } from "@/lib/authUtils";
@@ -512,6 +512,42 @@ export function ContentEditor({ selectedCityId, onCityChange }: ContentEditorPro
               </div>
             </div>
           )}
+        </CardContent>
+      </Card>
+    )}
+
+    {/* Sample Itinerary HTML Panel */}
+    {city && (
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center text-foreground">
+            <FileText className="mr-3 text-primary w-5 h-5" />
+            Sample Itinerary HTML - {city.name}
+          </CardTitle>
+          <p className="text-muted-foreground text-sm">
+            Custom HTML content that will be displayed below "Today's Discovery Cards" with title "Sample Itinerary for {city.name}"
+          </p>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="sample-itinerary" className="text-foreground">HTML Content</Label>
+            <Textarea
+              id="sample-itinerary"
+              value={city.sampleItinerary || ""}
+              onChange={(e) => {
+                updateCityMutation.mutate({ 
+                  id: city.id, 
+                  sampleItinerary: e.target.value 
+                });
+              }}
+              placeholder="Enter custom HTML content for sample itinerary section..."
+              className="bg-background min-h-[200px] font-mono text-sm"
+              data-testid="textarea-sample-itinerary-editor"
+            />
+            <p className="text-xs text-muted-foreground">
+              This HTML will be rendered on the city page. You can include any valid HTML elements.
+            </p>
+          </div>
         </CardContent>
       </Card>
     )}

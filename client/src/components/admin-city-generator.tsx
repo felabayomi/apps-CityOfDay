@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Textarea } from "@/components/ui/textarea";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
@@ -22,12 +23,13 @@ export function AdminCityGenerator() {
   const [focus, setFocus] = useState("balanced");
   const [autoPublish, setAutoPublish] = useState(false);
   const [scheduledDate, setScheduledDate] = useState<Date | undefined>(undefined);
+  const [sampleItinerary, setSampleItinerary] = useState("");
   
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
   const generateCityMutation = useMutation({
-    mutationFn: async (data: { cityName: string; country: string; focus: string; autoPublish: boolean; scheduledDate?: string }) => {
+    mutationFn: async (data: { cityName: string; country: string; focus: string; autoPublish: boolean; scheduledDate?: string; sampleItinerary?: string }) => {
       const response = await apiRequest("POST", "/api/admin/cities/generate", data);
       return response.json();
     },
@@ -43,6 +45,7 @@ export function AdminCityGenerator() {
       setFocus("balanced");
       setAutoPublish(false);
       setScheduledDate(undefined);
+      setSampleItinerary("");
       
       // Refresh cities list
       queryClient.invalidateQueries({ queryKey: ["/api/admin/cities"] });
@@ -99,6 +102,7 @@ export function AdminCityGenerator() {
       focus,
       autoPublish,
       scheduledDate: scheduledDate ? format(scheduledDate, 'yyyy-MM-dd') : undefined,
+      sampleItinerary: sampleItinerary.trim() || undefined,
     });
   };
 
@@ -155,6 +159,19 @@ export function AdminCityGenerator() {
                 <SelectItem value="nature">Nature & Wildlife</SelectItem>
               </SelectContent>
             </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="sampleItinerary" className="text-foreground">Sample Itinerary HTML (Optional)</Label>
+            <Textarea
+              id="sampleItinerary"
+              placeholder="Enter custom HTML content for sample itinerary section..."
+              value={sampleItinerary}
+              onChange={(e) => setSampleItinerary(e.target.value)}
+              className="bg-background min-h-[120px]"
+              data-testid="textarea-sample-itinerary"
+            />
+            <p className="text-xs text-muted-foreground">This HTML will be displayed below "Today's Discovery Cards" with the title "Sample Itinerary for [City Name]"</p>
           </div>
 
           {/* Scheduled Date Picker */}
