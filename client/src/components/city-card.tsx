@@ -119,7 +119,7 @@ export function CityCard({
         <Badge 
           className={`absolute top-4 left-4 ${color}`}
           style={{
-            backgroundColor: content.cardType === 'morning' || content.cardType === 'afternoon' || content.cardType === 'bonus' ? '#DC4405' : '#69B3E7'
+            backgroundColor: content.cardType === 'morning' || content.cardType === 'afternoon' || content.cardType === 'bonus' ? '#002D72' : '#FFD200'
           }}
           data-testid={`badge-${content.cardType}`}
         >

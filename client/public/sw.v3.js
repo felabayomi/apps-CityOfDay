@@ -1,4 +1,4 @@
-const CACHE_NAME = 'city-discoverer-v6-sanfrancisco-colors-20250914';
+const CACHE_NAME = 'city-discoverer-v7-nashville-colors-20250914';
 // Remove pre-caching - Vite uses /assets/* not /static/*
 const urlsToCache = [];
 
