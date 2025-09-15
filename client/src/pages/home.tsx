@@ -158,6 +158,22 @@ export default function Home() {
             <div className="w-24 h-1 mx-auto rounded-full mt-4" style={{background: 'linear-gradient(135deg, #002D72, #FFD200)'}}></div>
           </div>
 
+          {/* Sample Itinerary HTML Section */}
+          {todaysCity?.sampleItinerary && (
+            <div className="max-w-4xl mx-auto mb-12">
+              <div className="text-center mb-8">
+                <h4 className="text-2xl font-bold" style={{color: 'var(--text-dark)'}}>
+                  Sample Itinerary for {todaysCity.name}
+                </h4>
+              </div>
+              <div 
+                className="sample-itinerary-content"
+                dangerouslySetInnerHTML={{ __html: todaysCity.sampleItinerary }}
+                data-testid="sample-itinerary-content"
+              />
+            </div>
+          )}
+
           {/* Display all content cards */}
           <div className="max-w-4xl mx-auto">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
