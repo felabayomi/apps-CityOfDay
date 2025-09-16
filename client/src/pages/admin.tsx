@@ -10,6 +10,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Globe, Wand2, Edit, Trash2, Plus, Eye, MapPin, CalendarIcon } from "lucide-react";
 import { AdminCityGenerator } from "@/components/admin-city-generator";
 import { ContentEditor } from "@/components/content-editor";
+import { ColorThemeManager } from "@/components/ColorThemeManager";
 import { useToast } from "@/hooks/use-toast";
 import { isUnauthorizedError } from "@/lib/authUtils";
 import { useEffect } from "react";
@@ -144,6 +145,21 @@ export default function Admin() {
         <div className="mb-8">
           <h2 className="text-3xl font-bold text-foreground mb-4">Content Management Dashboard</h2>
           <p className="text-xl text-muted-foreground">Generate and manage your daily city content</p>
+        </div>
+
+        {/* Color Theme Management */}
+        <div id="color-themes" className="mb-12">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center text-foreground">
+                <div className="w-5 h-5 mr-3 rounded bg-gradient-to-r from-primary to-accent"></div>
+                Color Theme Management
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ColorThemeManager />
+            </CardContent>
+          </Card>
         </div>
 
         <div className="grid lg:grid-cols-2 gap-8 mb-12">
