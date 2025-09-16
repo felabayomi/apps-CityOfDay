@@ -100,7 +100,7 @@ export default function Home() {
       {/* Hero Section with Today's City */}
       {todaysCity && (
         <section id="discover" className="relative">
-          <div className="h-64 relative overflow-hidden" style={{background: 'linear-gradient(135deg, #002D72, #FFD200)'}}>
+          <div className="h-64 relative overflow-hidden" style={{background: 'linear-gradient(135deg, #0038A8, #008ED6)'}}>
             <div className="absolute inset-0 flex items-center justify-center text-center">
               <div className="max-w-4xl mx-auto px-4">
                 <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
@@ -155,7 +155,7 @@ export default function Home() {
             <p className="text-xl mb-4" style={{color: '#666'}}>
               Explore Morning Discovery, Afternoon Culture, Evening Experiences, Bonus Facts, Luxury Experiences, and Wildlife — all at once
             </p>
-            <div className="w-24 h-1 mx-auto rounded-full mt-4" style={{background: 'linear-gradient(135deg, #002D72, #FFD200)'}}></div>
+            <div className="w-24 h-1 mx-auto rounded-full mt-4" style={{background: 'linear-gradient(135deg, #0038A8, #F2AF00)'}}></div>
           </div>
 
           {/* Sample Itinerary HTML Section */}

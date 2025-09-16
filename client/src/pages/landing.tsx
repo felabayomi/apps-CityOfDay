@@ -66,7 +66,7 @@ export default function Landing() {
 
       {/* Hero Section */}
       <section id="discover" className="relative">
-        <div className="h-96 relative overflow-hidden" style={{background: 'linear-gradient(135deg, #002D72, #FFD200)'}}>
+        <div className="h-96 relative overflow-hidden" style={{background: 'linear-gradient(135deg, #0038A8, #008ED6)'}}>
           <div className="absolute inset-0 flex items-center justify-center text-center">
             <div className="max-w-4xl mx-auto px-4">
               <h2 className="text-4xl md:text-6xl font-bold text-white mb-4">
@@ -94,7 +94,7 @@ export default function Landing() {
       <section className="py-16 bg-background">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           {isLoading ? (
-            <div className="bg-gradient-to-br rounded-2xl p-8 text-center text-white shadow-2xl" style={{background: 'linear-gradient(135deg, #002D72, #FFD200)'}}>
+            <div className="bg-gradient-to-br rounded-2xl p-8 text-center text-white shadow-2xl" style={{background: 'linear-gradient(135deg, #0038A8, #008ED6)'}}>
               <div className="animate-pulse">
                 <div className="h-4 bg-white/20 rounded w-48 mx-auto mb-6"></div>
                 <div className="h-8 bg-white/20 rounded-full w-32 mx-auto mb-8"></div>
@@ -105,7 +105,7 @@ export default function Landing() {
               </div>
             </div>
           ) : city ? (
-            <div className="bg-gradient-to-br rounded-2xl p-8 text-center text-white shadow-2xl relative" style={{background: 'linear-gradient(135deg, #002D72, #FFD200)'}}>
+            <div className="bg-gradient-to-br rounded-2xl p-8 text-center text-white shadow-2xl relative" style={{background: 'linear-gradient(135deg, #0038A8, #008ED6)'}}>
               <p className="text-sm uppercase tracking-wide mb-4 text-white/80">
                 {new Date().toLocaleDateString('en-US', { 
                   weekday: 'long', 
@@ -157,7 +157,7 @@ export default function Landing() {
               </div>
             </div>
           ) : (
-            <div className="bg-gradient-to-br rounded-2xl p-8 text-center text-white shadow-2xl" style={{background: 'linear-gradient(135deg, #002D72, #FFD200)'}}>
+            <div className="bg-gradient-to-br rounded-2xl p-8 text-center text-white shadow-2xl" style={{background: 'linear-gradient(135deg, #0038A8, #008ED6)'}}>
               <p className="text-lg">No city available for today</p>
             </div>
           )}
