@@ -207,7 +207,7 @@
   align-items: center;
   padding: 1rem 2rem;
   border-bottom: 1px solid var(--primary-yellow);
-  background: linear-gradient(to right, var(--bg-sand), #f7f3ea);
+  background: linear-gradient(to right, #E8E1D5, #E0D7C7);
   position: sticky;
   top: 0;
   z-index: 999;
