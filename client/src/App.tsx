@@ -19,7 +19,7 @@ function Router() {
       <Route path="/" component={Landing} />
       <Route path="/home" component={Home} />
       <Route path="/preview" component={Preview} />
-      <Route path="/cities/:id" component={CityDetail} />
+      <Route path="/city/:id" component={CityDetail} />
       <Route path="/library" component={LibraryPage} />
       
       {/* Protected routes that handle their own auth */}
