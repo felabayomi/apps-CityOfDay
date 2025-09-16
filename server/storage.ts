@@ -5,16 +5,19 @@ import {
   userCollectedCities,
   userBucketList,
   userTravelPhotos,
+  colorThemes,
   type User,
   type UpsertUser,
   type City,
   type CityContent,
   type UserTravelPhoto,
+  type ColorTheme,
   type InsertCity,
   type InsertCityContent,
   type InsertUserCollectedCity,
   type InsertUserBucketList,
   type InsertUserTravelPhoto,
+  type InsertColorTheme,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, and, or, gte, lt, lte, asc, isNull, isNotNull, sql } from "drizzle-orm";
@@ -55,6 +58,15 @@ export interface IStorage {
   createTravelPhoto(photo: InsertUserTravelPhoto): Promise<UserTravelPhoto>;
   getUserTravelPhotos(userId: string): Promise<UserTravelPhoto[]>;
   deleteTravelPhoto(id: string): Promise<void>;
+
+  // Color theme operations
+  getAllColorThemes(): Promise<ColorTheme[]>;
+  getActiveColorTheme(): Promise<ColorTheme | undefined>;
+  getColorThemeById(id: string): Promise<ColorTheme | undefined>;
+  createColorTheme(theme: InsertColorTheme): Promise<ColorTheme>;
+  updateColorTheme(id: string, theme: Partial<InsertColorTheme>): Promise<ColorTheme>;
+  deleteColorTheme(id: string): Promise<void>;
+  setActiveColorTheme(id: string): Promise<ColorTheme>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -323,6 +335,70 @@ export class DatabaseStorage implements IStorage {
 
   async deleteTravelPhoto(id: string): Promise<void> {
     await db.delete(userTravelPhotos).where(eq(userTravelPhotos.id, id));
+  }
+
+  // Color theme operations
+  async getAllColorThemes(): Promise<ColorTheme[]> {
+    return await db
+      .select()
+      .from(colorThemes)
+      .orderBy(desc(colorThemes.createdAt));
+  }
+
+  async getActiveColorTheme(): Promise<ColorTheme | undefined> {
+    const [theme] = await db
+      .select()
+      .from(colorThemes)
+      .where(eq(colorThemes.isActive, true));
+    return theme;
+  }
+
+  async getColorThemeById(id: string): Promise<ColorTheme | undefined> {
+    const [theme] = await db
+      .select()
+      .from(colorThemes)
+      .where(eq(colorThemes.id, id));
+    return theme;
+  }
+
+  async createColorTheme(theme: InsertColorTheme): Promise<ColorTheme> {
+    const [newTheme] = await db
+      .insert(colorThemes)
+      .values(theme)
+      .returning();
+    return newTheme;
+  }
+
+  async updateColorTheme(id: string, theme: Partial<InsertColorTheme>): Promise<ColorTheme> {
+    const [updatedTheme] = await db
+      .update(colorThemes)
+      .set({
+        ...theme,
+        updatedAt: new Date(),
+      })
+      .where(eq(colorThemes.id, id))
+      .returning();
+    return updatedTheme;
+  }
+
+  async deleteColorTheme(id: string): Promise<void> {
+    await db.delete(colorThemes).where(eq(colorThemes.id, id));
+  }
+
+  async setActiveColorTheme(id: string): Promise<ColorTheme> {
+    // First deactivate all themes
+    await db
+      .update(colorThemes)
+      .set({ isActive: false, updatedAt: new Date() });
+    
+    // Then activate the selected theme
+    const [activeTheme] = await db
+      .update(colorThemes)
+      .set({ isActive: true, updatedAt: new Date() })
+      .where(eq(colorThemes.id, id))
+      .returning();
+    
+    return activeTheme;
   }
 }
 

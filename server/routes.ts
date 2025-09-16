@@ -3,7 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
 import { generateCityContent, generateCityImageSuggestions } from "./openai";
-import { insertCitySchema, insertCityContentSchema, insertUserTravelPhotoSchema, cities } from "@shared/schema";
+import { insertCitySchema, insertCityContentSchema, insertUserTravelPhotoSchema, insertColorThemeSchema, cities } from "@shared/schema";
 import { z } from "zod";
 import { eq } from "drizzle-orm";
 import { db } from "./db";
@@ -550,6 +550,71 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error generating image suggestions:", error);
       res.status(500).json({ message: "Failed to generate image suggestions" });
+    }
+  });
+
+  // Color theme admin routes
+  app.get("/api/admin/color-themes", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const themes = await storage.getAllColorThemes();
+      res.json(themes);
+    } catch (error) {
+      console.error("Error fetching color themes:", error);
+      res.status(500).json({ message: "Failed to fetch color themes" });
+    }
+  });
+
+  app.get("/api/color-themes/active", async (req, res) => {
+    try {
+      const activeTheme = await storage.getActiveColorTheme();
+      res.json(activeTheme);
+    } catch (error) {
+      console.error("Error fetching active color theme:", error);
+      res.status(500).json({ message: "Failed to fetch active color theme" });
+    }
+  });
+
+  app.post("/api/admin/color-themes", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const validatedData = insertColorThemeSchema.parse(req.body);
+      const theme = await storage.createColorTheme(validatedData);
+      res.json(theme);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid color theme data", errors: error.errors });
+      }
+      console.error("Error creating color theme:", error);
+      res.status(500).json({ message: "Failed to create color theme" });
+    }
+  });
+
+  app.put("/api/admin/color-themes/:id", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const theme = await storage.updateColorTheme(req.params.id, req.body);
+      res.json(theme);
+    } catch (error) {
+      console.error("Error updating color theme:", error);
+      res.status(500).json({ message: "Failed to update color theme" });
+    }
+  });
+
+  app.put("/api/admin/color-themes/:id/activate", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const activeTheme = await storage.setActiveColorTheme(req.params.id);
+      res.json(activeTheme);
+    } catch (error) {
+      console.error("Error activating color theme:", error);
+      res.status(500).json({ message: "Failed to activate color theme" });
+    }
+  });
+
+  app.delete("/api/admin/color-themes/:id", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      await storage.deleteColorTheme(req.params.id);
+      res.json({ message: "Color theme deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting color theme:", error);
+      res.status(500).json({ message: "Failed to delete color theme" });
     }
   });
 
