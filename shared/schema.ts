@@ -184,6 +184,28 @@ export const insertCitySchema = createInsertSchema(cities).omit({
   updatedAt: true,
 });
 
+// Color themes table for customizable UI colors
+export const colorThemes = pgTable("color_themes", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: varchar("name").notNull(), // Theme name like "Kansas City", "Nashville", etc.
+  heroGradientStart: varchar("hero_gradient_start").notNull(), // Start color for hero gradients
+  heroGradientEnd: varchar("hero_gradient_end").notNull(), // End color for hero gradients
+  accentBarStart: varchar("accent_bar_start").notNull(), // Start color for accent bars
+  accentBarEnd: varchar("accent_bar_end").notNull(), // End color for accent bars
+  cardBadgePrimary: varchar("card_badge_primary").notNull(), // Primary badge background (morning/afternoon/bonus)
+  cardBadgeSecondary: varchar("card_badge_secondary").notNull(), // Secondary badge background (evening/luxury/wildlife)
+  headerBackground: varchar("header_background").notNull(), // Header background color/gradient
+  isActive: boolean("is_active").default(false), // Whether this theme is currently active
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertColorThemeSchema = createInsertSchema(colorThemes).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
 export const insertCityContentSchema = createInsertSchema(cityContent).omit({
   id: true,
   createdAt: true,
@@ -214,8 +236,10 @@ export type CityContent = typeof cityContent.$inferSelect;
 export type UserCollectedCity = typeof userCollectedCities.$inferSelect;
 export type UserBucketList = typeof userBucketList.$inferSelect;
 export type UserTravelPhoto = typeof userTravelPhotos.$inferSelect;
+export type ColorTheme = typeof colorThemes.$inferSelect;
 export type InsertCity = z.infer<typeof insertCitySchema>;
 export type InsertCityContent = z.infer<typeof insertCityContentSchema>;
 export type InsertUserCollectedCity = z.infer<typeof insertUserCollectedCitySchema>;
 export type InsertUserBucketList = z.infer<typeof insertUserBucketListSchema>;
 export type InsertUserTravelPhoto = z.infer<typeof insertUserTravelPhotoSchema>;
+export type InsertColorTheme = z.infer<typeof insertColorThemeSchema>;
