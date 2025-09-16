@@ -82,7 +82,7 @@ export default function CityDetail() {
               <CityCard
                 key={card.id}
                 content={card}
-                isPreview={true}
+                isPreview={false}
               />
             ))}
           </div>
