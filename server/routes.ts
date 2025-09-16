@@ -105,22 +105,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/cities/:id", async (req, res) => {
-    try {
-      const city = await storage.getCityById(req.params.id);
-      if (!city) {
-        return res.status(404).json({ message: "City not found" });
-      }
-      
-      const content = await storage.getCityContent(city.id);
-      res.json({ city, content });
-    } catch (error) {
-      console.error("Error fetching city:", error);
-      res.status(500).json({ message: "Failed to fetch city" });
-    }
-  });
-
   // Library routes - for Evergreen Library feature (now public)
+  // IMPORTANT: These specific routes must come BEFORE the wildcard :id route
   app.get("/api/cities/library", async (req, res) => {
     try {
       // Get all published cities except today's city
@@ -160,6 +146,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching all cities content:", error);
       res.status(500).json({ message: "Failed to fetch all cities content" });
+    }
+  });
+
+  // Wildcard route for individual cities - MUST come after specific routes
+  app.get("/api/cities/:id", async (req, res) => {
+    try {
+      const city = await storage.getCityById(req.params.id);
+      if (!city) {
+        return res.status(404).json({ message: "City not found" });
+      }
+      
+      const content = await storage.getCityContent(city.id);
+      res.json({ city, content });
+    } catch (error) {
+      console.error("Error fetching city:", error);
+      res.status(500).json({ message: "Failed to fetch city" });
     }
   });
 
