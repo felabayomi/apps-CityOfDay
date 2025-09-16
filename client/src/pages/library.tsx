@@ -240,18 +240,18 @@ export default function LibraryPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredCities.map(city => (
                 <Link key={city.id} href={`/city/${city.id}`}>
-                  <Card className="cursor-pointer hover:shadow-lg transition-all duration-300 postcard-shadow">
-                    <CardHeader className="pb-3">
+                  <Card className="cursor-pointer hover:shadow-lg transition-all duration-300 postcard-shadow flex flex-col h-full">
+                    <CardHeader className="pb-3 min-h-[88px]">
                       <div className="flex items-center justify-between">
-                        <div>
-                          <CardTitle className="text-xl font-bold text-foreground">
+                        <div className="flex-1 min-w-0">
+                          <CardTitle className="text-xl font-bold text-foreground line-clamp-1">
                             {city.name}
                           </CardTitle>
-                          <p className="text-muted-foreground">
+                          <p className="text-muted-foreground text-sm line-clamp-1">
                             {city.country}
                           </p>
                         </div>
-                        <div className="flex flex-col items-end">
+                        <div className="flex flex-col items-end flex-shrink-0 ml-2">
                           <MapPin className="w-6 h-6 text-primary mb-1" />
                           {city.publishedDate && (
                             <Badge variant="outline" className="text-xs">
@@ -262,26 +262,32 @@ export default function LibraryPage() {
                         </div>
                       </div>
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className="flex flex-col justify-between gap-3 flex-1">
                       <div className="space-y-3">
                         {/* CTA Buttons - Always visible for lead generation */}
-                        <div className="flex flex-wrap gap-2">
-                          {city.cityCtaLinks && Array.isArray(city.cityCtaLinks) && city.cityCtaLinks.slice(0, 2).map((link: any, index: number) => (
-                            <Button
-                              key={index}
-                              variant="outline"
-                              size="sm"
-                              className="text-xs"
-                              onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                window.open(link.url, '_blank');
-                              }}
-                              data-testid={`library-cta-${index}`}
-                            >
-                              {link.text}
-                            </Button>
-                          ))}
+                        <div className="flex flex-wrap gap-2 min-h-[36px]">
+                          {city.cityCtaLinks && Array.isArray(city.cityCtaLinks) && city.cityCtaLinks.slice(0, 2).map((link: any, index: number) => {
+                            if (!link?.text?.trim()) return null;
+                            const truncatedText = link.text.length > 18 ? link.text.substring(0, 18) + '...' : link.text;
+                            return (
+                              <Button
+                                key={index}
+                                variant="outline"
+                                size="sm"
+                                className="text-xs max-w-full"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  window.open(link.url, '_blank');
+                                }}
+                                data-testid={`library-cta-${index}`}
+                              >
+                                <span className="truncate max-w-[10rem]">
+                                  {truncatedText}
+                                </span>
+                              </Button>
+                            );
+                          })}
                         </div>
                         
                         <Button 
