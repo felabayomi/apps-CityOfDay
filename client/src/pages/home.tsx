@@ -50,13 +50,25 @@ export default function Home() {
     // Convert sample itinerary HTML to plain text and truncate
     let itineraryText = '';
     if (todaysCity.sampleItinerary) {
-      // Strip HTML tags for plain text sharing
+      // Strip HTML tags and CSS for plain text sharing
       const tempDiv = document.createElement('div');
       tempDiv.innerHTML = todaysCity.sampleItinerary;
+      
+      // Remove script and style elements entirely
+      const scripts = tempDiv.querySelectorAll('script, style');
+      scripts.forEach(el => el.remove());
+      
       const plainText = tempDiv.textContent || tempDiv.innerText || '';
-      itineraryText = plainText.length > 500 
-        ? plainText.substring(0, 497) + '...'
-        : plainText;
+      
+      // Clean up extra whitespace and format for sharing
+      const cleanText = plainText
+        .replace(/\s+/g, ' ') // Replace multiple whitespace with single space
+        .replace(/\n\s*\n/g, '\n') // Remove multiple empty lines
+        .trim();
+        
+      itineraryText = cleanText.length > 500 
+        ? cleanText.substring(0, 497) + '...'
+        : cleanText;
     }
     
     // Create rich text format for sharing
