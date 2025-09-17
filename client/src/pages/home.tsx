@@ -25,8 +25,8 @@ export default function Home() {
     if (!todaysCity) return;
     
     // Create concise Twitter-style snippet under 280 characters
-    const shareText = `🏛 ${todaysCity.name} Itinerary
-Morning to evening discoveries: culture, food, music & hidden gems. 6 curated experiences await!
+    const shareText = `🏛 ${todaysCity.name}, ${todaysCity.country} Itinerary
+Come to explore. Stay to discover what makes this city unforgettable.
 
 ✨ Plan: https://citydiscoverer.guide/contact
 📄 Full Guide: https://daily.citydiscoverer.guide/home`;
