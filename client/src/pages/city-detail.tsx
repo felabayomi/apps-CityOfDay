@@ -19,68 +19,18 @@ export default function CityDetail() {
   const handleShareItinerary = async (city: any) => {
     if (!city) return;
     
-    // Get actual content for each card type
-    const cardDescriptions = ['morning', 'afternoon', 'evening', 'bonus', 'luxury', 'wildlife'].map(cardType => {
-      const cardContent = content.find((c: any) => c.cardType === cardType);
-      if (cardContent) {
-        const cardTypeLabel = {
-          morning: 'Morning Discovery',
-          afternoon: 'Afternoon Culture', 
-          evening: 'Evening Experiences',
-          bonus: 'Bonus Facts',
-          luxury: 'Luxury Experiences',
-          wildlife: 'Wildlife'
-        }[cardType];
-        
-        // Truncate content to ~150 chars for sharing
-        const truncatedContent = cardContent.content.length > 150 
-          ? cardContent.content.substring(0, 147) + '...'
-          : cardContent.content;
-          
-        return `${cardTypeLabel}: ${cardContent.title}\n${truncatedContent}`;
-      }
-      return null;
-    }).filter(Boolean);
-    
-    // Convert sample itinerary HTML to plain text and truncate  
-    let itineraryText = '';
-    if (city.sampleItinerary) {
-      // Strip HTML tags and CSS for plain text sharing
-      const tempDiv = document.createElement('div');
-      tempDiv.innerHTML = city.sampleItinerary;
-      
-      // Remove script and style elements entirely
-      const scripts = tempDiv.querySelectorAll('script, style');
-      scripts.forEach(el => el.remove());
-      
-      const plainText = tempDiv.textContent || tempDiv.innerText || '';
-      
-      // Clean up extra whitespace and format for sharing
-      const cleanText = plainText
-        .replace(/\s+/g, ' ') // Replace multiple whitespace with single space
-        .replace(/\n\s*\n/g, '\n') // Remove multiple empty lines
-        .trim();
-        
-      itineraryText = cleanText.length > 500 
-        ? cleanText.substring(0, 497) + '...'
-        : cleanText;
-    }
-    
-    // Create rich text format for sharing
-    const shareText = `🏛 Sample Itinerary for ${city.name}
-📍 ${city.name}, ${city.country}
+    // Create concise Twitter-style snippet under 280 characters
+    const shareText = `🏛 ${city.name} Itinerary
+Morning to evening discoveries: culture, food, music & hidden gems. 6 curated experiences await!
 
-${cardDescriptions.join('\n\n')}
-
-${itineraryText ? `\nDetailed Itinerary:\n${itineraryText}\n` : ''}
-✨ Plan with City Discoverer: https://citydiscoverer.guide/contact
-📄 View Full Itinerary: https://daily.citydiscoverer.guide`;
+✨ Plan: https://citydiscoverer.guide/contact
+📄 Full Guide: https://daily.citydiscoverer.guide`;
 
     try {
       await navigator.clipboard.writeText(shareText);
       toast({
         title: "Itinerary copied!",
-        description: "Rich itinerary details copied to clipboard - ready to share!",
+        description: "Concise itinerary snippet copied - perfect for sharing!",
       });
     } catch (err) {
       // Fallback for browsers that don't support clipboard API
@@ -92,7 +42,7 @@ ${itineraryText ? `\nDetailed Itinerary:\n${itineraryText}\n` : ''}
       document.body.removeChild(textArea);
       toast({
         title: "Itinerary copied!",
-        description: "Rich itinerary details copied to clipboard - ready to share!",
+        description: "Concise itinerary snippet copied - perfect for sharing!",
       });
     }
   };
