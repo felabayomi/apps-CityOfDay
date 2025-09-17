@@ -2,13 +2,16 @@ import { useParams } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { MapPin, ArrowLeft } from "lucide-react";
+import { MapPin, ArrowLeft, ChevronDown, ChevronRight } from "lucide-react";
 import { Link } from "wouter";
 import { CityCard } from "@/components/city-card";
 import Footer from "@/components/Footer";
+import * as Collapsible from "@radix-ui/react-collapsible";
+import { useState } from "react";
 
 export default function CityDetail() {
   const { id } = useParams<{ id: string }>();
+  const [isItineraryOpen, setIsItineraryOpen] = useState(false);
 
   const { data, isLoading, error } = useQuery({
     queryKey: [`/api/cities/${id}`],
@@ -79,19 +82,36 @@ export default function CityDetail() {
             <div className="w-24 h-1 mx-auto rounded-full mt-4" style={{background: 'linear-gradient(135deg, #0038A8, #F2AF00)'}}></div>
           </div>
 
-          {/* Sample Itinerary HTML Section */}
+          {/* Sample Itinerary HTML Section - Collapsible */}
           {city?.sampleItinerary && (
             <div className="max-w-4xl mx-auto mb-12">
-              <div className="text-center mb-8">
-                <h4 className="text-2xl font-bold text-white">
-                  Sample Itinerary for {city.name}
-                </h4>
-              </div>
-              <div 
-                className="sample-itinerary-content text-left"
-                dangerouslySetInnerHTML={{ __html: city.sampleItinerary }}
-                data-testid="sample-itinerary-content"
-              />
+              <Collapsible.Root open={isItineraryOpen} onOpenChange={setIsItineraryOpen}>
+                <Collapsible.Trigger asChild>
+                  <Button
+                    variant="ghost"
+                    className="w-full p-4 text-white hover:bg-white/10 border border-white/20 rounded-lg mb-4"
+                    data-testid="button-toggle-itinerary"
+                  >
+                    <div className="flex items-center justify-center gap-2">
+                      {isItineraryOpen ? (
+                        <ChevronDown className="w-5 h-5" />
+                      ) : (
+                        <ChevronRight className="w-5 h-5" />
+                      )}
+                      <h4 className="text-2xl font-bold">
+                        Sample Itinerary for {city.name}
+                      </h4>
+                    </div>
+                  </Button>
+                </Collapsible.Trigger>
+                <Collapsible.Content className="animate-in slide-in-from-top-2 duration-200">
+                  <div 
+                    className="sample-itinerary-content text-left bg-white/10 backdrop-blur-sm rounded-lg p-6 border border-white/20"
+                    dangerouslySetInnerHTML={{ __html: city.sampleItinerary }}
+                    data-testid="sample-itinerary-content"
+                  />
+                </Collapsible.Content>
+              </Collapsible.Root>
             </div>
           )}
 

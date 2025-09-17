@@ -2,13 +2,14 @@ import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Globe, Bell, Heart, Flame, MapPin } from "lucide-react";
+import { Globe, Bell, Heart, Flame, MapPin, ChevronDown, ChevronRight } from "lucide-react";
 import { CityCard } from "@/components/city-card";
 import { useToast } from "@/hooks/use-toast";
 import { useEffect, useState } from "react";
 import Footer from "@/components/Footer";
 import { ShareButton } from "@/components/ShareButton";
 import { getCurrentCardType, getNextCardType, formatTimeUntilNext, type CardDisplayType } from "@/lib/timeBasedContent";
+import * as Collapsible from "@radix-ui/react-collapsible";
 
 export default function Home() {
   const { toast } = useToast();
@@ -17,6 +18,7 @@ export default function Home() {
   const [currentCardInfo, setCurrentCardInfo] = useState(getCurrentCardType());
   const [nextCardInfo, setNextCardInfo] = useState(getNextCardType());
   const [timeUntilNext, setTimeUntilNext] = useState(formatTimeUntilNext());
+  const [isItineraryOpen, setIsItineraryOpen] = useState(false);
 
   // Time-based content update timer
   useEffect(() => {
@@ -158,19 +160,37 @@ export default function Home() {
             <div className="w-24 h-1 mx-auto rounded-full mt-4" style={{background: 'linear-gradient(135deg, #0038A8, #F2AF00)'}}></div>
           </div>
 
-          {/* Sample Itinerary HTML Section */}
+          {/* Sample Itinerary HTML Section - Collapsible */}
           {todaysCity?.sampleItinerary && (
             <div className="max-w-4xl mx-auto mb-12">
-              <div className="text-center mb-8">
-                <h4 className="text-2xl font-bold" style={{color: 'var(--text-dark)'}}>
-                  Sample Itinerary for {todaysCity.name}
-                </h4>
-              </div>
-              <div 
-                className="sample-itinerary-content"
-                dangerouslySetInnerHTML={{ __html: todaysCity.sampleItinerary }}
-                data-testid="sample-itinerary-content"
-              />
+              <Collapsible.Root open={isItineraryOpen} onOpenChange={setIsItineraryOpen}>
+                <Collapsible.Trigger asChild>
+                  <Button
+                    variant="outline"
+                    className="w-full p-4 hover:bg-muted/50 border-2 border-primary/20 rounded-lg mb-4"
+                    data-testid="button-toggle-itinerary"
+                    style={{color: 'var(--text-dark)', borderColor: '#0038A8'}}
+                  >
+                    <div className="flex items-center justify-center gap-2">
+                      {isItineraryOpen ? (
+                        <ChevronDown className="w-5 h-5" />
+                      ) : (
+                        <ChevronRight className="w-5 h-5" />
+                      )}
+                      <h4 className="text-2xl font-bold">
+                        Sample Itinerary for {todaysCity.name}
+                      </h4>
+                    </div>
+                  </Button>
+                </Collapsible.Trigger>
+                <Collapsible.Content className="animate-in slide-in-from-top-2 duration-200">
+                  <div 
+                    className="sample-itinerary-content bg-muted/30 rounded-lg p-6 border border-primary/20"
+                    dangerouslySetInnerHTML={{ __html: todaysCity.sampleItinerary }}
+                    data-testid="sample-itinerary-content"
+                  />
+                </Collapsible.Content>
+              </Collapsible.Root>
             </div>
           )}
 
