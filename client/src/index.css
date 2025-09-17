@@ -13,6 +13,16 @@
   --radius-lg: 12px;
   --font-main: 'Inter', sans-serif;
 
+  /* Default theme colors (overridden by ActiveThemeProvider) */
+  --hero-gradient-start: #0038A8;
+  --hero-gradient-end: #008ED6;
+  --accent-bar-bg: #F2AF00;
+  --accent-bar-text: #000000;
+  --badge-bg: #0038A8;
+  --badge-text: #FFFFFF;
+  --header-bg: #002455;
+  --header-text: #FFFFFF;
+
   --button-outline: rgba(0,0,0, .10);
   --badge-outline: rgba(0,0,0, .05);
 

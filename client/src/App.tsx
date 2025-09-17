@@ -11,6 +11,7 @@ import Preview from "@/pages/preview";
 import CityDetail from "@/pages/city-detail";
 import LibraryPage from "@/pages/library";
 import { useAuth } from "@/hooks/useAuth";
+import { ActiveThemeProvider } from "@/components/ActiveThemeProvider";
 
 function Router() {
   return (
@@ -35,8 +36,10 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <Toaster />
-        <Router />
+        <ActiveThemeProvider>
+          <Toaster />
+          <Router />
+        </ActiveThemeProvider>
       </TooltipProvider>
     </QueryClientProvider>
   );

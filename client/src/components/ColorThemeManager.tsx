@@ -162,9 +162,10 @@ export function ColorThemeManager() {
     onSuccess: () => {
       toast({
         title: "Theme Activated",
-        description: "Color theme is now active. The site will update within a few minutes.",
+        description: "Color theme is now active and will apply immediately.",
       });
       queryClient.invalidateQueries({ queryKey: ["/api/admin/color-themes"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/color-themes/active"] });
     },
     onError: () => {
       toast({
