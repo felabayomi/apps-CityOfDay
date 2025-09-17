@@ -188,13 +188,15 @@ export const insertCitySchema = createInsertSchema(cities).omit({
 export const colorThemes = pgTable("color_themes", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   name: varchar("name").notNull(), // Theme name like "Kansas City", "Nashville", etc.
+  description: varchar("description"), // Optional description of the theme
   heroGradientStart: varchar("hero_gradient_start").notNull(), // Start color for hero gradients
   heroGradientEnd: varchar("hero_gradient_end").notNull(), // End color for hero gradients
-  accentBarStart: varchar("accent_bar_start").notNull(), // Start color for accent bars
-  accentBarEnd: varchar("accent_bar_end").notNull(), // End color for accent bars
-  cardBadgePrimary: varchar("card_badge_primary").notNull(), // Primary badge background (morning/afternoon/bonus)
-  cardBadgeSecondary: varchar("card_badge_secondary").notNull(), // Secondary badge background (evening/luxury/wildlife)
-  headerBackground: varchar("header_background").notNull(), // Header background color/gradient
+  accentBarBackground: varchar("accent_bar_background").notNull(), // Accent bar background color
+  accentBarText: varchar("accent_bar_text").notNull(), // Accent bar text color
+  cardBadgeBackground: varchar("card_badge_background").notNull(), // Card badge background color
+  cardBadgeText: varchar("card_badge_text").notNull(), // Card badge text color
+  headerBackground: varchar("header_background").notNull(), // Header background color
+  headerText: varchar("header_text").notNull(), // Header text color
   isActive: boolean("is_active").default(false), // Whether this theme is currently active
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
