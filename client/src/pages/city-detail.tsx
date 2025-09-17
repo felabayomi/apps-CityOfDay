@@ -2,16 +2,42 @@ import { useParams } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { MapPin, ArrowLeft, ChevronDown, ChevronRight } from "lucide-react";
+import { MapPin, ArrowLeft, ChevronDown, ChevronRight, Share2 } from "lucide-react";
 import { Link } from "wouter";
 import { CityCard } from "@/components/city-card";
 import Footer from "@/components/Footer";
 import * as Collapsible from "@radix-ui/react-collapsible";
 import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 export default function CityDetail() {
   const { id } = useParams<{ id: string }>();
   const [isItineraryOpen, setIsItineraryOpen] = useState(false);
+  const { toast } = useToast();
+
+  // Share itinerary functionality
+  const handleShareItinerary = async () => {
+    try {
+      const url = window.location.href;
+      await navigator.clipboard.writeText(url);
+      toast({
+        title: "Link copied!",
+        description: "Sample itinerary link has been copied to clipboard",
+      });
+    } catch (err) {
+      // Fallback for browsers that don't support clipboard API
+      const textArea = document.createElement('textarea');
+      textArea.value = window.location.href;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+      toast({
+        title: "Link copied!",
+        description: "Sample itinerary link has been copied to clipboard",
+      });
+    }
+  };
 
   const { data, isLoading, error } = useQuery({
     queryKey: [`/api/cities/${id}`],
@@ -87,22 +113,37 @@ export default function CityDetail() {
             <div className="max-w-4xl mx-auto mb-12">
               <Collapsible.Root open={isItineraryOpen} onOpenChange={setIsItineraryOpen}>
                 <Collapsible.Trigger asChild>
-                  <Button
-                    variant="ghost"
-                    className="w-full p-4 text-white hover:bg-white/10 border border-white/20 rounded-lg mb-4"
-                    data-testid="button-toggle-itinerary"
-                  >
-                    <div className="flex items-center justify-center gap-2">
-                      {isItineraryOpen ? (
-                        <ChevronDown className="w-5 h-5" />
-                      ) : (
-                        <ChevronRight className="w-5 h-5" />
-                      )}
-                      <h4 className="text-2xl font-bold">
-                        Sample Itinerary for {city.name}
-                      </h4>
-                    </div>
-                  </Button>
+                  <div className="relative">
+                    <Button
+                      variant="ghost"
+                      className="w-full p-4 text-white hover:bg-white/10 border border-white/20 rounded-lg mb-4"
+                      data-testid="button-toggle-itinerary"
+                    >
+                      <div className="flex items-center justify-center gap-2">
+                        {isItineraryOpen ? (
+                          <ChevronDown className="w-5 h-5" />
+                        ) : (
+                          <ChevronRight className="w-5 h-5" />
+                        )}
+                        <h4 className="text-2xl font-bold">
+                          Sample Itinerary for {city.name}
+                        </h4>
+                      </div>
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="absolute right-2 top-1/2 transform -translate-y-1/2 text-white hover:bg-white/10"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleShareItinerary();
+                      }}
+                      data-testid="button-share-itinerary"
+                      title="Share this itinerary"
+                    >
+                      <Share2 className="w-5 h-5" />
+                    </Button>
+                  </div>
                 </Collapsible.Trigger>
                 <Collapsible.Content className="animate-in slide-in-from-top-2 duration-200">
                   <div 
