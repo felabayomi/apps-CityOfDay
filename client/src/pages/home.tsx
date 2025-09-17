@@ -67,7 +67,7 @@ ${cardDescriptions.join('\n\n')}
 
 ${itineraryText ? `\nDetailed Itinerary:\n${itineraryText}\n` : ''}
 ✨ Plan with City Discoverer: https://citydiscoverer.guide/contact
-📄 View Full Itinerary: ${window.location.href}`;
+📄 View Full Itinerary: https://daily.citydiscoverer.guide/home`;
 
     try {
       await navigator.clipboard.writeText(shareText);
