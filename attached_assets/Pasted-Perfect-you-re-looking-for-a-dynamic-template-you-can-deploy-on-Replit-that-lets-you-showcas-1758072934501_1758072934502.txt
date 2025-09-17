@@ -1,0 +1,219 @@
+Perfect — you’re looking for a **dynamic template** you can deploy on Replit that lets you **showcase a new city itinerary every day**, automatically pulling in the city of the day.
+
+Here’s what we’ll build:
+
+---
+
+## ✅ Features of the Replit Template
+
+* ✅ Dynamic HTML template that loads **city-specific itinerary data**
+* ✅ Data-driven (using a JSON file or JS object)
+* ✅ Easy to update/add new cities
+* ✅ Highlights key details: city name, theme, trip days, best for, and links
+* ✅ **One codebase**, auto-renders new content based on **query string or a simple control**
+
+---
+
+## 🔧 Folder Structure
+
+```
+/public
+  └─ style.css
+/data
+  └─ itineraries.js
+index.html
+script.js
+```
+
+---
+
+### 📄 `index.html`
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>City Itinerary Preview</title>
+  <link rel="stylesheet" href="public/style.css" />
+</head>
+<body>
+  <div class="card" id="itinerary-card">
+    <h1 id="title">Loading...</h1>
+    <p id="location"></p>
+    <div class="details" id="details"></div>
+    <div class="footer">
+      <a id="ai-link" href="https://plan.citydiscoverer.ai/" target="_blank">✨ Plan with AI</a>
+      <a id="view-button" href="#" class="button">📄 View Full Itinerary</a>
+    </div>
+  </div>
+
+  <script src="data/itineraries.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
+```
+
+---
+
+### 🧩 `script.js`
+
+```javascript
+// Get city from query string, default to Albany
+const params = new URLSearchParams(window.location.search);
+const cityKey = params.get("city")?.toLowerCase() || "albany";
+
+// Get the itinerary for the city
+const itinerary = itineraries[cityKey];
+
+if (itinerary) {
+  document.getElementById("title").textContent = itinerary.title;
+  document.getElementById("location").textContent = "📍 " + itinerary.location;
+
+  document.getElementById("details").innerHTML = `
+    <p><strong>Theme:</strong> ${itinerary.theme}</p>
+    <p><strong>Style:</strong> ${itinerary.style}</p>
+    <p><strong>Trip Length:</strong> ${itinerary.length}</p>
+    <p><strong>Best For:</strong> ${itinerary.bestFor}</p>
+  `;
+
+  document.getElementById("view-button").href = itinerary.link;
+} else {
+  document.getElementById("title").textContent = "City Not Found";
+  document.getElementById("location").textContent = "Try a different city in the URL.";
+  document.querySelector(".details").innerHTML = "";
+}
+```
+
+---
+
+### 📁 `data/itineraries.js`
+
+```javascript
+const itineraries = {
+  albany: {
+    title: "🏛 Capitol to Canals",
+    location: "Albany, New York",
+    theme: "History. Hudson. Hidden Gems.",
+    style: "Urban charm + river walks + museums",
+    length: "3–4 Days",
+    bestFor: "Solo travelers, history buffs, regional groups",
+    link: "https://your-full-itinerary-link.com/albany"
+  },
+  asheville: {
+    title: "🌲 Art, Altitude & Appalachia",
+    location: "Asheville, North Carolina",
+    theme: "Mountains. Makers. Mindfulness.",
+    style: "Laid-back + artsy + immersive",
+    length: "3–4 Days",
+    bestFor: "Nature lovers, creatives, foodies, wellness travelers",
+    link: "https://your-full-itinerary-link.com/asheville"
+  },
+  louisville: {
+    title: "🥃 Legends & Limestone",
+    location: "Louisville, Kentucky",
+    theme: "Bourbon. Bridges. Bluegrass.",
+    style: "Southern hospitality + bold flavors + riverside relaxation",
+    length: "3–4 Days",
+    bestFor: "Culture seekers, bourbon fans, history lovers, foodies",
+    link: "https://your-full-itinerary-link.com/louisville"
+  }
+  // Add more cities here...
+};
+```
+
+---
+
+### 🎨 `public/style.css`
+
+```css
+body {
+  margin: 0;
+  padding: 2rem;
+  background: #f0f4f8;
+  font-family: 'Segoe UI', sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.card {
+  background: #ffffff;
+  border-radius: 16px;
+  max-width: 420px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  padding: 2rem;
+  text-align: center;
+}
+
+.card h1 {
+  font-size: 1.8rem;
+  color: #2c3e50;
+  margin-bottom: 0.2rem;
+}
+
+.card p {
+  color: #7f8c8d;
+}
+
+.details {
+  text-align: left;
+  margin-top: 1rem;
+  font-size: 0.95rem;
+  color: #34495e;
+}
+
+.footer {
+  margin-top: 1.5rem;
+}
+
+.footer a {
+  display: inline-block;
+  margin: 0.5rem;
+  text-decoration: none;
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+.footer a:first-child {
+  background: #2c3e50;
+  color: #fff;
+}
+
+.footer a.button {
+  background: #e67e22;
+  color: #fff;
+}
+```
+
+---
+
+### 🧪 How to Use on Replit
+
+1. Go to [Replit](https://replit.com/)
+2. Create a new project → **HTML, CSS, JS**
+3. Add the folder/files above (`data/`, `public/`, etc.)
+4. Run the app
+5. Visit:
+
+```
+https://your-replit-url.repl.co/?city=albany
+https://your-replit-url.repl.co/?city=louisville
+https://your-replit-url.repl.co/?city=asheville
+```
+
+---
+
+### 🪄 Bonus Ideas
+
+* **Auto-rotate cities daily** with `new Date().getDay()` logic
+* Add **social sharing buttons**
+* Connect to **Google Sheets** or a **Supabase DB** for dynamic updates
+* Add **admin mode** to post new cities
+
+---
+
+Would you like me to generate the Replit project for you or help host it?

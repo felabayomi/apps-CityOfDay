@@ -1,0 +1,205 @@
+Great question!
+
+Let me show you **exactly how your Albany post will look in practice** using the dynamic Replit setup I outlined above.
+
+---
+
+## 🧪 Live Example: **Albany Social Card**
+
+Once your Replit app is live (e.g., `https://itinerary-app.replit.app/`), you can preview the **Albany post** by going to:
+
+```
+https://itinerary-app.replit.app/?city=albany
+```
+
+This will render the following **dynamic social media card-style preview**:
+
+---
+
+### ✅ Example Output for `?city=albany`
+
+```html
+🏛 Capitol to Canals
+📍 Albany, New York
+
+Theme: History. Hudson. Hidden Gems.  
+Style: Urban charm + river walks + museums  
+Trip Length: 3–4 Days  
+Best For: Solo travelers, history buffs, regional groups
+
+[✨ Plan with AI]  [📄 View Full Itinerary]
+```
+
+The **buttons** at the bottom:
+
+* `✨ Plan with AI` → links to CityDiscoverer AI tool
+* `📄 View Full Itinerary` → links to your full detailed itinerary (you set this link in `itineraries.js`)
+
+---
+
+## 🧩 Full Code Sample for Albany Version
+
+Here's how all the relevant code fits together **just for Albany**.
+
+---
+
+### ✅ `data/itineraries.js`
+
+```js
+const itineraries = {
+  albany: {
+    title: "🏛 Capitol to Canals",
+    location: "Albany, New York",
+    theme: "History. Hudson. Hidden Gems.",
+    style: "Urban charm + river walks + museums",
+    length: "3–4 Days",
+    bestFor: "Solo travelers, history buffs, regional groups",
+    link: "https://your-site.com/itineraries/albany"
+  }
+};
+```
+
+---
+
+### ✅ `index.html` (same for all cities)
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>City Itinerary Preview</title>
+  <link rel="stylesheet" href="public/style.css" />
+</head>
+<body>
+  <div class="card" id="itinerary-card">
+    <h1 id="title">Loading...</h1>
+    <p id="location"></p>
+    <div class="details" id="details"></div>
+    <div class="footer">
+      <a id="ai-link" href="https://plan.citydiscoverer.ai/" target="_blank">✨ Plan with AI</a>
+      <a id="view-button" href="#" class="button">📄 View Full Itinerary</a>
+    </div>
+  </div>
+  <script src="data/itineraries.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
+```
+
+---
+
+### ✅ `script.js`
+
+```js
+const params = new URLSearchParams(window.location.search);
+const cityKey = params.get("city")?.toLowerCase() || "albany";
+
+const itinerary = itineraries[cityKey];
+
+if (itinerary) {
+  document.getElementById("title").textContent = itinerary.title;
+  document.getElementById("location").textContent = "📍 " + itinerary.location;
+
+  document.getElementById("details").innerHTML = `
+    <p><strong>Theme:</strong> ${itinerary.theme}</p>
+    <p><strong>Style:</strong> ${itinerary.style}</p>
+    <p><strong>Trip Length:</strong> ${itinerary.length}</p>
+    <p><strong>Best For:</strong> ${itinerary.bestFor}</p>
+  `;
+
+  document.getElementById("view-button").href = itinerary.link;
+} else {
+  document.getElementById("title").textContent = "City Not Found";
+  document.getElementById("location").textContent = "Try a different city in the URL.";
+}
+```
+
+---
+
+### ✅ `public/style.css`
+
+```css
+body {
+  margin: 0;
+  padding: 2rem;
+  background: #f4f6fa;
+  font-family: 'Segoe UI', sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 2rem;
+  max-width: 420px;
+  width: 100%;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.card h1 {
+  margin: 0;
+  font-size: 1.8rem;
+  color: #2d3436;
+}
+
+.card p {
+  color: #636e72;
+  margin-top: 0.3rem;
+}
+
+.details {
+  margin: 1.5rem 0;
+  font-size: 0.95rem;
+  text-align: left;
+  color: #2d3436;
+}
+
+.footer a {
+  display: inline-block;
+  margin: 0.3rem;
+  text-decoration: none;
+  padding: 0.6rem 1rem;
+  border-radius: 6px;
+  font-weight: bold;
+}
+
+.footer a:first-child {
+  background: #34495e;
+  color: white;
+}
+
+.footer a.button {
+  background: #e67e22;
+  color: white;
+}
+```
+
+---
+
+## 🔗 Share Links Example
+
+Now you can simply update your itinerary **daily** and promote each post like this:
+
+| City       | Shareable Link                              |
+| ---------- | ------------------------------------------- |
+| Albany     | `https://your-app.repl.co/?city=albany`     |
+| Asheville  | `https://your-app.repl.co/?city=asheville`  |
+| Louisville | `https://your-app.repl.co/?city=louisville` |
+
+Just drop it into your **Instagram bio**, **Twitter post**, or **Linktree**, and it's good to go.
+
+---
+
+### ✅ Next Steps?
+
+* Want me to bundle and send you a `.zip` to drop into Replit?
+* Need me to auto-detect the **city of the day** based on date?
+* Want to add a **hero image per city** or **social meta tags** for rich preview?
+
+Just say the word.
