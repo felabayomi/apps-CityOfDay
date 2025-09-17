@@ -22,24 +22,70 @@ export default function Home() {
 
   // Share itinerary functionality
   const handleShareItinerary = async () => {
+    if (!todaysCity) return;
+    
+    // Get actual content for each card type
+    const cardDescriptions = ['morning', 'afternoon', 'evening', 'bonus', 'luxury', 'wildlife'].map(cardType => {
+      const content = todaysContent.find((c: any) => c.cardType === cardType);
+      if (content) {
+        const cardTypeLabel = {
+          morning: 'Morning Discovery',
+          afternoon: 'Afternoon Culture', 
+          evening: 'Evening Experiences',
+          bonus: 'Bonus Facts',
+          luxury: 'Luxury Experiences',
+          wildlife: 'Wildlife'
+        }[cardType];
+        
+        // Truncate content to ~150 chars for sharing
+        const truncatedContent = content.content.length > 150 
+          ? content.content.substring(0, 147) + '...'
+          : content.content;
+          
+        return `${cardTypeLabel}: ${content.title}\n${truncatedContent}`;
+      }
+      return null;
+    }).filter(Boolean);
+    
+    // Convert sample itinerary HTML to plain text and truncate
+    let itineraryText = '';
+    if (todaysCity.sampleItinerary) {
+      // Strip HTML tags for plain text sharing
+      const tempDiv = document.createElement('div');
+      tempDiv.innerHTML = todaysCity.sampleItinerary;
+      const plainText = tempDiv.textContent || tempDiv.innerText || '';
+      itineraryText = plainText.length > 500 
+        ? plainText.substring(0, 497) + '...'
+        : plainText;
+    }
+    
+    // Create rich text format for sharing
+    const shareText = `🏛 Sample Itinerary for ${todaysCity.name}
+📍 ${todaysCity.name}, ${todaysCity.country}
+
+${cardDescriptions.join('\n\n')}
+
+${itineraryText ? `\nDetailed Itinerary:\n${itineraryText}\n` : ''}
+✨ Plan with City Discoverer: https://citydiscoverer.guide/contact
+📄 View Full Itinerary: ${window.location.href}`;
+
     try {
-      const url = window.location.href;
-      await navigator.clipboard.writeText(url);
+      await navigator.clipboard.writeText(shareText);
       toast({
-        title: "Link copied!",
-        description: "Sample itinerary link has been copied to clipboard",
+        title: "Itinerary copied!",
+        description: "Rich itinerary details copied to clipboard - ready to share!",
       });
     } catch (err) {
       // Fallback for browsers that don't support clipboard API
       const textArea = document.createElement('textarea');
-      textArea.value = window.location.href;
+      textArea.value = shareText;
       document.body.appendChild(textArea);
       textArea.select();
       document.execCommand('copy');
       document.body.removeChild(textArea);
       toast({
-        title: "Link copied!",
-        description: "Sample itinerary link has been copied to clipboard",
+        title: "Itinerary copied!",
+        description: "Rich itinerary details copied to clipboard - ready to share!",
       });
     }
   };

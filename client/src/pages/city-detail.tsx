@@ -16,25 +16,71 @@ export default function CityDetail() {
   const { toast } = useToast();
 
   // Share itinerary functionality
-  const handleShareItinerary = async () => {
+  const handleShareItinerary = async (city: any) => {
+    if (!city) return;
+    
+    // Get actual content for each card type
+    const cardDescriptions = ['morning', 'afternoon', 'evening', 'bonus', 'luxury', 'wildlife'].map(cardType => {
+      const cardContent = content.find((c: any) => c.cardType === cardType);
+      if (cardContent) {
+        const cardTypeLabel = {
+          morning: 'Morning Discovery',
+          afternoon: 'Afternoon Culture', 
+          evening: 'Evening Experiences',
+          bonus: 'Bonus Facts',
+          luxury: 'Luxury Experiences',
+          wildlife: 'Wildlife'
+        }[cardType];
+        
+        // Truncate content to ~150 chars for sharing
+        const truncatedContent = cardContent.content.length > 150 
+          ? cardContent.content.substring(0, 147) + '...'
+          : cardContent.content;
+          
+        return `${cardTypeLabel}: ${cardContent.title}\n${truncatedContent}`;
+      }
+      return null;
+    }).filter(Boolean);
+    
+    // Convert sample itinerary HTML to plain text and truncate  
+    let itineraryText = '';
+    if (city.sampleItinerary) {
+      // Strip HTML tags for plain text sharing
+      const tempDiv = document.createElement('div');
+      tempDiv.innerHTML = city.sampleItinerary;
+      const plainText = tempDiv.textContent || tempDiv.innerText || '';
+      itineraryText = plainText.length > 500 
+        ? plainText.substring(0, 497) + '...'
+        : plainText;
+    }
+    
+    // Create rich text format for sharing
+    const shareText = `🏛 Sample Itinerary for ${city.name}
+📍 ${city.name}, ${city.country}
+
+${cardDescriptions.join('\n\n')}
+
+${itineraryText ? `\nDetailed Itinerary:\n${itineraryText}\n` : ''}
+✨ Plan with City Discoverer: https://citydiscoverer.guide/contact
+📄 View Full Itinerary: ${window.location.href}`;
+
     try {
-      const url = window.location.href;
-      await navigator.clipboard.writeText(url);
+      await navigator.clipboard.writeText(shareText);
       toast({
-        title: "Link copied!",
-        description: "Sample itinerary link has been copied to clipboard",
+        title: "Itinerary copied!",
+        description: "Rich itinerary details copied to clipboard - ready to share!",
       });
     } catch (err) {
       // Fallback for browsers that don't support clipboard API
       const textArea = document.createElement('textarea');
-      textArea.value = window.location.href;
+      textArea.value = shareText;
       document.body.appendChild(textArea);
       textArea.select();
       document.execCommand('copy');
       document.body.removeChild(textArea);
       toast({
-        title: "Link copied!",
-        description: "Sample itinerary link has been copied to clipboard",
+        title: "Itinerary copied!",
+        description: "Rich itinerary details copied to clipboard - ready to share!",
       });
     }
   };
@@ -52,7 +98,10 @@ export default function CityDetail() {
     );
   }
 
-  if (error || !data?.city) {
+  const city = data?.city;
+  const content = data?.content || [];
+
+  if (error || !city) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center">
@@ -68,8 +117,6 @@ export default function CityDetail() {
       </div>
     );
   }
-
-  const { city, content } = data;
 
   return (
     <div className="min-h-screen bg-background">
@@ -136,7 +183,7 @@ export default function CityDetail() {
                       className="absolute right-2 top-1/2 transform -translate-y-1/2 text-white hover:bg-white/10"
                       onClick={(e) => {
                         e.stopPropagation();
-                        handleShareItinerary();
+                        handleShareItinerary(data?.city);
                       }}
                       data-testid="button-share-itinerary"
                       title="Share this itinerary"
