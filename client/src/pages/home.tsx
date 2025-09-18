@@ -134,7 +134,7 @@ Come to explore. Stay to discover what makes this city unforgettable.
       {/* Hero Section with Today's City */}
       {todaysCity && (
         <section id="discover" className="relative">
-          <div className="h-64 relative overflow-hidden" style={{background: 'linear-gradient(135deg, #0038A8, #008ED6)'}}>
+          <div className="h-64 relative overflow-hidden" style={{background: 'linear-gradient(135deg, var(--hero-gradient-start), var(--hero-gradient-end))'}}>
             <div className="absolute inset-0 flex items-center justify-center text-center">
               <div className="max-w-4xl mx-auto px-4">
                 <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">

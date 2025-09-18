@@ -217,7 +217,7 @@
   align-items: center;
   padding: 1rem 2rem;
   border-bottom: 1px solid var(--primary-yellow);
-  background: var(--header-bg);
+  background: linear-gradient(to right, #E8E1D5, #E0D7C7);
   position: sticky;
   top: 0;
   z-index: 999;
@@ -246,12 +246,12 @@
 .brand-name {
   font-size: 1rem;
   font-weight: 700;
-  color: var(--header-text);
+  color: var(--text-dark);
 }
 
 .tagline {
   font-size: 1.5rem;
-  color: var(--header-text);
+  color: var(--accent-blue);
   margin-left: 0.5rem;
   font-weight: 700;
 }
@@ -264,13 +264,13 @@
 .nav-links a {
   margin: 0 1rem;
   text-decoration: none;
-  color: var(--header-text);
+  color: var(--text-dark);
   font-weight: 500;
   transition: color 0.2s ease-in-out;
 }
 
 .nav-links a:hover {
-  color: var(--primary-yellow);
+  color: var(--accent-blue);
 }
 
 .auth-area {
