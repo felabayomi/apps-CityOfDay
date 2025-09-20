@@ -22,33 +22,18 @@ export default function LibraryPage() {
   // const [regionFilter, setRegionFilter] = useState("all"); // TO BE IMPLEMENTED LATER
   const [themeFilter, setThemeFilter] = useState("all");
 
-  // Redirect to login if not authenticated
-  useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
-      toast({
-        title: "Unauthorized",
-        description: "You are logged out. Logging in again...",
-        variant: "destructive",
-      });
-      setTimeout(() => {
-        window.location.href = "/api/login";
-      }, 500);
-      return;
-    }
-  }, [isAuthenticated, isLoading, toast]);
+  // Library is now public - no authentication required
 
   // Fetch all published cities for the library
   const { data: cities, isLoading: loadingCities } = useQuery<any[]>({
     queryKey: ["/api/cities/library"],
     retry: false,
-    enabled: !!user,
   });
 
   // Fetch city content for each city (we'll need this for theme filtering)
   const { data: allCitiesContent, isLoading: loadingContent } = useQuery<any[]>({
     queryKey: ["/api/cities/all-content"],
     retry: false,
-    enabled: !!user,
   });
 
   if (isLoading) {
@@ -59,9 +44,7 @@ export default function LibraryPage() {
     );
   }
 
-  if (!user) {
-    return null;
-  }
+  // Library is public - no user check needed
 
   // Filter cities based on search and filters
   const filteredCities = cities?.filter(city => {
@@ -109,16 +92,28 @@ export default function LibraryPage() {
           )}
         </nav>
         <div className="auth-area">
-          <div className="user-section">
-            <span className="welcome-text">Welcome, {(user as any)?.firstName || 'Explorer'}</span>
-            <button 
-              className="sign-in-btn" 
-              onClick={() => window.location.href = "/api/logout"}
-              data-testid="button-logout"
-            >
-              Sign Out
-            </button>
-          </div>
+          {user ? (
+            <div className="user-section">
+              <span className="welcome-text">Welcome, {(user as any)?.firstName || 'Explorer'}</span>
+              <button 
+                className="sign-in-btn" 
+                onClick={() => window.location.href = "/api/logout"}
+                data-testid="button-logout"
+              >
+                Sign Out
+              </button>
+            </div>
+          ) : (
+            <div className="user-section">
+              <button 
+                className="sign-in-btn" 
+                onClick={() => window.location.href = "/api/login"}
+                data-testid="button-login"
+              >
+                Sign In
+              </button>
+            </div>
+          )}
         </div>
       </header>
 
