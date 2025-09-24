@@ -131,160 +131,120 @@ Come to explore. Stay to discover what makes this city unforgettable.
         </div>
       </header>
 
-      {/* Hero Section with Today's City */}
+      {/* Hero Section - Full layout exactly like city detail page */}
       {todaysCity && (
-        <section id="discover" className="relative">
-          <div className="h-64 relative overflow-hidden" style={{background: 'linear-gradient(135deg, var(--hero-gradient-start), var(--hero-gradient-end))'}}>
-            <div className="absolute inset-0 flex items-center justify-center text-center">
-              <div className="max-w-4xl mx-auto px-4">
-                <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-                  Today's Featured City
-                </h2>
-                <h3 className="text-4xl md:text-6xl font-bold text-yellow-300 mb-4">
-                  {todaysCity.name}, {todaysCity.country}
-                </h3>
-                <div className="flex flex-wrap justify-center gap-4">
-                  {/* User interaction buttons removed - app is now fully public */}
-                  <div className="flex">
-                    <ShareButton 
-                      city={{ 
-                        name: todaysCity.name, 
-                        country: todaysCity.country,
-                        morningShareTemplate: todaysCity.morningShareTemplate,
-                        afternoonShareTemplate: todaysCity.afternoonShareTemplate,
-                        eveningShareTemplate: todaysCity.eveningShareTemplate,
-                        bonusShareTemplate: todaysCity.bonusShareTemplate,
-                        luxuryShareTemplate: todaysCity.luxuryShareTemplate,
-                        wildlifeShareTemplate: todaysCity.wildlifeShareTemplate,
-                      }}
-                      content={todaysContent.map((c: any) => ({
-                        title: c.title,
-                        content: c.content,
-                        card_type: c.cardType,
-                        image_url: c.imageUrl
-                      }))}
-                      shareType="page"
+        <section className="relative overflow-hidden py-20 bg-gradient-to-br from-primary to-accent text-white">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h1 className="text-4xl md:text-6xl font-bold mb-6 text-white">
+              {todaysCity.name}
+            </h1>
+            <p className="text-xl md:text-2xl mb-8 text-white/90">
+              {todaysCity.country}
+            </p>
+            <div className="space-y-2 mb-8">
+              <p className="text-xl mb-4" style={{color: '#FFF'}}>
+                Explore Morning Discovery, Afternoon Culture, Evening Experiences, Bonus Facts, Luxury Experiences, and Wildlife — all at once
+              </p>
+              <div className="w-24 h-1 mx-auto rounded-full mt-4" style={{background: 'linear-gradient(135deg, #0038A8, #F2AF00)'}}></div>
+            </div>
+
+            {/* Sample Itinerary HTML Section - Collapsible */}
+            {todaysCity?.sampleItinerary && (
+              <div className="max-w-4xl mx-auto mb-12">
+                <Collapsible.Root open={isItineraryOpen} onOpenChange={setIsItineraryOpen}>
+                  <Collapsible.Trigger asChild>
+                    <div className="relative">
+                      <Button
+                        variant="ghost"
+                        className="w-full p-3 md:p-4 text-white hover:bg-white/10 border border-white/20 rounded-lg mb-4 antialiased font-semibold overflow-hidden"
+                        data-testid="button-toggle-itinerary"
+                      >
+                        <div className="flex items-center justify-center gap-2">
+                          {isItineraryOpen ? (
+                            <ChevronDown className="w-5 h-5" />
+                          ) : (
+                            <ChevronRight className="w-5 h-5" />
+                          )}
+                          <h4 className="text-lg font-bold text-white antialiased" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>
+                            Sample Itinerary
+                          </h4>
+                        </div>
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="absolute right-2 top-1/2 transform -translate-y-1/2 text-white hover:bg-white/10"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleShareItinerary();
+                        }}
+                        data-testid="button-share-itinerary"
+                        title="Share this itinerary"
+                      >
+                        <Share2 className="w-5 h-5" />
+                      </Button>
+                    </div>
+                  </Collapsible.Trigger>
+                  <Collapsible.Content className="animate-in slide-in-from-top-2 duration-200">
+                    <div 
+                      className="sample-itinerary-content text-left bg-white/90 rounded-lg p-6 border border-gray-300 antialiased text-gray-900"
+                      dangerouslySetInnerHTML={{ __html: todaysCity.sampleItinerary }}
+                      data-testid="sample-itinerary-content"
                     />
-                  </div>
-                </div>
+                  </Collapsible.Content>
+                </Collapsible.Root>
+              </div>
+            )}
+
+            {/* Display all content cards */}
+            <div className="max-w-4xl mx-auto">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {organizedContent.map((item) => (
+                  <CityCard
+                    key={item.cardType}
+                    content={item.content}
+                    city={todaysCity || { name: "Your City" }}
+                    nextCardTitle={item.isCurrent ? nextCardInfo.label : undefined}
+                    timeUntilNext={item.isCurrent ? timeUntilNext : undefined}
+                    isCurrent={item.isCurrent}
+                  />
+                ))}
               </div>
             </div>
           </div>
         </section>
       )}
 
-      {/* User stats section removed - app is now fully public */}
-
-      {/* Time-Based Content Display */}
-      <section className="py-16" style={{backgroundColor: '#ffffff'}}>
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <div className="flex items-center justify-center gap-4 mb-6">
-              <h3 className="text-3xl font-bold" style={{color: 'var(--text-dark)'}}>
-                Today's Discovery Cards
-              </h3>
+      {/* City Specials Section - Prominent display like city detail page */}
+      {todaysCity?.cityCtaLinks && Array.isArray(todaysCity.cityCtaLinks) && todaysCity.cityCtaLinks.length > 0 && (
+        <section className="py-16 bg-white">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-8">
+              <h2 className="text-3xl font-bold mb-2">{todaysCity.name} Specials</h2>
+              <p className="text-muted-foreground">City-specific recommendations and deals</p>
             </div>
-            
-            
-            <p className="text-xl mb-4" style={{color: '#666'}}>
-              Explore Morning Discovery, Afternoon Culture, Evening Experiences, Bonus Facts, Luxury Experiences, and Wildlife — all at once
-            </p>
-            <div className="w-24 h-1 mx-auto rounded-full mt-4" style={{background: 'linear-gradient(135deg, #0038A8, #F2AF00)'}}></div>
-          </div>
-
-          {/* Sample Itinerary HTML Section - Collapsible */}
-          {todaysCity?.sampleItinerary && (
-            <div className="max-w-4xl mx-auto mb-12">
-              <Collapsible.Root open={isItineraryOpen} onOpenChange={setIsItineraryOpen}>
-                <Collapsible.Trigger asChild>
-                  <div className="relative">
-                    <Button
-                      variant="outline"
-                      className="w-full p-4 hover:bg-muted/50 border-2 border-primary/20 rounded-lg mb-4"
-                      data-testid="button-toggle-itinerary"
-                      style={{color: 'var(--text-dark)', borderColor: '#0038A8'}}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl mx-auto">
+              {todaysCity.cityCtaLinks.map((link: any, index: number) => (
+                <Card key={`special-${index}`} className="hover:shadow-lg transition-shadow">
+                  <CardContent className="p-4">
+                    <Button 
+                      className="w-full h-auto min-h-[80px] whitespace-normal text-sm leading-tight bg-primary hover:bg-primary/90 text-white"
+                      onClick={() => window.open(link.url, '_blank')}
+                      data-testid={`button-city-special-${index}`}
                     >
-                      <div className="flex items-center justify-center gap-2">
-                        {isItineraryOpen ? (
-                          <ChevronDown className="w-5 h-5" />
-                        ) : (
-                          <ChevronRight className="w-5 h-5" />
-                        )}
-                        <h4 className="text-lg font-bold text-center">
-                          <span className="hidden md:inline">Sample Itinerary for {todaysCity.name}</span>
-                          <span className="md:hidden">Sample Itinerary</span>
-                        </h4>
-                      </div>
+                      {link.text}
                     </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="absolute right-2 top-1/2 transform -translate-y-1/2 hover:bg-muted/50"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleShareItinerary();
-                      }}
-                      data-testid="button-share-itinerary"
-                      title="Share this itinerary"
-                    >
-                      <Share2 className="w-5 h-5" style={{color: 'var(--text-dark)'}} />
-                    </Button>
-                  </div>
-                </Collapsible.Trigger>
-                <Collapsible.Content className="animate-in slide-in-from-top-2 duration-200">
-                  <div 
-                    className="sample-itinerary-content bg-muted/30 rounded-lg p-6 border border-primary/20"
-                    dangerouslySetInnerHTML={{ __html: todaysCity.sampleItinerary }}
-                    data-testid="sample-itinerary-content"
-                  />
-                </Collapsible.Content>
-              </Collapsible.Root>
-            </div>
-          )}
-
-          {/* Display all content cards */}
-          <div className="max-w-4xl mx-auto">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {organizedContent.map((item) => (
-                <CityCard
-                  key={item.cardType}
-                  content={item.content}
-                  city={todaysCity || { name: "Your City" }}
-                  nextCardTitle={item.isCurrent ? nextCardInfo.label : undefined}
-                  timeUntilNext={item.isCurrent ? timeUntilNext : undefined}
-                  isCurrent={item.isCurrent}
-                />
+                  </CardContent>
+                </Card>
               ))}
             </div>
           </div>
-
-          </div>
         </section>
+      )}
 
       {/* Travel Booking Hub - Always visible */}
       <section className="py-16" style={{backgroundColor: '#f8f9fa'}}>
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* City-Specific CTAs - Show first when available */}
-          {todaysCity?.cityCtaLinks && Array.isArray(todaysCity.cityCtaLinks) && todaysCity.cityCtaLinks.length > 0 && (
-            <div className="mb-12">
-              <div className="text-center mb-6">
-                <h5 className="text-lg font-semibold">Today's {todaysCity.name} Specials</h5>
-                <p className="text-muted-foreground text-sm">City-specific recommendations and deals</p>
-              </div>
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 max-w-3xl mx-auto">
-                {todaysCity.cityCtaLinks.map((link: any, index: number) => (
-                  <Button 
-                    key={`custom-${index}`}
-                    className="bg-white text-primary hover:bg-gray-100 border-2 border-primary/20 text-xs md:text-sm px-2 md:px-4 py-2 md:py-2 h-auto min-h-[44px] whitespace-normal leading-tight"
-                    onClick={() => window.open(link.url, '_blank')}
-                    data-testid={`button-city-cta-${index}`}
-                  >
-                    {link.text}
-                  </Button>
-                ))}
-              </div>
-            </div>
-          )}
 
           <div className="text-center mb-8">
             <h4 className="text-2xl font-bold mb-4">Ready to Explore {todaysCity?.name || "the World"}?</h4>
