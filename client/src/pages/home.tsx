@@ -116,15 +116,19 @@ Come to explore. Stay to discover what makes this city unforgettable.
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Navigation Header */}
+      {/* Header */}
       <header className="site-header">
         <div className="logo-area">
           <div className="logo-icon">
             <MapPin className="w-6 h-6" />
           </div>
-          <span className="brand-name">City Discoverer</span>
-          <span className="tagline">Travel Inspiration</span>
+          <span className="brand-name">Daily Felix</span>
+          <span className="tagline">City Explorer</span>
         </div>
+        <nav className="nav-links">
+          <a href="/" className="home-link">Home</a>
+          <a href="/library" className="library-link">Library</a>
+        </nav>
       </header>
 
       {/* Hero Section - Current City & Current Card */}
