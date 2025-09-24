@@ -125,7 +125,7 @@ Come to explore. Stay to discover what makes this city unforgettable.
                   <div className="relative">
                     <Button
                       variant="ghost"
-                      className="w-full p-4 text-white hover:bg-white/10 border border-white/20 rounded-lg mb-4"
+                      className="w-full p-4 text-white hover:bg-white/10 border border-white/20 rounded-lg mb-4 antialiased font-semibold"
                       data-testid="button-toggle-itinerary"
                     >
                       <div className="flex items-center justify-center gap-2">
@@ -134,8 +134,9 @@ Come to explore. Stay to discover what makes this city unforgettable.
                         ) : (
                           <ChevronRight className="w-5 h-5" />
                         )}
-                        <h4 className="text-2xl font-bold">
-                          Sample Itinerary for {city.name}
+                        <h4 className="text-lg md:text-xl font-bold text-white antialiased truncate" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>
+                          <span className="hidden sm:inline">Sample Itinerary for {city.name}</span>
+                          <span className="sm:hidden">Sample Itinerary</span>
                         </h4>
                       </div>
                     </Button>
@@ -156,7 +157,7 @@ Come to explore. Stay to discover what makes this city unforgettable.
                 </Collapsible.Trigger>
                 <Collapsible.Content className="animate-in slide-in-from-top-2 duration-200">
                   <div 
-                    className="sample-itinerary-content text-left bg-white/10 backdrop-blur-sm rounded-lg p-6 border border-white/20"
+                    className="sample-itinerary-content text-left bg-white/20 rounded-lg p-6 border border-white/30 antialiased"
                     dangerouslySetInnerHTML={{ __html: city.sampleItinerary }}
                     data-testid="sample-itinerary-content"
                   />
