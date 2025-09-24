@@ -339,7 +339,7 @@ export default function Admin() {
                         <Button 
                           variant="ghost" 
                           size="sm"
-                          onClick={() => window.open(`/cities/${city.id}`, '_blank')}
+                          onClick={() => window.open(`/city/${city.id}`, '_blank')}
                           data-testid={`button-view-${city.name.toLowerCase().replace(/\s+/g, '-')}`}
                         >
                           <Eye className="w-4 h-4" />
