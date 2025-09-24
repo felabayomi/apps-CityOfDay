@@ -215,36 +215,30 @@ Come to explore. Stay to discover what makes this city unforgettable.
         </section>
       )}
 
-      {/* City Specials Section - Prominent display like city detail page */}
-      {todaysCity?.cityCtaLinks && Array.isArray(todaysCity.cityCtaLinks) && todaysCity.cityCtaLinks.length > 0 && (
-        <section className="py-16 bg-white">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-8">
-              <h2 className="text-3xl font-bold mb-2">{todaysCity.name} Specials</h2>
-              <p className="text-muted-foreground">City-specific recommendations and deals</p>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl mx-auto">
-              {todaysCity.cityCtaLinks.map((link: any, index: number) => (
-                <Card key={`special-${index}`} className="hover:shadow-lg transition-shadow">
-                  <CardContent className="p-4">
-                    <Button 
-                      className="w-full h-auto min-h-[80px] whitespace-normal text-sm leading-tight bg-primary hover:bg-primary/90 text-white"
-                      onClick={() => window.open(link.url, '_blank')}
-                      data-testid={`button-city-special-${index}`}
-                    >
-                      {link.text}
-                    </Button>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
       {/* Travel Booking Hub - Always visible */}
       <section className="py-16" style={{backgroundColor: '#f8f9fa'}}>
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* City-Specific CTAs - Show first when available */}
+          {todaysCity?.cityCtaLinks && Array.isArray(todaysCity.cityCtaLinks) && todaysCity.cityCtaLinks.length > 0 && (
+            <div className="mb-12">
+              <div className="text-center mb-6">
+                <h5 className="text-lg font-semibold">Today's {todaysCity.name} Specials</h5>
+                <p className="text-muted-foreground text-sm">City-specific recommendations and deals</p>
+              </div>
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 max-w-3xl mx-auto">
+                {todaysCity.cityCtaLinks.map((link: any, index: number) => (
+                  <Button 
+                    key={`custom-${index}`}
+                    className="bg-white text-primary hover:bg-gray-100 border-2 border-primary/20 text-xs md:text-sm px-2 md:px-4 py-2 md:py-2 h-auto min-h-[44px] whitespace-normal leading-tight"
+                    onClick={() => window.open(link.url, '_blank')}
+                    data-testid={`button-city-cta-${index}`}
+                  >
+                    {link.text}
+                  </Button>
+                ))}
+              </div>
+            </div>
+          )}
 
           <div className="text-center mb-8">
             <h4 className="text-2xl font-bold mb-4">Ready to Explore {todaysCity?.name || "the World"}?</h4>
