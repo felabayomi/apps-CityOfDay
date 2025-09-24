@@ -134,9 +134,8 @@ Come to explore. Stay to discover what makes this city unforgettable.
                         ) : (
                           <ChevronRight className="w-5 h-5" />
                         )}
-                        <h4 className="text-sm md:text-lg font-bold text-white antialiased max-w-full overflow-hidden" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>
-                          <span className="hidden md:inline">Sample Itinerary for {city.name}</span>
-                          <span className="md:hidden truncate block">Itinerary</span>
+                        <h4 className="text-lg font-bold text-white antialiased" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>
+                          Sample Itinerary
                         </h4>
                       </div>
                     </Button>
