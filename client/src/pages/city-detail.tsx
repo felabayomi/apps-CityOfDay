@@ -157,7 +157,7 @@ Come to explore. Stay to discover what makes this city unforgettable.
                 </Collapsible.Trigger>
                 <Collapsible.Content className="animate-in slide-in-from-top-2 duration-200">
                   <div 
-                    className="sample-itinerary-content text-left bg-white/20 rounded-lg p-6 border border-white/30 antialiased"
+                    className="sample-itinerary-content text-left bg-white/90 rounded-lg p-6 border border-gray-300 antialiased text-gray-900"
                     dangerouslySetInnerHTML={{ __html: city.sampleItinerary }}
                     data-testid="sample-itinerary-content"
                   />
