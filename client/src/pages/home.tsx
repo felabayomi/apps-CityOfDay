@@ -210,8 +210,9 @@ Come to explore. Stay to discover what makes this city unforgettable.
                         ) : (
                           <ChevronRight className="w-5 h-5" />
                         )}
-                        <h4 className="text-2xl font-bold">
-                          Sample Itinerary for {todaysCity.name}
+                        <h4 className="text-lg font-bold text-center">
+                          <span className="hidden md:inline">Sample Itinerary for {todaysCity.name}</span>
+                          <span className="md:hidden">Sample Itinerary</span>
                         </h4>
                       </div>
                     </Button>
