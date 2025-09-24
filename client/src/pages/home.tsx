@@ -116,70 +116,57 @@ Come to explore. Stay to discover what makes this city unforgettable.
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
+      {/* Navigation Header */}
       <header className="site-header">
         <div className="logo-area">
           <div className="logo-icon">
             <MapPin className="w-6 h-6" />
           </div>
-          <span className="brand-name">Daily Felix</span>
-          <span className="tagline">City Explorer</span>
+          <span className="brand-name">City Discoverer</span>
+          <span className="tagline">City of the Day™</span>
         </div>
-        <nav className="nav-links">
+        <div className="auth-area">
           <a href="/" className="home-link">Home</a>
           <a href="/library" className="library-link">Library</a>
-        </nav>
+        </div>
       </header>
 
-      {/* Hero Section - Current City & Current Card */}
+      {/* Hero Section with Today's City */}
       {todaysCity && (
-        <section className="relative overflow-hidden py-20 bg-gradient-to-br from-primary to-accent text-white">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h1 className="text-4xl md:text-6xl font-bold mb-6 text-white">
-              {todaysCity.name}
-            </h1>
-            <p className="text-xl md:text-2xl mb-8 text-white/90">
-              {todaysCity.country}
-            </p>
-
-            {/* Current Time-Based Card Highlight */}
-            <div className="mb-8">
-              <div className="flex items-center justify-center gap-2 mb-4">
-                <Badge variant="secondary" className="text-sm font-medium bg-white/20 text-white border-white/30">
-                  <Flame className="w-4 h-4 mr-1" />
-                  {currentCardInfo.label} is live now
-                </Badge>
-              </div>
-              <p className="text-lg mb-2 text-white/90">
-                {currentCardInfo.description}
-              </p>
-              <p className="text-sm text-white/70">
-                Next: {nextCardInfo.label} in {timeUntilNext}
-              </p>
-            </div>
-
-            <div className="mb-8">
-              <div className="flex items-center justify-center gap-4">
-                <ShareButton 
-                  city={{
-                    id: todaysCity.id,
-                    name: todaysCity.name, 
-                    country: todaysCity.country,
-                    morningShareTemplate: todaysCity.morningShareTemplate,
-                    afternoonShareTemplate: todaysCity.afternoonShareTemplate,
-                    eveningShareTemplate: todaysCity.eveningShareTemplate,
-                    bonusShareTemplate: todaysCity.bonusShareTemplate,
-                    luxuryShareTemplate: todaysCity.luxuryShareTemplate,
-                    wildlifeShareTemplate: todaysCity.wildlifeShareTemplate,
-                  }}
-                  content={todaysContent.map((c: any) => ({
-                    title: c.title,
-                    content: c.content,
-                    card_type: c.cardType,
-                    image_url: c.imageUrl
-                  }))}
-                  shareType="page"
-                />
+        <section id="discover" className="relative">
+          <div className="h-64 relative overflow-hidden" style={{background: 'linear-gradient(135deg, var(--hero-gradient-start), var(--hero-gradient-end))'}}>
+            <div className="absolute inset-0 flex items-center justify-center text-center">
+              <div className="max-w-4xl mx-auto px-4">
+                <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+                  Today's Featured City
+                </h2>
+                <h3 className="text-4xl md:text-6xl font-bold text-yellow-300 mb-4">
+                  {todaysCity.name}, {todaysCity.country}
+                </h3>
+                <div className="flex flex-wrap justify-center gap-4">
+                  {/* User interaction buttons removed - app is now fully public */}
+                  <div className="flex">
+                    <ShareButton 
+                      city={{ 
+                        name: todaysCity.name, 
+                        country: todaysCity.country,
+                        morningShareTemplate: todaysCity.morningShareTemplate,
+                        afternoonShareTemplate: todaysCity.afternoonShareTemplate,
+                        eveningShareTemplate: todaysCity.eveningShareTemplate,
+                        bonusShareTemplate: todaysCity.bonusShareTemplate,
+                        luxuryShareTemplate: todaysCity.luxuryShareTemplate,
+                        wildlifeShareTemplate: todaysCity.wildlifeShareTemplate,
+                      }}
+                      content={todaysContent.map((c: any) => ({
+                        title: c.title,
+                        content: c.content,
+                        card_type: c.cardType,
+                        image_url: c.imageUrl
+                      }))}
+                      shareType="page"
+                    />
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -212,9 +199,10 @@ Come to explore. Stay to discover what makes this city unforgettable.
                 <Collapsible.Trigger asChild>
                   <div className="relative">
                     <Button
-                      variant="ghost"
-                      className="w-full p-3 md:p-4 text-gray-700 hover:bg-gray-100 border border-gray-200 rounded-lg mb-4 antialiased font-semibold overflow-hidden"
+                      variant="outline"
+                      className="w-full p-4 hover:bg-muted/50 border-2 border-primary/20 rounded-lg mb-4"
                       data-testid="button-toggle-itinerary"
+                      style={{color: 'var(--text-dark)', borderColor: '#0038A8'}}
                     >
                       <div className="flex items-center justify-center gap-2">
                         {isItineraryOpen ? (
@@ -231,7 +219,7 @@ Come to explore. Stay to discover what makes this city unforgettable.
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-600 hover:bg-gray-100"
+                      className="absolute right-2 top-1/2 transform -translate-y-1/2 hover:bg-muted/50"
                       onClick={(e) => {
                         e.stopPropagation();
                         handleShareItinerary();
@@ -239,13 +227,13 @@ Come to explore. Stay to discover what makes this city unforgettable.
                       data-testid="button-share-itinerary"
                       title="Share this itinerary"
                     >
-                      <Share2 className="w-5 h-5" />
+                      <Share2 className="w-5 h-5" style={{color: 'var(--text-dark)'}} />
                     </Button>
                   </div>
                 </Collapsible.Trigger>
                 <Collapsible.Content className="animate-in slide-in-from-top-2 duration-200">
                   <div 
-                    className="sample-itinerary-content text-left bg-white rounded-lg p-6 border border-gray-300 antialiased text-gray-900"
+                    className="sample-itinerary-content bg-muted/30 rounded-lg p-6 border border-primary/20"
                     dangerouslySetInnerHTML={{ __html: todaysCity.sampleItinerary }}
                     data-testid="sample-itinerary-content"
                   />
@@ -254,19 +242,24 @@ Come to explore. Stay to discover what makes this city unforgettable.
             </div>
           )}
 
-          {/* Cards Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {organizedContent.map(({ cardType, content, isCurrent }) => (
-              <CityCard 
-                key={cardType}
-                content={content}
-                city={todaysCity}
-                isCurrent={isCurrent}
-              />
-            ))}
+          {/* Display all content cards */}
+          <div className="max-w-4xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {organizedContent.map((item) => (
+                <CityCard
+                  key={item.cardType}
+                  content={item.content}
+                  city={todaysCity || { name: "Your City" }}
+                  nextCardTitle={item.isCurrent ? nextCardInfo.label : undefined}
+                  timeUntilNext={item.isCurrent ? timeUntilNext : undefined}
+                  isCurrent={item.isCurrent}
+                />
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+
+          </div>
+        </section>
 
       {/* Travel Booking Hub - Always visible */}
       <section className="py-16" style={{backgroundColor: '#f8f9fa'}}>
@@ -329,24 +322,69 @@ Come to explore. Stay to discover what makes this city unforgettable.
                 <Button 
                   className="w-full bg-primary hover:bg-primary/90" 
                   data-testid="button-find-tours"
-                  onClick={() => window.open('https://viator.prf.hn/click/camref:1101l4RREX/creativeref:1101l32239', '_blank')}
+                  onClick={() => window.open('https://www.viator.com/?pid=P00113651&uid=U00350276&mcid=58086&currency=USD', '_blank')}
                 >
                   Find Tours
                 </Button>
               </CardContent>
             </Card>
 
-            {/* Book Flights Card */}
+            {/* Search Flights Card */}
             <Card className="hover:shadow-lg transition-shadow">
               <CardContent className="p-6">
-                <h5 className="text-lg font-semibold mb-4">Book Flights</h5>
-                <p className="text-sm text-muted-foreground mb-4">Compare flights from multiple airlines and find the best deals for your next trip.</p>
+                <h5 className="text-lg font-semibold mb-4">Search Flights</h5>
+                <p className="text-sm text-muted-foreground mb-4">Compare and book flights from multiple airlines to get the best deals for your trip.</p>
                 <Button 
                   className="w-full bg-primary hover:bg-primary/90" 
-                  data-testid="button-book-flights"
-                  onClick={() => window.open('https://resmax.globaltravel.net/?custom1=GT20038250&custom2=resmax', '_blank')}
+                  data-testid="button-search-flights"
+                  onClick={() => window.open('https://globaltravel.airfareassist.com/agentsearch?cmp=R400000', '_blank')}
                 >
-                  Book Flights
+                  Search Flights
+                </Button>
+              </CardContent>
+            </Card>
+
+            {/* Car Rental Card */}
+            <Card className="hover:shadow-lg transition-shadow">
+              <CardContent className="p-6">
+                <h5 className="text-lg font-semibold mb-4">Car Rental</h5>
+                <p className="text-sm text-muted-foreground mb-4">Rent a car for ultimate freedom and flexibility during your travels.</p>
+                <Button 
+                  className="w-full bg-primary hover:bg-primary/90" 
+                  data-testid="button-car-rental"
+                  onClick={() => window.open('https://rezervco.carhire-solutions.com/', '_blank')}
+                >
+                  Car Rental
+                </Button>
+              </CardContent>
+            </Card>
+
+            {/* Smart Travel Companion Card */}
+            <Card className="hover:shadow-lg transition-shadow">
+              <CardContent className="p-6">
+                <h5 className="text-lg font-semibold mb-4">Smart Travel Companion</h5>
+                <p className="text-sm text-muted-foreground mb-4">Get AI-powered travel insights and recommendations tailored to your preferences.</p>
+                <Button 
+                  className="w-full bg-primary hover:bg-primary/90" 
+                  data-testid="button-travel-companion"
+                  onClick={() => window.open('https://detect.citydiscoverer.ai/', '_blank')}
+                >
+                  Smart Travel Companion
+                </Button>
+              </CardContent>
+            </Card>
+
+            {/* Itinerary Planner Card */}
+            <Card className="hover:shadow-lg transition-shadow">
+              <CardContent className="p-6">
+                <h5 className="text-lg font-semibold mb-4">Itinerary Planner</h5>
+                <p className="text-sm text-muted-foreground mb-4">Plan your perfect trip with our intelligent itinerary planning tools.</p>
+                <Button 
+                  className="w-full bg-primary hover:bg-primary/90" 
+                  data-testid="button-itinerary-planner"
+                  onClick={() => window.open('https://plan.citydiscoverer.ai/', '_blank')}
+                >
+                  Itinerary Planner
                 </Button>
               </CardContent>
             </Card>
@@ -354,6 +392,8 @@ Come to explore. Stay to discover what makes this city unforgettable.
           </div>
         </div>
       </section>
+
+      {/* Camera and collection features removed - app is now fully public */}
 
       <Footer />
     </div>
