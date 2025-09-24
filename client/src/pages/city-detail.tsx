@@ -60,8 +60,9 @@ Come to explore. Stay to discover what makes this city unforgettable.
     );
   }
 
-  const city = data?.city;
-  const content = data?.content || [];
+  const response = data as any;
+  const city = response?.city || response;
+  const content = response?.content || [];
 
   if (error || !city) {
     return (
@@ -145,7 +146,7 @@ Come to explore. Stay to discover what makes this city unforgettable.
                       className="absolute right-2 top-1/2 transform -translate-y-1/2 text-white hover:bg-white/10"
                       onClick={(e) => {
                         e.stopPropagation();
-                        handleShareItinerary(data?.city);
+                        handleShareItinerary(city);
                       }}
                       data-testid="button-share-itinerary"
                       title="Share this itinerary"
