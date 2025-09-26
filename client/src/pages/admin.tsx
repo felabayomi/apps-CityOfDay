@@ -189,123 +189,156 @@ export default function Admin() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              {cities && cities.length > 0 ? (
-                <div className="space-y-2">
-                  {(() => {
-                    // Group cities by first letter
-                    const citiesByLetter = cities.reduce((acc: any, city: any) => {
-                      const firstLetter = city.name.charAt(0).toUpperCase();
-                      if (!acc[firstLetter]) {
-                        acc[firstLetter] = [];
-                      }
-                      acc[firstLetter].push(city);
-                      return acc;
-                    }, {});
+              {(() => {
+                // Group cities by first letter
+                const citiesByLetter = cities ? cities.reduce((acc: any, city: any) => {
+                  const firstLetter = city.name.charAt(0).toUpperCase();
+                  if (!acc[firstLetter]) {
+                    acc[firstLetter] = [];
+                  }
+                  acc[firstLetter].push(city);
+                  return acc;
+                }, {}) : {};
 
-                    // Sort cities within each letter group alphabetically
-                    Object.keys(citiesByLetter).forEach(letter => {
-                      citiesByLetter[letter].sort((a: any, b: any) => a.name.localeCompare(b.name));
-                    });
+                // Sort cities within each letter group alphabetically
+                Object.keys(citiesByLetter).forEach(letter => {
+                  citiesByLetter[letter].sort((a: any, b: any) => a.name.localeCompare(b.name));
+                });
 
-                    // Create alphabet array and filter only letters that have cities
-                    const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
-                    const lettersWithCities = alphabet.filter(letter => citiesByLetter[letter]?.length > 0);
+                // All 26 letters of the alphabet
+                const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
 
-                    const toggleLetter = (letter: string) => {
-                      setOpenLetters(prev => {
-                        const newSet = new Set(prev);
-                        if (newSet.has(letter)) {
-                          newSet.delete(letter);
-                        } else {
-                          newSet.add(letter);
-                        }
-                        return newSet;
-                      });
-                    };
+                const toggleLetter = (letter: string) => {
+                  setOpenLetters(prev => {
+                    const newSet = new Set(prev);
+                    if (newSet.has(letter)) {
+                      newSet.delete(letter);
+                    } else {
+                      newSet.add(letter);
+                    }
+                    return newSet;
+                  });
+                };
 
-                    return lettersWithCities.map(letter => (
-                      <Collapsible
-                        key={letter}
-                        open={openLetters.has(letter)}
-                        onOpenChange={() => toggleLetter(letter)}
-                      >
-                        <CollapsibleTrigger className="flex items-center w-full p-3 text-left hover:bg-muted/30 rounded-lg transition-colors group" data-testid={`button-letter-${letter.toLowerCase()}`}>
-                          <div className="flex items-center justify-between w-full">
-                            <div className="flex items-center gap-3">
-                              {openLetters.has(letter) ? (
-                                <ChevronDown className="w-4 h-4 text-muted-foreground" />
-                              ) : (
-                                <ChevronRight className="w-4 h-4 text-muted-foreground" />
-                              )}
-                              <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
-                                <span className="font-semibold text-primary">{letter}</span>
-                              </div>
-                              <span className="font-medium text-foreground">
-                                {letter} Cities
+                return (
+                  <div className="space-y-6">
+                    {/* Alphabet Grid - 7 columns x 4 rows */}
+                    <div className="grid grid-cols-7 gap-3">
+                      {alphabet.map(letter => {
+                        const cityCount = citiesByLetter[letter]?.length || 0;
+                        const hasContent = cityCount > 0;
+                        
+                        return (
+                          <button
+                            key={letter}
+                            onClick={() => hasContent && toggleLetter(letter)}
+                            disabled={!hasContent}
+                            className={`
+                              relative p-4 rounded-lg border transition-all duration-200
+                              ${hasContent 
+                                ? 'border-primary/20 bg-primary/5 hover:bg-primary/10 hover:border-primary/30 cursor-pointer' 
+                                : 'border-muted bg-muted/20 cursor-not-allowed opacity-50'
+                              }
+                              ${openLetters.has(letter) ? 'ring-2 ring-primary/20 bg-primary/10' : ''}
+                            `}
+                            data-testid={`button-letter-${letter.toLowerCase()}`}
+                          >
+                            <div className="flex flex-col items-center">
+                              <span className={`text-xl font-bold ${hasContent ? 'text-primary' : 'text-muted-foreground'}`}>
+                                {letter}
                               </span>
+                              {cityCount > 0 && (
+                                <span className="text-xs text-muted-foreground mt-1 bg-muted px-1.5 py-0.5 rounded-full">
+                                  {cityCount}
+                                </span>
+                              )}
                             </div>
-                            <span className="text-sm text-muted-foreground bg-muted px-2 py-1 rounded-full">
-                              {citiesByLetter[letter].length}
-                            </span>
-                          </div>
-                        </CollapsibleTrigger>
-                        <CollapsibleContent className="pl-11 pr-3 pb-3">
-                          <div className="grid md:grid-cols-2 gap-3">
-                            {citiesByLetter[letter].map((city: any) => (
-                              <div
-                                key={city.id}
-                                className="p-4 border border-border rounded-lg bg-card hover:bg-muted/30 transition-colors"
-                                data-testid={`city-card-${city.name.toLowerCase().replace(/\s+/g, '-').replace(/,/g, '')}`}
-                              >
-                                <div className="flex items-start justify-between mb-2">
-                                  <div className="flex-1">
-                                    <h5 className="font-medium text-foreground text-sm">{city.name}</h5>
-                                    <p className="text-xs text-muted-foreground">{city.country}</p>
-                                  </div>
-                                  <span className={`text-xs px-2 py-1 rounded-full ml-2 ${
-                                    city.isPublished 
-                                      ? 'bg-green-100 text-green-700' 
-                                      : 'bg-muted text-muted-foreground'
-                                  }`}>
-                                    {city.isPublished ? 'Live' : 'Draft'}
-                                  </span>
-                                </div>
-                                
-                                {city.scheduledDate && (
-                                  <div className="flex items-center text-xs text-accent mt-2">
-                                    <CalendarIcon className="w-3 h-3 mr-1" />
-                                    <span className="bg-accent/10 px-2 py-1 rounded">
-                                      {new Date(city.scheduledDate).toLocaleDateString('en-US', { 
-                                        weekday: 'short',
-                                        month: 'short', 
-                                        day: 'numeric',
-                                        year: 'numeric'
-                                      })}
-                                    </span>
-                                  </div>
-                                )}
-                                
-                                {city.isPinned && (
-                                  <div className="mt-2">
-                                    <span className="text-xs px-2 py-1 rounded-full bg-secondary/10 text-secondary">
-                                      Pinned
-                                    </span>
-                                  </div>
-                                )}
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    {/* Expanded Content for Selected Letter */}
+                    {Array.from(openLetters).map(letter => {
+                      const letterCities = citiesByLetter[letter] || [];
+                      if (letterCities.length === 0) return null;
+                      
+                      return (
+                        <Collapsible key={letter} open={true}>
+                          <div className="border border-primary/20 rounded-lg p-4 bg-primary/5">
+                            <div className="flex items-center gap-3 mb-4">
+                              <div className="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center">
+                                <span className="font-bold text-primary text-lg">{letter}</span>
                               </div>
-                            ))}
+                              <h4 className="font-semibold text-foreground">
+                                {letter} Cities ({letterCities.length})
+                              </h4>
+                              <button
+                                onClick={() => toggleLetter(letter)}
+                                className="ml-auto p-1 hover:bg-muted rounded"
+                              >
+                                <Eye className="w-4 h-4 text-muted-foreground" />
+                              </button>
+                            </div>
+                            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-3">
+                              {letterCities.map((city: any) => (
+                                <div
+                                  key={city.id}
+                                  className="p-4 border border-border rounded-lg bg-card hover:bg-muted/30 transition-colors"
+                                  data-testid={`city-card-${city.name.toLowerCase().replace(/\s+/g, '-').replace(/,/g, '')}`}
+                                >
+                                  <div className="flex items-start justify-between mb-2">
+                                    <div className="flex-1">
+                                      <h5 className="font-medium text-foreground text-sm">{city.name}</h5>
+                                      <p className="text-xs text-muted-foreground">{city.country}</p>
+                                    </div>
+                                    <span className={`text-xs px-2 py-1 rounded-full ml-2 ${
+                                      city.isPublished 
+                                        ? 'bg-green-100 text-green-700' 
+                                        : 'bg-muted text-muted-foreground'
+                                    }`}>
+                                      {city.isPublished ? 'Live' : 'Draft'}
+                                    </span>
+                                  </div>
+                                  
+                                  {city.scheduledDate && (
+                                    <div className="flex items-center text-xs text-accent mt-2">
+                                      <CalendarIcon className="w-3 h-3 mr-1" />
+                                      <span className="bg-accent/10 px-2 py-1 rounded">
+                                        {new Date(city.scheduledDate).toLocaleDateString('en-US', { 
+                                          weekday: 'short',
+                                          month: 'short', 
+                                          day: 'numeric',
+                                          year: 'numeric'
+                                        })}
+                                      </span>
+                                    </div>
+                                  )}
+                                  
+                                  {city.isPinned && (
+                                    <div className="mt-2">
+                                      <span className="text-xs px-2 py-1 rounded-full bg-secondary/10 text-secondary">
+                                        Pinned
+                                      </span>
+                                    </div>
+                                  )}
+                                </div>
+                              ))}
+                            </div>
                           </div>
-                        </CollapsibleContent>
-                      </Collapsible>
-                    ));
-                  })()}
-                </div>
-              ) : (
-                <div className="text-center py-8 text-muted-foreground">
-                  <CalendarIcon className="w-16 h-16 mx-auto mb-4 opacity-30" />
-                  <p>No cities created yet. Start by generating your first city!</p>
-                </div>
-              )}
+                        </Collapsible>
+                      );
+                    })}
+
+                    {cities && cities.length === 0 && (
+                      <div className="text-center py-8 text-muted-foreground">
+                        <CalendarIcon className="w-16 h-16 mx-auto mb-4 opacity-30" />
+                        <p>No cities created yet. Start by generating your first city!</p>
+                      </div>
+                    )}
+                  </div>
+                );
+              })()}
             </CardContent>
           </Card>
         </div>
