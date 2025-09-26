@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Plus, Edit2, Trash2, Palette, Eye, Check } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
@@ -102,6 +103,8 @@ export function ColorThemeManager() {
   const [isCreating, setIsCreating] = useState(false);
   const [editingTheme, setEditingTheme] = useState<ColorTheme | null>(null);
   const [formData, setFormData] = useState<ColorThemeForm>(DEFAULT_FORM);
+  const [selectedThemeId, setSelectedThemeId] = useState<string>("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Fetch all color themes
   const { data: themes, isLoading } = useQuery<ColorTheme[]>({
@@ -252,101 +255,156 @@ export function ColorThemeManager() {
           </Button>
         </div>
 
-        {isLoading ? (
+{isLoading ? (
           <div className="flex items-center justify-center py-8">
             <div className="animate-spin w-6 h-6 border-4 border-primary border-t-transparent rounded-full" />
           </div>
         ) : themes && themes.length > 0 ? (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {themes.map((theme) => (
-              <Card key={theme.id} className="relative">
-                <CardHeader className="pb-4">
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-base">{theme.name}</CardTitle>
-                    {theme.isActive && (
-                      <Badge variant="default" className="bg-green-100 text-green-700">
-                        <Check className="w-3 h-3 mr-1" />
-                        Active
-                      </Badge>
-                    )}
-                  </div>
-                  {theme.description && (
-                    <p className="text-sm text-muted-foreground">{theme.description}</p>
-                  )}
-                </CardHeader>
-                <CardContent>
-                  {/* Color Preview */}
-                  <div className="space-y-2 mb-4">
-                    <div
-                      className="h-8 rounded flex items-center justify-center text-white text-xs font-medium"
-                      style={{
-                        background: `linear-gradient(135deg, ${theme.heroGradientStart}, ${theme.heroGradientEnd})`,
-                      }}
-                    >
-                      Hero Gradient
-                    </div>
-                    <div className="grid grid-cols-2 gap-2">
-                      <div
-                        className="h-6 rounded flex items-center justify-center text-xs font-medium"
-                        style={{
-                          backgroundColor: theme.accentBarBackground,
-                          color: theme.accentBarText,
-                        }}
-                      >
-                        Accent
+          <div className="space-y-4">
+            <Label htmlFor="theme-select">Select City Theme to Manage:</Label>
+            <Select value={selectedThemeId} onValueChange={setSelectedThemeId}>
+              <SelectTrigger className="w-full max-w-md" data-testid="select-theme">
+                <SelectValue placeholder="Choose a city theme..." />
+              </SelectTrigger>
+              <SelectContent>
+                {themes
+                  .sort((a, b) => a.name.localeCompare(b.name))
+                  .map((theme) => (
+                    <SelectItem key={theme.id} value={theme.id}>
+                      <div className="flex items-center gap-2">
+                        {theme.name}
+                        {theme.isActive && (
+                          <Badge variant="default" className="bg-green-100 text-green-700 text-xs">
+                            Active
+                          </Badge>
+                        )}
                       </div>
-                      <div
-                        className="h-6 rounded flex items-center justify-center text-xs font-medium"
-                        style={{
-                          backgroundColor: theme.cardBadgeBackground,
-                          color: theme.cardBadgeText,
-                        }}
-                      >
-                        Badge
-                      </div>
-                    </div>
-                  </div>
+                    </SelectItem>
+                  ))}
+              </SelectContent>
+            </Select>
 
-                  {/* Actions */}
-                  <div className="flex items-center gap-2">
-                    {!theme.isActive && (
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => activateThemeMutation.mutate(theme.id)}
-                        disabled={activateThemeMutation.isPending}
-                        data-testid={`button-activate-${theme.name.toLowerCase().replace(/\s+/g, '-')}`}
-                      >
-                        <Eye className="w-3 h-3 mr-1" />
-                        Activate
-                      </Button>
-                    )}
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => startEdit(theme)}
-                      data-testid={`button-edit-theme-${theme.name.toLowerCase().replace(/\s+/g, '-')}`}
-                    >
-                      <Edit2 className="w-3 h-3" />
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => {
-                        if (window.confirm(`Delete theme "${theme.name}"?`)) {
-                          deleteThemeMutation.mutate(theme.id);
-                        }
-                      }}
-                      disabled={theme.isActive || deleteThemeMutation.isPending}
-                      data-testid={`button-delete-theme-${theme.name.toLowerCase().replace(/\s+/g, '-')}`}
-                      className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                    >
-                      <Trash2 className="w-3 h-3" />
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+            {selectedThemeId && (
+              <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+                <DialogTrigger asChild>
+                  <Button
+                    variant="outline"
+                    onClick={() => setIsModalOpen(true)}
+                    data-testid="button-view-theme"
+                  >
+                    <Eye className="w-4 h-4 mr-2" />
+                    View & Manage Theme
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-md">
+                  <DialogHeader>
+                    <DialogTitle>Manage Color Theme</DialogTitle>
+                  </DialogHeader>
+                  {(() => {
+                    const theme = themes.find(t => t.id === selectedThemeId);
+                    if (!theme) return null;
+                    
+                    return (
+                      <Card className="relative">
+                        <CardHeader className="pb-4">
+                          <div className="flex items-center justify-between">
+                            <CardTitle className="text-base">{theme.name}</CardTitle>
+                            {theme.isActive && (
+                              <Badge variant="default" className="bg-green-100 text-green-700">
+                                <Check className="w-3 h-3 mr-1" />
+                                Active
+                              </Badge>
+                            )}
+                          </div>
+                          {theme.description && (
+                            <p className="text-sm text-muted-foreground">{theme.description}</p>
+                          )}
+                        </CardHeader>
+                        <CardContent>
+                          {/* Color Preview */}
+                          <div className="space-y-2 mb-4">
+                            <div
+                              className="h-8 rounded flex items-center justify-center text-white text-xs font-medium"
+                              style={{
+                                background: `linear-gradient(135deg, ${theme.heroGradientStart}, ${theme.heroGradientEnd})`,
+                              }}
+                            >
+                              Hero Gradient
+                            </div>
+                            <div className="grid grid-cols-2 gap-2">
+                              <div
+                                className="h-6 rounded flex items-center justify-center text-xs font-medium"
+                                style={{
+                                  backgroundColor: theme.accentBarBackground,
+                                  color: theme.accentBarText,
+                                }}
+                              >
+                                Accent
+                              </div>
+                              <div
+                                className="h-6 rounded flex items-center justify-center text-xs font-medium"
+                                style={{
+                                  backgroundColor: theme.cardBadgeBackground,
+                                  color: theme.cardBadgeText,
+                                }}
+                              >
+                                Badge
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Actions */}
+                          <div className="flex items-center gap-2">
+                            {!theme.isActive && (
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => {
+                                  activateThemeMutation.mutate(theme.id);
+                                  setIsModalOpen(false);
+                                }}
+                                disabled={activateThemeMutation.isPending}
+                                data-testid={`button-activate-${theme.name.toLowerCase().replace(/\s+/g, '-')}`}
+                              >
+                                <Eye className="w-3 h-3 mr-1" />
+                                Activate
+                              </Button>
+                            )}
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => {
+                                startEdit(theme);
+                                setIsModalOpen(false);
+                              }}
+                              data-testid={`button-edit-theme-${theme.name.toLowerCase().replace(/\s+/g, '-')}`}
+                            >
+                              <Edit2 className="w-3 h-3" />
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => {
+                                if (window.confirm(`Delete theme "${theme.name}"?`)) {
+                                  deleteThemeMutation.mutate(theme.id);
+                                  setIsModalOpen(false);
+                                  setSelectedThemeId("");
+                                }
+                              }}
+                              disabled={theme.isActive || deleteThemeMutation.isPending}
+                              data-testid={`button-delete-theme-${theme.name.toLowerCase().replace(/\s+/g, '-')}`}
+                              className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                            >
+                              <Trash2 className="w-3 h-3" />
+                            </Button>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    );
+                  })()}
+                </DialogContent>
+              </Dialog>
+            )}
           </div>
         ) : (
           <div className="text-center py-8 text-muted-foreground">
