@@ -23,6 +23,7 @@ export default function Admin() {
   const queryClient = useQueryClient();
   const [selectedCity, setSelectedCity] = useState<string>("");
   const [openLetters, setOpenLetters] = useState<Set<string>>(new Set());
+  const [searchQuery, setSearchQuery] = useState<string>("");
 
   // Redirect to login if not authenticated or check admin access
   useEffect(() => {
@@ -353,13 +354,36 @@ export default function Admin() {
               </CardTitle>
             </CardHeader>
             <CardContent>
+              <div className="mb-6">
+                <Input
+                  placeholder="Search cities by name, state, country, or date created..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="max-w-md"
+                  data-testid="input-search-cities"
+                />
+              </div>
+              
               {loadingCities ? (
                 <div className="flex items-center justify-center py-8">
                   <div className="animate-spin w-6 h-6 border-4 border-primary border-t-transparent rounded-full" />
                 </div>
               ) : cities && cities.length > 0 ? (
                 <div className="space-y-4">
-                  {cities.map((city: any) => (
+                  {cities
+                    .filter((city: any) => {
+                      if (!searchQuery.trim()) return true;
+                      
+                      const query = searchQuery.toLowerCase();
+                      const cityName = city.name.toLowerCase();
+                      const country = city.country.toLowerCase();
+                      const createdDate = new Date(city.createdAt).toLocaleDateString();
+                      
+                      return cityName.includes(query) || 
+                             country.includes(query) || 
+                             createdDate.includes(query);
+                    })
+                    .map((city: any) => (
                     <div 
                       key={city.id} 
                       className="flex items-center justify-between p-4 border border-border rounded-lg hover:bg-muted/30 transition-colors"
