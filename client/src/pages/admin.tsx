@@ -7,7 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Globe, Wand2, Edit, Trash2, Plus, Eye, MapPin, CalendarIcon } from "lucide-react";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Globe, Wand2, Edit, Trash2, Plus, Eye, MapPin, CalendarIcon, ChevronDown, ChevronRight } from "lucide-react";
 import { AdminCityGenerator } from "@/components/admin-city-generator";
 import { ContentEditor } from "@/components/content-editor";
 import { ColorThemeManager } from "@/components/ColorThemeManager";
@@ -21,6 +22,7 @@ export default function Admin() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [selectedCity, setSelectedCity] = useState<string>("");
+  const [openLetters, setOpenLetters] = useState<Set<string>>(new Set());
 
   // Redirect to login if not authenticated or check admin access
   useEffect(() => {
@@ -188,76 +190,115 @@ export default function Admin() {
             </CardHeader>
             <CardContent>
               {cities && cities.length > 0 ? (
-                <div>
-                  {/* Scheduled Cities */}
-                  <div className="mb-6">
-                    <h4 className="font-semibold text-foreground mb-4">Scheduled Content</h4>
-                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {cities
-                        .filter((city: any) => city.scheduledDate)
-                        .sort((a: any, b: any) => new Date(a.scheduledDate).getTime() - new Date(b.scheduledDate).getTime())
-                        .map((city: any) => (
-                          <div
-                            key={city.id}
-                            className="p-4 border border-accent/20 rounded-lg bg-accent/5 hover:bg-accent/10 transition-colors"
-                          >
-                            <div className="flex items-center justify-between mb-2">
-                              <h5 className="font-medium text-foreground">{city.name}</h5>
-                              <span className={`text-xs px-2 py-1 rounded-full ${
-                                city.isPublished 
-                                  ? 'bg-green-100 text-green-700' 
-                                  : 'bg-muted text-muted-foreground'
-                              }`}>
-                                {city.isPublished ? 'Live' : 'Draft'}
-                              </span>
-                            </div>
-                            <p className="text-sm text-muted-foreground mb-2">{city.country}</p>
-                            <div className="flex items-center text-xs text-accent">
-                              <CalendarIcon className="w-3 h-3 mr-1" />
-                              {new Date(city.scheduledDate).toLocaleDateString('en-US', { 
-                                weekday: 'short',
-                                month: 'short', 
-                                day: 'numeric',
-                                year: 'numeric'
-                              })}
-                            </div>
-                          </div>
-                        ))}
-                    </div>
-                    {cities.filter((city: any) => city.scheduledDate).length === 0 && (
-                      <div className="text-center py-8 text-muted-foreground">
-                        <CalendarIcon className="w-16 h-16 mx-auto mb-4 opacity-30" />
-                        <p>No content scheduled yet. Use the generator above to schedule content for specific dates!</p>
-                      </div>
-                    )}
-                  </div>
+                <div className="space-y-2">
+                  {(() => {
+                    // Group cities by first letter
+                    const citiesByLetter = cities.reduce((acc: any, city: any) => {
+                      const firstLetter = city.name.charAt(0).toUpperCase();
+                      if (!acc[firstLetter]) {
+                        acc[firstLetter] = [];
+                      }
+                      acc[firstLetter].push(city);
+                      return acc;
+                    }, {});
 
-                  {/* Unscheduled Content */}
-                  {cities.filter((city: any) => !city.scheduledDate).length > 0 && (
-                    <div>
-                      <h4 className="font-semibold text-foreground mb-4">Unscheduled Content</h4>
-                      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-3">
-                        {cities
-                          .filter((city: any) => !city.scheduledDate)
-                          .map((city: any) => (
-                            <div
-                              key={city.id}
-                              className="p-3 border border-border rounded-lg bg-card hover:bg-muted/30 transition-colors"
-                            >
-                              <h6 className="font-medium text-foreground text-sm">{city.name}</h6>
-                              <p className="text-xs text-muted-foreground">{city.country}</p>
-                              <span className={`inline-block mt-2 text-xs px-2 py-1 rounded-full ${
-                                city.isPublished 
-                                  ? 'bg-green-100 text-green-700' 
-                                  : 'bg-muted text-muted-foreground'
-                              }`}>
-                                {city.isPublished ? 'Published' : 'Draft'}
+                    // Sort cities within each letter group alphabetically
+                    Object.keys(citiesByLetter).forEach(letter => {
+                      citiesByLetter[letter].sort((a: any, b: any) => a.name.localeCompare(b.name));
+                    });
+
+                    // Create alphabet array and filter only letters that have cities
+                    const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+                    const lettersWithCities = alphabet.filter(letter => citiesByLetter[letter]?.length > 0);
+
+                    const toggleLetter = (letter: string) => {
+                      setOpenLetters(prev => {
+                        const newSet = new Set(prev);
+                        if (newSet.has(letter)) {
+                          newSet.delete(letter);
+                        } else {
+                          newSet.add(letter);
+                        }
+                        return newSet;
+                      });
+                    };
+
+                    return lettersWithCities.map(letter => (
+                      <Collapsible
+                        key={letter}
+                        open={openLetters.has(letter)}
+                        onOpenChange={() => toggleLetter(letter)}
+                      >
+                        <CollapsibleTrigger className="flex items-center w-full p-3 text-left hover:bg-muted/30 rounded-lg transition-colors group" data-testid={`button-letter-${letter.toLowerCase()}`}>
+                          <div className="flex items-center justify-between w-full">
+                            <div className="flex items-center gap-3">
+                              {openLetters.has(letter) ? (
+                                <ChevronDown className="w-4 h-4 text-muted-foreground" />
+                              ) : (
+                                <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                              )}
+                              <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
+                                <span className="font-semibold text-primary">{letter}</span>
+                              </div>
+                              <span className="font-medium text-foreground">
+                                {letter} Cities
                               </span>
                             </div>
-                          ))}
-                      </div>
-                    </div>
-                  )}
+                            <span className="text-sm text-muted-foreground bg-muted px-2 py-1 rounded-full">
+                              {citiesByLetter[letter].length}
+                            </span>
+                          </div>
+                        </CollapsibleTrigger>
+                        <CollapsibleContent className="pl-11 pr-3 pb-3">
+                          <div className="grid md:grid-cols-2 gap-3">
+                            {citiesByLetter[letter].map((city: any) => (
+                              <div
+                                key={city.id}
+                                className="p-4 border border-border rounded-lg bg-card hover:bg-muted/30 transition-colors"
+                                data-testid={`city-card-${city.name.toLowerCase().replace(/\s+/g, '-').replace(/,/g, '')}`}
+                              >
+                                <div className="flex items-start justify-between mb-2">
+                                  <div className="flex-1">
+                                    <h5 className="font-medium text-foreground text-sm">{city.name}</h5>
+                                    <p className="text-xs text-muted-foreground">{city.country}</p>
+                                  </div>
+                                  <span className={`text-xs px-2 py-1 rounded-full ml-2 ${
+                                    city.isPublished 
+                                      ? 'bg-green-100 text-green-700' 
+                                      : 'bg-muted text-muted-foreground'
+                                  }`}>
+                                    {city.isPublished ? 'Live' : 'Draft'}
+                                  </span>
+                                </div>
+                                
+                                {city.scheduledDate && (
+                                  <div className="flex items-center text-xs text-accent mt-2">
+                                    <CalendarIcon className="w-3 h-3 mr-1" />
+                                    <span className="bg-accent/10 px-2 py-1 rounded">
+                                      {new Date(city.scheduledDate).toLocaleDateString('en-US', { 
+                                        weekday: 'short',
+                                        month: 'short', 
+                                        day: 'numeric',
+                                        year: 'numeric'
+                                      })}
+                                    </span>
+                                  </div>
+                                )}
+                                
+                                {city.isPinned && (
+                                  <div className="mt-2">
+                                    <span className="text-xs px-2 py-1 rounded-full bg-secondary/10 text-secondary">
+                                      Pinned
+                                    </span>
+                                  </div>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        </CollapsibleContent>
+                      </Collapsible>
+                    ));
+                  })()}
                 </div>
               ) : (
                 <div className="text-center py-8 text-muted-foreground">
