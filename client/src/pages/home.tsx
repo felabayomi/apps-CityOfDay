@@ -133,7 +133,7 @@ Come to explore. Stay to discover what makes this city unforgettable.
 
       {/* Hero Section - Full layout exactly like city detail page */}
       {todaysCity && (
-        <section className="relative overflow-hidden py-20 bg-gradient-to-br from-primary to-accent text-white">
+        <section className="relative overflow-hidden py-20 text-white" style={{background: 'linear-gradient(135deg, var(--hero-gradient-start), var(--hero-gradient-end))'}}>
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h1 className="text-4xl md:text-6xl font-bold mb-6 text-white">
               {todaysCity.name}
@@ -145,7 +145,7 @@ Come to explore. Stay to discover what makes this city unforgettable.
               <p className="text-xl mb-4" style={{color: '#FFF'}}>
                 Explore Morning Discovery, Afternoon Culture, Evening Experiences, Bonus Facts, Luxury Experiences, and Wildlife — all at once
               </p>
-              <div className="w-24 h-1 mx-auto rounded-full mt-4" style={{background: 'linear-gradient(135deg, #0038A8, #F2AF00)'}}></div>
+              <div className="w-24 h-1 mx-auto rounded-full mt-4" style={{background: 'linear-gradient(135deg, var(--hero-gradient-start), var(--accent-bar-bg))'}}></div>
             </div>
 
             {/* Sample Itinerary HTML Section - Collapsible */}
