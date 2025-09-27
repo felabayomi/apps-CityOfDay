@@ -22,8 +22,9 @@ export function ActiveThemeProvider({ children }: ActiveThemeProviderProps) {
   // Fetch active theme from public API
   const { data: activeTheme } = useQuery<ColorTheme | null>({
     queryKey: ["/api/color-themes/active"],
-    refetchOnWindowFocus: false,
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    refetchOnWindowFocus: true,
+    staleTime: 30 * 1000, // 30 seconds instead of 5 minutes
+    refetchInterval: 30 * 1000, // Check for updates every 30 seconds
   });
 
   // Apply theme colors as CSS variables whenever theme changes
