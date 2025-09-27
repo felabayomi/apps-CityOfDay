@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Plus, Edit2, Trash2, Palette, Eye, Check } from "lucide-react";
+import { Plus, Edit2, Trash2, Palette, Eye, Check, ChevronLeft, ChevronRight } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 
@@ -105,6 +105,7 @@ export function ColorThemeManager() {
   const [formData, setFormData] = useState<ColorThemeForm>(DEFAULT_FORM);
   const [selectedThemeId, setSelectedThemeId] = useState<string>("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currentThemeIndex, setCurrentThemeIndex] = useState(0);
 
   // Fetch all color themes
   const { data: themes, isLoading } = useQuery<ColorTheme[]>({
@@ -261,150 +262,197 @@ export function ColorThemeManager() {
           </div>
         ) : themes && themes.length > 0 ? (
           <div className="space-y-4">
-            <Label htmlFor="theme-select">Select City Theme to Manage:</Label>
-            <Select value={selectedThemeId} onValueChange={setSelectedThemeId}>
-              <SelectTrigger className="w-full max-w-md" data-testid="select-theme">
-                <SelectValue placeholder="Choose a city theme..." />
-              </SelectTrigger>
-              <SelectContent>
-                {themes
-                  .sort((a, b) => a.name.localeCompare(b.name))
-                  .map((theme) => (
-                    <SelectItem key={theme.id} value={theme.id}>
-                      <div className="flex items-center gap-2">
-                        {theme.name}
-                        {theme.isActive && (
-                          <Badge variant="default" className="bg-green-100 text-green-700 text-xs">
-                            Active
-                          </Badge>
-                        )}
-                      </div>
-                    </SelectItem>
-                  ))}
-              </SelectContent>
-            </Select>
+            <div className="flex items-center justify-between">
+              <Label>Browse and manage your color themes:</Label>
+              <Badge variant="secondary" className="text-xs">
+                {themes.length} theme{themes.length !== 1 ? 's' : ''}
+              </Badge>
+            </div>
+            
+            <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+              <DialogTrigger asChild>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    // Set initial theme to active one or first theme
+                    const activeIndex = themes.findIndex(t => t.isActive);
+                    setCurrentThemeIndex(activeIndex >= 0 ? activeIndex : 0);
+                    setIsModalOpen(true);
+                  }}
+                  data-testid="button-browse-themes"
+                  className="w-full"
+                >
+                  <Eye className="w-4 h-4 mr-2" />
+                  Browse & Manage All Themes
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-lg">
+                <DialogHeader>
+                  <DialogTitle className="flex items-center justify-between">
+                    <span>Theme Gallery</span>
+                    <Badge variant="secondary" className="text-xs">
+                      {currentThemeIndex + 1} of {themes.length}
+                    </Badge>
+                  </DialogTitle>
+                </DialogHeader>
+                
+                {(() => {
+                  const sortedThemes = themes.sort((a, b) => a.name.localeCompare(b.name));
+                  const currentTheme = sortedThemes[currentThemeIndex];
+                  if (!currentTheme) return null;
 
-            {selectedThemeId && (
-              <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-                <DialogTrigger asChild>
-                  <Button
-                    variant="outline"
-                    onClick={() => setIsModalOpen(true)}
-                    data-testid="button-view-theme"
-                  >
-                    <Eye className="w-4 h-4 mr-2" />
-                    View & Manage Theme
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="max-w-md">
-                  <DialogHeader>
-                    <DialogTitle>Manage Color Theme</DialogTitle>
-                  </DialogHeader>
-                  {(() => {
-                    const theme = themes.find(t => t.id === selectedThemeId);
-                    if (!theme) return null;
-                    
-                    return (
-                      <Card className="relative">
+                  const goToPrevious = () => {
+                    setCurrentThemeIndex(prev => prev > 0 ? prev - 1 : sortedThemes.length - 1);
+                  };
+
+                  const goToNext = () => {
+                    setCurrentThemeIndex(prev => prev < sortedThemes.length - 1 ? prev + 1 : 0);
+                  };
+                  
+                  return (
+                    <div className="relative">
+                      {/* Navigation Arrows */}
+                      {sortedThemes.length > 1 && (
+                        <>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={goToPrevious}
+                            className="absolute left-2 top-1/2 -translate-y-1/2 z-10 bg-background/80 hover:bg-background"
+                            data-testid="button-theme-previous"
+                          >
+                            <ChevronLeft className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={goToNext}
+                            className="absolute right-2 top-1/2 -translate-y-1/2 z-10 bg-background/80 hover:bg-background"
+                            data-testid="button-theme-next"
+                          >
+                            <ChevronRight className="w-4 h-4" />
+                          </Button>
+                        </>
+                      )}
+
+                      {/* Theme Card */}
+                      <Card className="relative mx-8">
                         <CardHeader className="pb-4">
                           <div className="flex items-center justify-between">
-                            <CardTitle className="text-base">{theme.name}</CardTitle>
-                            {theme.isActive && (
+                            <CardTitle className="text-base">{currentTheme.name}</CardTitle>
+                            {currentTheme.isActive && (
                               <Badge variant="default" className="bg-green-100 text-green-700">
                                 <Check className="w-3 h-3 mr-1" />
                                 Active
                               </Badge>
                             )}
                           </div>
-                          {theme.description && (
-                            <p className="text-sm text-muted-foreground">{theme.description}</p>
+                          {currentTheme.description && (
+                            <p className="text-sm text-muted-foreground">{currentTheme.description}</p>
                           )}
                         </CardHeader>
                         <CardContent>
                           {/* Color Preview */}
-                          <div className="space-y-2 mb-4">
+                          <div className="space-y-2 mb-6">
                             <div
-                              className="h-8 rounded flex items-center justify-center text-white text-xs font-medium"
+                              className="h-10 rounded flex items-center justify-center text-white text-sm font-medium"
                               style={{
-                                background: `linear-gradient(135deg, ${theme.heroGradientStart}, ${theme.heroGradientEnd})`,
+                                background: `linear-gradient(135deg, ${currentTheme.heroGradientStart}, ${currentTheme.heroGradientEnd})`,
                               }}
                             >
                               Hero Gradient
                             </div>
                             <div className="grid grid-cols-2 gap-2">
                               <div
-                                className="h-6 rounded flex items-center justify-center text-xs font-medium"
+                                className="h-8 rounded flex items-center justify-center text-xs font-medium"
                                 style={{
-                                  backgroundColor: theme.accentBarBackground,
-                                  color: theme.accentBarText,
+                                  backgroundColor: currentTheme.accentBarBackground,
+                                  color: currentTheme.accentBarText,
                                 }}
                               >
-                                Accent
+                                Accent Bar
                               </div>
                               <div
-                                className="h-6 rounded flex items-center justify-center text-xs font-medium"
+                                className="h-8 rounded flex items-center justify-center text-xs font-medium"
                                 style={{
-                                  backgroundColor: theme.cardBadgeBackground,
-                                  color: theme.cardBadgeText,
+                                  backgroundColor: currentTheme.cardBadgeBackground,
+                                  color: currentTheme.cardBadgeText,
                                 }}
                               >
-                                Badge
+                                Badge Colors
                               </div>
                             </div>
                           </div>
 
                           {/* Actions */}
-                          <div className="flex items-center gap-2">
-                            {!theme.isActive && (
+                          <div className="flex items-center justify-center gap-2">
+                            {!currentTheme.isActive && (
                               <Button
                                 size="sm"
-                                variant="outline"
+                                variant="default"
                                 onClick={() => {
-                                  activateThemeMutation.mutate(theme.id);
-                                  setIsModalOpen(false);
+                                  activateThemeMutation.mutate(currentTheme.id);
                                 }}
                                 disabled={activateThemeMutation.isPending}
-                                data-testid={`button-activate-${theme.name.toLowerCase().replace(/\s+/g, '-')}`}
+                                data-testid={`button-activate-${currentTheme.name.toLowerCase().replace(/\s+/g, '-')}`}
                               >
                                 <Eye className="w-3 h-3 mr-1" />
-                                Activate
+                                Activate This Theme
                               </Button>
                             )}
                             <Button
                               size="sm"
-                              variant="ghost"
+                              variant="outline"
                               onClick={() => {
-                                startEdit(theme);
+                                startEdit(currentTheme);
                                 setIsModalOpen(false);
                               }}
-                              data-testid={`button-edit-theme-${theme.name.toLowerCase().replace(/\s+/g, '-')}`}
+                              data-testid={`button-edit-theme-${currentTheme.name.toLowerCase().replace(/\s+/g, '-')}`}
                             >
-                              <Edit2 className="w-3 h-3" />
+                              <Edit2 className="w-3 h-3 mr-1" />
+                              Edit
                             </Button>
                             <Button
                               size="sm"
                               variant="ghost"
                               onClick={() => {
-                                if (window.confirm(`Delete theme "${theme.name}"?`)) {
-                                  deleteThemeMutation.mutate(theme.id);
+                                if (window.confirm(`Delete theme "${currentTheme.name}"?`)) {
+                                  deleteThemeMutation.mutate(currentTheme.id);
                                   setIsModalOpen(false);
-                                  setSelectedThemeId("");
                                 }
                               }}
-                              disabled={theme.isActive || deleteThemeMutation.isPending}
-                              data-testid={`button-delete-theme-${theme.name.toLowerCase().replace(/\s+/g, '-')}`}
+                              disabled={currentTheme.isActive || deleteThemeMutation.isPending}
+                              data-testid={`button-delete-theme-${currentTheme.name.toLowerCase().replace(/\s+/g, '-')}`}
                               className="text-red-600 hover:text-red-700 hover:bg-red-50"
                             >
                               <Trash2 className="w-3 h-3" />
                             </Button>
                           </div>
+
+                          {/* Theme Dots Indicator */}
+                          {sortedThemes.length > 1 && (
+                            <div className="flex justify-center gap-1 mt-4">
+                              {sortedThemes.map((_, index) => (
+                                <button
+                                  key={index}
+                                  onClick={() => setCurrentThemeIndex(index)}
+                                  className={`w-2 h-2 rounded-full transition-colors ${
+                                    index === currentThemeIndex 
+                                      ? 'bg-primary' 
+                                      : 'bg-muted-foreground/30 hover:bg-muted-foreground/50'
+                                  }`}
+                                  data-testid={`button-theme-dot-${index}`}
+                                />
+                              ))}
+                            </div>
+                          )}
                         </CardContent>
                       </Card>
-                    );
-                  })()}
-                </DialogContent>
-              </Dialog>
-            )}
+                    </div>
+                  );
+                })()}
+              </DialogContent>
+            </Dialog>
           </div>
         ) : (
           <div className="text-center py-8 text-muted-foreground">
