@@ -52,6 +52,40 @@ Come to explore. Stay to discover what makes this city unforgettable.
     }
   };
 
+  // Share Travel Showcase functionality
+  const handleShareTravelShowcase = async (city: any) => {
+    if (!city) return;
+    
+    const ctaTexts = city.cityCtaLinks?.map((link: any) => link.text).join('\n') || '';
+    
+    const shareText = `${city.name} Travel Showcase
+Curated itineraries, sample flights, and exclusive deals
+
+${ctaTexts}
+
+Agent Support: Send us your booking confirmation for tracking and assistance.`;
+
+    try {
+      await navigator.clipboard.writeText(shareText);
+      toast({
+        title: "Travel Showcase copied!",
+        description: "Travel showcase content copied to clipboard - ready to share!",
+      });
+    } catch (err) {
+      // Fallback for browsers that don't support clipboard API
+      const textArea = document.createElement('textarea');
+      textArea.value = shareText;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+      toast({
+        title: "Travel Showcase copied!",
+        description: "Travel showcase content copied to clipboard - ready to share!",
+      });
+    }
+  };
+
   // Time-based content update timer
   useEffect(() => {
     const updateCardInfo = () => {
@@ -201,7 +235,19 @@ Come to explore. Stay to discover what makes this city unforgettable.
             {todaysCity?.cityCtaLinks && Array.isArray(todaysCity.cityCtaLinks) && todaysCity.cityCtaLinks.length > 0 && (
               <div className="mb-8">
                 <div className="text-center mb-6">
-                  <h5 className="text-lg font-semibold text-white">{todaysCity.name} Travel Showcase</h5>
+                  <div className="flex items-center justify-center gap-3 mb-2">
+                    <h5 className="text-lg font-semibold text-white">{todaysCity.name} Travel Showcase</h5>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="text-white hover:bg-white/10 border border-white/20"
+                      onClick={() => handleShareTravelShowcase(todaysCity)}
+                      data-testid="button-share-travel-showcase"
+                      title="Share Travel Showcase"
+                    >
+                      <Share2 className="w-4 h-4" />
+                    </Button>
+                  </div>
                   <p className="text-white/80 text-sm">Curated itineraries, sample flights, and exclusive deals</p>
                 </div>
                 <div className="flex flex-col gap-3 md:gap-4 max-w-2xl mx-auto">
