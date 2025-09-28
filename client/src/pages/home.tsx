@@ -200,8 +200,8 @@ Come to explore. Stay to discover what makes this city unforgettable.
             {todaysCity?.cityCtaLinks && Array.isArray(todaysCity.cityCtaLinks) && todaysCity.cityCtaLinks.length > 0 && (
               <div className="mb-8">
                 <div className="text-center mb-6">
-                  <h5 className="text-lg font-semibold text-white">Today's {todaysCity.name} Specials</h5>
-                  <p className="text-white/80 text-sm">City-specific recommendations and deals</p>
+                  <h5 className="text-lg font-semibold text-white">{todaysCity.name} Travel Showcase</h5>
+                  <p className="text-white/80 text-sm">Curated itineraries, sample flights, and exclusive deals</p>
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 max-w-3xl mx-auto">
                   {todaysCity.cityCtaLinks.map((link: any, index: number) => (
