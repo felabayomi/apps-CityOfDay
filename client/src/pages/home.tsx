@@ -148,7 +148,7 @@ Come to explore. Stay to discover what makes this city unforgettable.
               <div className="w-24 h-1 mx-auto rounded-full mt-4" style={{background: 'linear-gradient(135deg, var(--hero-gradient-start), var(--accent-bar-bg))'}}></div>
             </div>
 
-            {/* Sample Itinerary HTML Section - Collapsible */}
+            {/* Sample Itinerary HTML Section - TEMPORARILY HIDDEN 
             {todaysCity?.sampleItinerary && (
               <div className="max-w-4xl mx-auto mb-12">
                 <Collapsible.Root open={isItineraryOpen} onOpenChange={setIsItineraryOpen}>
@@ -195,6 +195,7 @@ Come to explore. Stay to discover what makes this city unforgettable.
                 </Collapsible.Root>
               </div>
             )}
+            */}
 
             {/* City-Specific CTAs */}
             {todaysCity?.cityCtaLinks && Array.isArray(todaysCity.cityCtaLinks) && todaysCity.cityCtaLinks.length > 0 && (
