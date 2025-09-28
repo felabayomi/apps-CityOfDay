@@ -204,11 +204,11 @@ Come to explore. Stay to discover what makes this city unforgettable.
                   <h5 className="text-lg font-semibold text-white">{todaysCity.name} Travel Showcase</h5>
                   <p className="text-white/80 text-sm">Curated itineraries, sample flights, and exclusive deals</p>
                 </div>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 max-w-3xl mx-auto">
+                <div className="flex flex-col gap-3 md:gap-4 max-w-2xl mx-auto">
                   {todaysCity.cityCtaLinks.map((link: any, index: number) => (
                     <Button 
                       key={`custom-${index}`}
-                      className="bg-white text-primary hover:bg-gray-100 border-2 border-white/20 text-xs md:text-sm px-2 md:px-4 py-2 md:py-2 h-auto min-h-[44px] whitespace-normal leading-tight"
+                      className="bg-white text-primary hover:bg-gray-100 border-2 border-white/20 text-sm md:text-base px-4 md:px-6 py-3 md:py-4 h-auto min-h-[60px] whitespace-normal leading-tight w-full text-center"
                       onClick={() => window.open(link.url, '_blank')}
                       data-testid={`button-city-cta-${index}`}
                     >
