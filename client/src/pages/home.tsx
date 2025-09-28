@@ -56,12 +56,12 @@ Come to explore. Stay to discover what makes this city unforgettable.
   const handleShareTravelShowcase = async (city: any) => {
     if (!city) return;
     
-    const ctaTexts = city.cityCtaLinks?.map((link: any) => link.text).join('\n') || '';
+    const ctaLinksFormatted = city.cityCtaLinks?.map((link: any) => `${link.text}\n${link.url}`).join('\n\n') || '';
     
     const shareText = `${city.name} Travel Showcase
 Curated itineraries, sample flights, and exclusive deals
 
-${ctaTexts}
+${ctaLinksFormatted}
 
 Agent Support: Send us your booking confirmation for tracking and assistance.`;
 
