@@ -28,16 +28,7 @@ export default function Admin() {
   // Redirect to login if not authenticated or check admin access
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
-      toast({
-        title: "Unauthorized",
-        description: "You are logged out. Logging in again...",
-        variant: "destructive",
-      });
-      setTimeout(() => {
-        // Pass current URL so we return here after login
-        const returnTo = encodeURIComponent(window.location.pathname);
-        window.location.href = `/api/login?returnTo=${returnTo}`;
-      }, 500);
+      window.location.href = "/api/login";
       return;
     }
     
@@ -46,12 +37,9 @@ export default function Admin() {
       const userEmail = (user as any)?.email || 'unknown';
       toast({
         title: "Access Denied",
-        description: `Admin access required. Logged in as: ${userEmail}. Please contact administrator.`,
+        description: `Admin access required. Your email: ${userEmail}`,
         variant: "destructive",
       });
-      setTimeout(() => {
-        window.location.href = "/api/logout";
-      }, 2000);
       return;
     }
   }, [isAuthenticated, isLoading, user, toast]);
@@ -88,15 +76,7 @@ export default function Admin() {
     },
     onError: (error) => {
       if (isUnauthorizedError(error)) {
-        toast({
-          title: "Unauthorized",
-          description: "You are logged out. Logging in again...",
-          variant: "destructive",
-        });
-        setTimeout(() => {
-          const returnTo = encodeURIComponent(window.location.pathname);
-          window.location.href = `/api/login?returnTo=${returnTo}`;
-        }, 500);
+        window.location.href = "/api/login";
         return;
       }
       

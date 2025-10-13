@@ -141,10 +141,6 @@ export async function setupAuth(app: Express) {
   passport.deserializeUser((user: Express.User, cb) => cb(null, user));
 
   app.get("/api/login", (req, res, next) => {
-    // Store the return URL from query param or referer
-    const returnTo = req.query.returnTo as string || req.get('referer') || '/';
-    (req.session as any).returnTo = returnTo;
-    
     passport.authenticate(`replitauth:${req.hostname}`, {
       prompt: "login consent",
       scope: ["openid", "email", "profile", "offline_access"],
@@ -152,22 +148,9 @@ export async function setupAuth(app: Express) {
   });
 
   app.get("/api/callback", (req, res, next) => {
-    passport.authenticate(`replitauth:${req.hostname}`, (err: any, user: any) => {
-      if (err || !user) {
-        return res.redirect("/api/login");
-      }
-      
-      req.logIn(user, (loginErr) => {
-        if (loginErr) {
-          return res.redirect("/api/login");
-        }
-        
-        // Get stored return URL or default to home
-        const returnTo = (req.session as any).returnTo || '/';
-        delete (req.session as any).returnTo; // Clear it after use
-        
-        res.redirect(returnTo);
-      });
+    passport.authenticate(`replitauth:${req.hostname}`, {
+      successReturnToOrRedirect: "/",
+      failureRedirect: "/api/login",
     })(req, res, next);
   });
 
