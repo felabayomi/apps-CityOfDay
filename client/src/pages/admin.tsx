@@ -34,7 +34,9 @@ export default function Admin() {
         variant: "destructive",
       });
       setTimeout(() => {
-        window.location.href = "/api/login";
+        // Pass current URL so we return here after login
+        const returnTo = encodeURIComponent(window.location.pathname);
+        window.location.href = `/api/login?returnTo=${returnTo}`;
       }, 500);
       return;
     }
@@ -91,7 +93,8 @@ export default function Admin() {
           variant: "destructive",
         });
         setTimeout(() => {
-          window.location.href = "/api/login";
+          const returnTo = encodeURIComponent(window.location.pathname);
+          window.location.href = `/api/login?returnTo=${returnTo}`;
         }, 500);
         return;
       }
