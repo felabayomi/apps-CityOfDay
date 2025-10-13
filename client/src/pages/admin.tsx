@@ -43,14 +43,15 @@ export default function Admin() {
     
     // Check admin access using server-provided isAdmin flag
     if (user && !(user as any)?.isAdmin) {
+      const userEmail = (user as any)?.email || 'unknown';
       toast({
         title: "Access Denied",
-        description: "Admin access required.",
+        description: `Admin access required. Logged in as: ${userEmail}. Please contact administrator.`,
         variant: "destructive",
       });
       setTimeout(() => {
-        window.location.href = "/";
-      }, 500);
+        window.location.href = "/api/logout";
+      }, 2000);
       return;
     }
   }, [isAuthenticated, isLoading, user, toast]);
