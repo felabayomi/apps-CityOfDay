@@ -51,6 +51,52 @@ export default function Admin() {
     enabled: !!user,
   });
 
+  // Fetch draft queue
+  const { data: drafts, isLoading: loadingDrafts } = useQuery<any[]>({
+    queryKey: ["/api/admin/drafts"],
+    retry: false,
+    enabled: !!user,
+    refetchInterval: 10000,
+  });
+
+  // Approve draft mutation
+  const approveDraftMutation = useMutation({
+    mutationFn: async ({ id, scheduledDate }: { id: string; scheduledDate?: string }) => {
+      const res = await fetch(`/api/admin/cities/${id}/approve`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ scheduledDate }),
+      });
+      if (!res.ok) throw new Error("Failed to approve");
+      return res.json();
+    },
+    onSuccess: () => {
+      toast({ title: "City Approved", description: "City is now published and live." });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/drafts"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/cities"] });
+    },
+    onError: () => toast({ title: "Error", description: "Failed to approve draft.", variant: "destructive" }),
+  });
+
+  // Reject draft mutation
+  const rejectDraftMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const res = await fetch(`/api/admin/cities/${id}/reject`, {
+        method: "POST",
+        credentials: "include",
+      });
+      if (!res.ok) throw new Error("Failed to reject");
+      return res.json();
+    },
+    onSuccess: () => {
+      toast({ title: "Draft Rejected", description: "Draft has been rejected." });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/drafts"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/cities"] });
+    },
+    onError: () => toast({ title: "Error", description: "Failed to reject draft.", variant: "destructive" }),
+  });
+
   const handleLogout = () => {
     window.location.href = "/api/logout";
   };
@@ -133,6 +179,73 @@ export default function Admin() {
           <h2 className="text-3xl font-bold text-foreground mb-4">Content Management Dashboard</h2>
           <p className="text-xl text-muted-foreground">Generate and manage your daily city content</p>
         </div>
+
+        {/* Draft Queue - AI Generated content awaiting review */}
+        {(loadingDrafts || (drafts && drafts.length > 0)) && (
+          <div className="mb-10">
+            <Card className="border-2 border-yellow-400 dark:border-yellow-500">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-3 text-foreground">
+                  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-yellow-100 dark:bg-yellow-900">
+                    <Wand2 className="w-4 h-4 text-yellow-700 dark:text-yellow-300" />
+                  </div>
+                  AI Draft Queue
+                  {drafts && drafts.length > 0 && (
+                    <span className="ml-auto text-sm font-normal bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200 px-3 py-1 rounded-full">
+                      {drafts.length} awaiting review
+                    </span>
+                  )}
+                </CardTitle>
+                <p className="text-sm text-muted-foreground">AI-generated cities waiting for your approval before going live. Review, then Approve or Reject.</p>
+              </CardHeader>
+              <CardContent>
+                {loadingDrafts ? (
+                  <div className="flex items-center gap-2 text-muted-foreground py-4">
+                    <div className="animate-spin w-4 h-4 border-2 border-primary border-t-transparent rounded-full" />
+                    Loading drafts...
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {drafts?.map((draft: any) => (
+                      <div key={draft.id} className="flex flex-wrap items-center justify-between gap-3 p-4 rounded-md bg-muted/40 border border-border">
+                        <div className="flex-1 min-w-0">
+                          <p className="font-semibold text-foreground">{draft.name}</p>
+                          <p className="text-sm text-muted-foreground">{draft.country}</p>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            Generated {new Date(draft.createdAt).toLocaleDateString()} at {new Date(draft.createdAt).toLocaleTimeString()}
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-2 flex-shrink-0">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="border-red-300 text-red-600 dark:border-red-700 dark:text-red-400"
+                            onClick={() => rejectDraftMutation.mutate(draft.id)}
+                            disabled={rejectDraftMutation.isPending}
+                            data-testid={`button-reject-draft-${draft.id}`}
+                          >
+                            <Trash2 className="w-3 h-3 mr-1" />
+                            Reject
+                          </Button>
+                          <Button
+                            size="sm"
+                            className="bg-green-600 hover:bg-green-700 text-white"
+                            onClick={() => approveDraftMutation.mutate({ id: draft.id })}
+                            disabled={approveDraftMutation.isPending}
+                            data-testid={`button-approve-draft-${draft.id}`}
+                          >
+                            <Eye className="w-3 h-3 mr-1" />
+                            Approve & Publish
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+        )}
 
         {/* Color Theme Management */}
         <div id="color-themes" className="mb-12">

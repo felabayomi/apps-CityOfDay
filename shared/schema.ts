@@ -50,6 +50,7 @@ export const cities = pgTable("cities", {
   scheduledDate: timestamp("scheduled_date"), // When content should appear to users
   publishedDate: timestamp("published_date"), // When admin published it
   isPublished: boolean("is_published").default(false),
+  status: varchar("status").default("draft"), // 'draft' | 'published' | 'rejected'
   isPinned: boolean("is_pinned").default(false),
   cityCtaLinks: jsonb("city_cta_links"), // array of {text, url, type} for main city CTAs
   // Content card affiliate links

@@ -193,6 +193,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.get("/api/admin/drafts", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const drafts = await storage.getDraftCities();
+      res.json(drafts);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch drafts" });
+    }
+  });
+
+  app.post("/api/admin/cities/:id/approve", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const { scheduledDate } = req.body;
+      const city = await storage.approveDraft(req.params.id, scheduledDate ? new Date(scheduledDate) : undefined);
+      todaysCityCache.clear();
+      res.json(city);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to approve draft" });
+    }
+  });
+
+  app.post("/api/admin/cities/:id/reject", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const city = await storage.rejectDraft(req.params.id);
+      res.json(city);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to reject draft" });
+    }
+  });
+
   app.post("/api/admin/cities/generate", isAuthenticated, isAdmin, async (req, res) => {
     try {
       const { cityName, country, focus = "balanced", autoPublish = false, scheduledDate, sampleItinerary } = req.body;
@@ -234,22 +263,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       }
 
-      // Create city record
+      // Create city record - always as draft, admin reviews before publishing
       const cityData = {
         name: finalCityName,
         country: finalCountry,
-        isPublished: autoPublish,
-        publishedDate: autoPublish ? new Date() : null,
+        isPublished: false,
+        status: "draft",
+        publishedDate: null,
         scheduledDate: scheduledDate ? new Date(scheduledDate) : null,
         sampleItinerary: sampleItinerary || null,
       };
       
       const city = await storage.createCity(cityData);
-
-      // Clear cache when new city is created with autoPublish
-      if (autoPublish) {
-        todaysCityCache.clear();
-      }
 
       // Create content cards
       const contentCards = [

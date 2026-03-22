@@ -30,6 +30,7 @@ export interface IStorage {
 
   // City operations
   getAllCities(): Promise<City[]>;
+  getDraftCities(): Promise<City[]>;
   getPublishedCities(): Promise<City[]>;
   getCityById(id: string): Promise<City | undefined>;
   getCityByName(name: string): Promise<City | undefined>;
@@ -39,6 +40,8 @@ export interface IStorage {
   deleteCity(id: string): Promise<void>;
   getTodaysCity(): Promise<City | undefined>;
   getScheduledCities(): Promise<City[]>;
+  approveDraft(id: string, scheduledDate?: Date): Promise<City>;
+  rejectDraft(id: string): Promise<City>;
 
   // City content operations
   getCityContent(cityId: string): Promise<CityContent[]>;
@@ -109,8 +112,37 @@ export class DatabaseStorage implements IStorage {
     return await db.select().from(cities).orderBy(desc(cities.createdAt));
   }
 
+  async getDraftCities(): Promise<City[]> {
+    return await db.select().from(cities)
+      .where(eq(cities.status, "draft"))
+      .orderBy(desc(cities.createdAt));
+  }
+
   async getPublishedCities(): Promise<City[]> {
     return await db.select().from(cities).where(eq(cities.isPublished, true)).orderBy(desc(cities.publishedDate));
+  }
+
+  async approveDraft(id: string, scheduledDate?: Date): Promise<City> {
+    const [city] = await db.update(cities)
+      .set({
+        status: "published",
+        isPublished: true,
+        publishedDate: new Date(),
+        scheduledDate: scheduledDate || null,
+        updatedAt: new Date(),
+      })
+      .where(eq(cities.id, id))
+      .returning();
+    todaysCityCache: null; // signal to clear cache
+    return city;
+  }
+
+  async rejectDraft(id: string): Promise<City> {
+    const [city] = await db.update(cities)
+      .set({ status: "rejected", updatedAt: new Date() })
+      .where(eq(cities.id, id))
+      .returning();
+    return city;
   }
 
   async getCityById(id: string): Promise<City | undefined> {
