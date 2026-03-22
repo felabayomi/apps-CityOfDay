@@ -242,6 +242,30 @@ export async function autoApproveTodaysDrafts() {
   }
 }
 
+// Returns the current hour (0-23) in Eastern time
+function getCurrentHourEastern(): number {
+  const easternTime = new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour: "numeric", hour12: false });
+  return parseInt(easternTime, 10);
+}
+
+// On startup, catch up on any jobs missed due to a server restart or deployment
+async function runCatchUpChecks() {
+  const hourEastern = getCurrentHourEastern();
+  log(`[Scheduler] Startup catch-up — current Eastern hour: ${hourEastern}`);
+
+  // Past 9am? Make sure today's draft has been auto-approved if not manually approved
+  if (hourEastern >= 9) {
+    log("[Scheduler] Catch-up: running auto-approve check...");
+    await autoApproveTodaysDrafts();
+  }
+
+  // Past 3pm? Make sure tomorrow's draft has been generated
+  if (hourEastern >= 15) {
+    log("[Scheduler] Catch-up: running draft generation check...");
+    await generateTomorrowsDraft();
+  }
+}
+
 export function startScheduler() {
   // Generate tomorrow's draft daily at 3pm Eastern (handles EST/EDT automatically)
   cron.schedule("0 15 * * *", generateTomorrowsDraft, { timezone: "America/New_York" });
@@ -249,5 +273,8 @@ export function startScheduler() {
   // Auto-approve today's drafts at 9am Eastern (handles EST/EDT automatically)
   cron.schedule("0 9 * * *", autoApproveTodaysDrafts, { timezone: "America/New_York" });
 
-  log("[Scheduler] Started — daily draft generation at 2pm Eastern, auto-approve at 9am Eastern");
+  log("[Scheduler] Started — daily draft generation at 3pm Eastern, auto-approve at 9am Eastern");
+
+  // Run catch-up immediately so missed jobs recover after restarts/deployments
+  runCatchUpChecks().catch(err => log(`[Scheduler] Catch-up ERROR: ${(err as Error).message}`));
 }
