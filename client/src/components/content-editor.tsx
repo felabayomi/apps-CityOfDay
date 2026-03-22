@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Edit, Save, Eye, Sun, Utensils, Moon, Lightbulb, Globe, Trash2, Plus, Crown, Trees, FileText } from "lucide-react";
+import { Edit, Save, Eye, Sun, Utensils, Moon, Lightbulb, Globe, Trash2, Plus, Crown, Trees, FileText, Sparkles } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { isUnauthorizedError } from "@/lib/authUtils";
@@ -158,6 +158,7 @@ export function ContentEditor({ selectedCityId, onCityChange }: ContentEditorPro
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [editingCtaLinks, setEditingCtaLinks] = useState<any[]>([]);
+  const [editingHighlights, setEditingHighlights] = useState<string[]>([]);
   
   // Fetch all cities for selection
   const { data: cities } = useQuery({
@@ -301,6 +302,11 @@ export function ContentEditor({ selectedCityId, onCityChange }: ContentEditorPro
     } else {
       setEditingCtaLinks([]);
     }
+    if (city?.highlights && Array.isArray(city.highlights)) {
+      setEditingHighlights([...city.highlights]);
+    } else {
+      setEditingHighlights(["", "", "", "", ""]);
+    }
   }, [city]);
 
   return (
@@ -404,6 +410,49 @@ export function ContentEditor({ selectedCityId, onCityChange }: ContentEditorPro
         )}
       </CardContent>
     </Card>
+
+    {/* City Highlights Editor */}
+    {city && (
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center text-foreground">
+            <Sparkles className="mr-3 text-yellow-500 w-5 h-5" />
+            City Highlights — {city.name}
+          </CardTitle>
+          <p className="text-sm text-muted-foreground">5 quick-scan facts shown in the hero section. Edit each line, then save.</p>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          {editingHighlights.map((highlight, i) => (
+            <div key={i} className="flex items-center gap-3">
+              <span className="text-sm font-bold text-muted-foreground w-5 flex-shrink-0">{i + 1}.</span>
+              <Input
+                value={highlight}
+                onChange={(e) => {
+                  const updated = [...editingHighlights];
+                  updated[i] = e.target.value;
+                  setEditingHighlights(updated);
+                }}
+                placeholder={`Highlight ${i + 1} — one crisp sentence about ${city.name}`}
+                className="bg-background text-sm"
+                data-testid={`input-highlight-${i}`}
+              />
+            </div>
+          ))}
+          <Button
+            className="w-full mt-2"
+            onClick={() => {
+              const filtered = editingHighlights.filter(h => h.trim() !== "");
+              updateCityMutation.mutate({ id: city.id, highlights: filtered });
+            }}
+            disabled={updateCityMutation.isPending}
+            data-testid="button-save-highlights"
+          >
+            <Save className="w-4 h-4 mr-2" />
+            {updateCityMutation.isPending ? "Saving..." : "Save Highlights"}
+          </Button>
+        </CardContent>
+      </Card>
+    )}
 
     {/* City CTA Panel */}
     {city && (

@@ -8,6 +8,7 @@ import { z } from "zod";
 import { eq } from "drizzle-orm";
 import { db } from "./db";
 import { ObjectStorageService } from "./objectStorage";
+import { generateTomorrowsDraft, autoApproveTodaysDrafts } from "./scheduler";
 
 // Simple in-memory cache for daily city content
 const todaysCityCache = {
@@ -222,6 +223,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Manual scheduler triggers
+  app.post("/api/admin/scheduler/generate-tomorrow", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      await generateTomorrowsDraft();
+      // Return fresh drafts after generation
+      const drafts = await storage.getDraftCities();
+      res.json({ message: "Tomorrow's draft generation triggered", drafts });
+    } catch (error) {
+      res.status(500).json({ message: "Generation failed: " + (error as Error).message });
+    }
+  });
+
+  app.post("/api/admin/scheduler/approve-today", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      await autoApproveTodaysDrafts();
+      todaysCityCache.clear();
+      res.json({ message: "Auto-approve triggered for today's drafts" });
+    } catch (error) {
+      res.status(500).json({ message: "Auto-approve failed: " + (error as Error).message });
+    }
+  });
+
   app.post("/api/admin/cities/generate", isAuthenticated, isAdmin, async (req, res) => {
     try {
       const { cityName, country, focus = "balanced", autoPublish = false, scheduledDate, sampleItinerary } = req.body;
@@ -378,7 +401,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.put("/api/admin/cities/:id", isAuthenticated, isAdmin, async (req, res) => {
     try {
       // Only allow specific fields to be updated to avoid timestamp field conflicts
-      const allowedFields = ['name', 'country', 'isPublished', 'isPinned', 'publishedDate', 'scheduledDate', 'cityCtaLinks', 'morningCtaLink', 'afternoonCtaLink', 'eveningCtaLink', 'bonusCtaLink', 'luxuryCtaLink', 'wildlifeCtaLink', 'sampleItinerary'];
+      const allowedFields = ['name', 'country', 'isPublished', 'isPinned', 'publishedDate', 'scheduledDate', 'cityCtaLinks', 'morningCtaLink', 'afternoonCtaLink', 'eveningCtaLink', 'bonusCtaLink', 'luxuryCtaLink', 'wildlifeCtaLink', 'sampleItinerary', 'highlights', 'status'];
       const updateData: any = {};
       
       // Only copy allowed fields

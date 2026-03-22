@@ -160,6 +160,7 @@ export default function Admin() {
         <nav className="nav-links">
           <a href="/">Home</a>
           <a href="#drafts">Drafts</a>
+          <a href="#scheduler">Scheduler</a>
           <a href="#cities">Cities</a>
           <a href="#calendar">Calendar</a>
           <a href="#generate">Generate</a>
@@ -247,6 +248,72 @@ export default function Admin() {
             </Card>
           </div>
         )}
+
+        {/* Auto-Scheduler Panel */}
+        <div id="scheduler" className="mb-10">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-3 text-foreground">
+                <CalendarIcon className="w-5 h-5 text-primary" />
+                Auto-Publish Scheduler
+              </CardTitle>
+              <p className="text-sm text-muted-foreground">
+                Every day at <strong>8pm EST</strong> the system generates tomorrow's city as a draft. If you haven't approved it by <strong>9am EST</strong> on the scheduled day, it auto-publishes.
+              </p>
+            </CardHeader>
+            <CardContent>
+              <div className="grid sm:grid-cols-2 gap-4">
+                <div className="p-4 rounded-md bg-muted/40 border border-border">
+                  <p className="text-sm font-semibold text-foreground mb-1">Daily Generation</p>
+                  <p className="text-xs text-muted-foreground mb-3">Runs at 8pm EST — picks a new world city, generates AI content, saves as draft with tomorrow's date.</p>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={async () => {
+                      try {
+                        const res = await fetch("/api/admin/scheduler/generate-tomorrow", { method: "POST", credentials: "include" });
+                        const data = await res.json();
+                        if (!res.ok) throw new Error(data.message);
+                        toast({ title: "Generation triggered", description: data.message });
+                        queryClient.invalidateQueries({ queryKey: ["/api/admin/drafts"] });
+                      } catch (e: any) {
+                        toast({ title: "Error", description: e.message, variant: "destructive" });
+                      }
+                    }}
+                    data-testid="button-generate-tomorrow"
+                  >
+                    <Wand2 className="w-3 h-3 mr-2" />
+                    Generate Tomorrow's Draft Now
+                  </Button>
+                </div>
+                <div className="p-4 rounded-md bg-muted/40 border border-border">
+                  <p className="text-sm font-semibold text-foreground mb-1">Auto-Approve</p>
+                  <p className="text-xs text-muted-foreground mb-3">Runs at 9am EST — finds today's scheduled draft and publishes it if you haven't manually approved it yet.</p>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={async () => {
+                      try {
+                        const res = await fetch("/api/admin/scheduler/approve-today", { method: "POST", credentials: "include" });
+                        const data = await res.json();
+                        if (!res.ok) throw new Error(data.message);
+                        toast({ title: "Auto-approve triggered", description: data.message });
+                        queryClient.invalidateQueries({ queryKey: ["/api/admin/drafts"] });
+                        queryClient.invalidateQueries({ queryKey: ["/api/admin/cities"] });
+                      } catch (e: any) {
+                        toast({ title: "Error", description: e.message, variant: "destructive" });
+                      }
+                    }}
+                    data-testid="button-approve-today"
+                  >
+                    <Eye className="w-3 h-3 mr-2" />
+                    Approve Today's Draft Now
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
 
         {/* Color Theme Management */}
         <div id="color-themes" className="mb-12">

@@ -24,6 +24,13 @@ The client-side is built with **React 18** using Vite as the build tool and deve
 - **Styling**: Tailwind CSS with custom design system variables and postcard-style shadow effects
 - **PWA Support**: Progressive Web App capabilities with service worker, manifest, and offline functionality
 
+### Auto-Publish Scheduler (`server/scheduler.ts`)
+The server runs two automatic background jobs via `node-cron`:
+- **8pm EST daily** (01:00 UTC): Picks a new world city from a pool of 120+ cities, generates AI content (6 cards + 5 highlights), saves as draft with `scheduledDate = tomorrow`
+- **9am EST daily** (14:00 UTC): Finds any draft city scheduled for today and auto-approves it if the admin hasn't manually approved it
+
+Manual triggers are also available in the Admin Panel ("Auto-Publish Scheduler" section) for ad-hoc generation and approval.
+
 ### Backend Architecture
 The server is built with **Express.js** running on Node.js with TypeScript:
 
