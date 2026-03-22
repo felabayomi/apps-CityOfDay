@@ -154,12 +154,9 @@ function getTomorrowUTC(): Date {
   return tomorrow;
 }
 
-// Get today's date string in EST (UTC-5)
-function getTodayEST(): string {
-  const now = new Date();
-  // Offset by EST (-5h)
-  const estTime = new Date(now.getTime() - 5 * 60 * 60 * 1000);
-  return estTime.toISOString().split('T')[0];
+// Get today's date string in Eastern time (handles EST/EDT automatically)
+function getTodayEastern(): string {
+  return new Date().toLocaleDateString("en-CA", { timeZone: "America/New_York" });
 }
 
 export async function generateTomorrowsDraft() {
@@ -218,8 +215,8 @@ export async function generateTomorrowsDraft() {
 
 export async function autoApproveTodaysDrafts() {
   try {
-    const todayEST = getTodayEST();
-    log(`[Scheduler] Auto-approve: checking for drafts scheduled for ${todayEST} (EST)...`);
+    const todayEST = getTodayEastern();
+    log(`[Scheduler] Auto-approve: checking for drafts scheduled for ${todayEST} (Eastern)...`);
 
     const drafts = await storage.getDraftCities();
     let approved = 0;
@@ -246,11 +243,11 @@ export async function autoApproveTodaysDrafts() {
 }
 
 export function startScheduler() {
-  // Generate tomorrow's draft daily at 2pm EST = 19:00 UTC
-  cron.schedule("0 19 * * *", generateTomorrowsDraft, { timezone: "UTC" });
+  // Generate tomorrow's draft daily at 2pm Eastern (handles EST/EDT automatically)
+  cron.schedule("0 14 * * *", generateTomorrowsDraft, { timezone: "America/New_York" });
 
-  // Auto-approve today's drafts at 9am EST = 14:00 UTC
-  cron.schedule("0 14 * * *", autoApproveTodaysDrafts, { timezone: "UTC" });
+  // Auto-approve today's drafts at 9am Eastern (handles EST/EDT automatically)
+  cron.schedule("0 9 * * *", autoApproveTodaysDrafts, { timezone: "America/New_York" });
 
-  log("[Scheduler] Started — daily draft generation at 2pm EST, auto-approve at 9am EST");
+  log("[Scheduler] Started — daily draft generation at 2pm Eastern, auto-approve at 9am Eastern");
 }
