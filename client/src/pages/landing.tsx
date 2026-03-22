@@ -53,7 +53,7 @@ export default function Landing() {
       {/* Navigation Header */}
       <header className="site-header">
         <div className="logo-area">
-          <img src="/city-discoverer-logo.png" alt="City Discoverer" className="h-10 w-auto" />
+          <img src="/city-discoverer-logo.png" alt="City Discoverer" className="h-20 w-auto" />
         </div>
         <div className="auth-area">
           <a href="/library" className="library-link">Library</a>

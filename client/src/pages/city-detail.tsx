@@ -86,7 +86,7 @@ Come to explore. Stay to discover what makes this city unforgettable.
       {/* Header */}
       <header className="site-header">
         <div className="logo-area">
-          <img src="/city-discoverer-logo.png" alt="City Discoverer" className="h-10 w-auto" />
+          <img src="/city-discoverer-logo.png" alt="City Discoverer" className="h-20 w-auto" />
         </div>
         <nav className="nav-links">
           <Link href="/">
