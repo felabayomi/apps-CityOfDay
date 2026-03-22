@@ -205,8 +205,8 @@ export default function Admin() {
                 ) : (
                   <div className="space-y-3">
                     {drafts?.map((draft: any) => (
-                      <div key={draft.id} className="flex flex-wrap items-center justify-between gap-3 p-4 rounded-md bg-muted/40 border border-border">
-                        <div className="flex-1 min-w-0">
+                      <div key={draft.id} className="flex flex-col gap-3 p-4 rounded-md bg-muted/40 border border-border sm:flex-row sm:items-center sm:justify-between">
+                        <div className="min-w-0">
                           <p className="font-semibold text-foreground">{draft.name}</p>
                           <p className="text-sm text-muted-foreground">{draft.country}</p>
                           <p className="text-xs text-muted-foreground mt-1">
@@ -570,13 +570,13 @@ export default function Admin() {
                     .map((city: any) => (
                     <div 
                       key={city.id} 
-                      className="flex items-center justify-between p-4 border border-border rounded-lg hover:bg-muted/30 transition-colors"
+                      className="flex flex-col gap-3 p-4 border border-border rounded-lg hover:bg-muted/30 transition-colors sm:flex-row sm:items-center sm:justify-between"
                     >
-                      <div className="flex-1">
+                      <div className="min-w-0">
                         <h4 className="font-semibold text-foreground">
                           {city.name}, {city.country}
                         </h4>
-                        <div className="flex items-center space-x-4 mt-2">
+                        <div className="flex flex-wrap items-center gap-2 mt-2">
                           <span className={`text-xs px-2 py-1 rounded-full ${
                             city.isPublished 
                               ? 'bg-green-100 text-green-700 border border-green-200' 
@@ -586,7 +586,7 @@ export default function Admin() {
                           </span>
                           {city.scheduledDate && (
                             <span className="text-xs px-2 py-1 rounded-full bg-accent/10 text-accent border border-accent/20">
-                              📅 Scheduled: {new Date(city.scheduledDate).toLocaleDateString()}
+                              Scheduled: {new Date(city.scheduledDate).toLocaleDateString()}
                             </span>
                           )}
                           {city.isPinned && (
@@ -600,7 +600,7 @@ export default function Admin() {
                         </div>
                       </div>
                       
-                      <div className="flex items-center space-x-2">
+                      <div className="flex items-center space-x-2 flex-shrink-0">
                         <Button 
                           variant="ghost" 
                           size="sm"
