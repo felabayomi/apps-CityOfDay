@@ -213,7 +213,22 @@ export default function Admin() {
                             Generated {new Date(draft.createdAt).toLocaleDateString()} at {new Date(draft.createdAt).toLocaleTimeString()}
                           </p>
                         </div>
-                        <div className="flex items-center gap-2 flex-shrink-0">
+                        <div className="flex flex-wrap items-center gap-2 flex-shrink-0">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => {
+                              setSelectedCity(draft.id);
+                              setTimeout(() => {
+                                const el = document.querySelector('[data-testid="content-editor-card"]');
+                                if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                              }, 100);
+                            }}
+                            data-testid={`button-edit-draft-${draft.id}`}
+                          >
+                            <Edit className="w-3 h-3 mr-1" />
+                            Read / Edit
+                          </Button>
                           <Button
                             size="sm"
                             variant="outline"
