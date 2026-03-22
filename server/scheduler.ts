@@ -243,8 +243,8 @@ export async function autoApproveTodaysDrafts() {
 }
 
 export function startScheduler() {
-  // Generate tomorrow's draft daily at 2pm Eastern (handles EST/EDT automatically)
-  cron.schedule("0 14 * * *", generateTomorrowsDraft, { timezone: "America/New_York" });
+  // Generate tomorrow's draft daily at 3pm Eastern (handles EST/EDT automatically)
+  cron.schedule("0 15 * * *", generateTomorrowsDraft, { timezone: "America/New_York" });
 
   // Auto-approve today's drafts at 9am Eastern (handles EST/EDT automatically)
   cron.schedule("0 9 * * *", autoApproveTodaysDrafts, { timezone: "America/New_York" });
