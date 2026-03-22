@@ -254,14 +254,14 @@ export default function Admin() {
                 Auto-Publish Scheduler
               </CardTitle>
               <p className="text-sm text-muted-foreground">
-                Every day at <strong>2pm EST</strong> the system generates tomorrow's city as a draft. If you haven't approved it by <strong>9am EST</strong> on the scheduled day, it auto-publishes.
+                Every day at <strong>3pm Eastern</strong> the system generates tomorrow's city as a draft. If you haven't approved it by <strong>9am Eastern</strong> on the scheduled day, it auto-publishes.
               </p>
             </CardHeader>
             <CardContent>
               <div className="grid sm:grid-cols-2 gap-4">
                 <div className="p-4 rounded-md bg-muted/40 border border-border">
                   <p className="text-sm font-semibold text-foreground mb-1">Daily Generation</p>
-                  <p className="text-xs text-muted-foreground mb-3">Runs at 2pm EST — picks a new world city, generates AI content, saves as draft with tomorrow's date.</p>
+                  <p className="text-xs text-muted-foreground mb-3">Runs at 3pm Eastern — picks a new world city, generates AI content, saves as draft with tomorrow's date.</p>
                   <Button
                     size="sm"
                     variant="outline"
