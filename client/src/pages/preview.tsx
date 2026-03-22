@@ -59,11 +59,7 @@ export default function Preview() {
       {/* Header with Preview Banner */}
       <header className="site-header border-b border-orange-200">
         <div className="logo-area">
-          <div className="logo-icon">
-            <MapPin className="w-6 h-6" />
-          </div>
-          <span className="brand-name">City Discoverer</span>
-          <span className="tagline">City of the Day™</span>
+          <img src="/city-discoverer-logo.png" alt="City Discoverer" className="h-10 w-auto" />
         </div>
         <div className="auth-area">
           <Badge variant="outline" className="mr-4 border-orange-500 text-orange-600">

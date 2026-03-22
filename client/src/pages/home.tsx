@@ -153,11 +153,7 @@ Agent Support: Send us your booking confirmation for tracking and assistance.`;
       {/* Navigation Header */}
       <header className="site-header">
         <div className="logo-area">
-          <div className="logo-icon">
-            <MapPin className="w-6 h-6" />
-          </div>
-          <span className="brand-name">City Discoverer</span>
-          <span className="tagline">City of the Day™</span>
+          <img src="/city-discoverer-logo.png" alt="City Discoverer" className="h-10 w-auto" />
         </div>
         <div className="auth-area">
           <a href="/" className="home-link">Home</a>
