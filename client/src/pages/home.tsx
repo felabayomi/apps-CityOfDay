@@ -160,7 +160,7 @@ Agent Support: Send us your booking confirmation for tracking and assistance.`;
           <PushSubscribeButton />
           <a href="/" className="home-link">Home</a>
           <a href="/library" className="library-link">Library</a>
-          <a href="https://schedez.io/" target="_blank" rel="noopener noreferrer" className="library-link">Plan Less and Travel More</a>
+          <a href="https://schedez.io/" target="_blank" rel="noopener noreferrer" className="library-link schedez-link">Plan Less and Travel More</a>
         </div>
       </header>
 

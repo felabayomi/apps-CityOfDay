@@ -153,7 +153,7 @@ export default function Admin() {
           <img src="/city-discoverer-logo-nobg.png" alt="City Discoverer" className="h-48 w-auto" />
           <span className="tagline">Admin Panel</span>
         </div>
-        <nav className="nav-links">
+        <nav className="nav-links admin-nav-links">
           <a href="/">Home</a>
           <a href="#drafts">Drafts</a>
           <a href="#scheduler">Scheduler</a>

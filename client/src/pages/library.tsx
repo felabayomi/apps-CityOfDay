@@ -76,16 +76,10 @@ export default function LibraryPage() {
           <img src="/city-discoverer-logo-nobg.png" alt="City Discoverer" className="h-48 w-auto" />
         </div>
         <nav className="nav-links">
-          <Link href="/">
-            <a href="/">Home</a>
-          </Link>
-          <Link href="/library">
-            <a href="/library">Library</a>
-          </Link>
+          <Link href="/">Home</Link>
+          <Link href="/library">Library</Link>
           {(user as any)?.email === import.meta.env.VITE_ADMIN_EMAIL && user && (
-            <Link href="/admin">
-              <a href="/admin">Admin</a>
-            </Link>
+            <Link href="/admin">Admin</Link>
           )}
         </nav>
         <div className="auth-area">
