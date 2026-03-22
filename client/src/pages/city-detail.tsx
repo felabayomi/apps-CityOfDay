@@ -2,7 +2,7 @@ import { useParams } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { MapPin, ArrowLeft, ChevronDown, ChevronRight, Share2 } from "lucide-react";
+import { MapPin, ArrowLeft, ChevronDown, ChevronRight, Share2, Sparkles } from "lucide-react";
 import { Link } from "wouter";
 import { CityCard } from "@/components/city-card";
 import Footer from "@/components/Footer";
@@ -117,6 +117,24 @@ Come to explore. Stay to discover what makes this city unforgettable.
             </p>
             <div className="w-24 h-1 mx-auto rounded-full mt-4" style={{background: 'linear-gradient(135deg, #0038A8, #F2AF00)'}}></div>
           </div>
+
+          {/* City Highlights */}
+          {city?.highlights && Array.isArray(city.highlights) && city.highlights.length > 0 && (
+            <div className="max-w-2xl mx-auto mb-8 text-left">
+              <div className="flex items-center gap-2 mb-3 justify-center">
+                <Sparkles className="w-4 h-4 text-yellow-300" />
+                <span className="text-sm font-semibold text-white/90 uppercase tracking-wide">City Highlights</span>
+              </div>
+              <ul className="space-y-2">
+                {(city.highlights as string[]).map((highlight: string, i: number) => (
+                  <li key={i} className="flex items-start gap-3 text-sm text-white/90 bg-white/10 rounded-md px-4 py-2">
+                    <span className="text-yellow-300 font-bold mt-0.5 flex-shrink-0">{i + 1}.</span>
+                    <span>{highlight}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
 
           {/* Sample Itinerary HTML Section - Collapsible */}
           {city?.sampleItinerary && (

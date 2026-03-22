@@ -36,6 +36,7 @@ export interface CityContentGeneration {
     content: string;
     natureActivity: string;
   };
+  highlights: string[]; // 5 scannable key facts about the city
 }
 
 export async function generateCityContent(cityName: string, country: string, focus: string = "balanced"): Promise<CityContentGeneration> {
@@ -86,6 +87,12 @@ Create exactly 6 content cards in JSON format:
    - Feature parks, gardens, wildlife viewing, or outdoor activities
    - Connect with the natural side of the destination
 
+7. HIGHLIGHTS - 5 quick-scan facts about this city
+   - Each highlight is one crisp sentence (max 15 words)
+   - Cover: best known for, must-try food, signature experience, surprising fact, best time to visit
+   - Make each one feel like a tweet-sized insight
+   - No bullet points in the text — just clean sentences
+
 Write in a friendly, upbeat tone with a hint of wanderlust. Use concise, vivid language that evokes sensory detail (sights, tastes, sounds). Aim for modern and approachable — like a travel-savvy friend sharing a great find. Keep it light, not too literary or academic. Avoid clichés and generic praise. Assume the reader is curious, not committed — spark their imagination in 100 words or less. Think curated Instagram caption meets travel-savvy friend, not Lonely Planet chapter.
 
 Respond with JSON in this exact format:
@@ -119,7 +126,14 @@ Respond with JSON in this exact format:
     "title": "Nature & Wildlife",
     "content": "...",
     "natureActivity": "[nature activity name]"
-  }
+  },
+  "highlights": [
+    "Highlight sentence one about this city.",
+    "Highlight sentence two about this city.",
+    "Highlight sentence three about this city.",
+    "Highlight sentence four about this city.",
+    "Highlight sentence five about this city."
+  ]
 }`;
 
     const response = await openai.chat.completions.create({

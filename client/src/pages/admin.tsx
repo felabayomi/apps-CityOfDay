@@ -159,6 +159,7 @@ export default function Admin() {
         </div>
         <nav className="nav-links">
           <a href="/">Home</a>
+          <a href="#drafts">Drafts</a>
           <a href="#cities">Cities</a>
           <a href="#calendar">Calendar</a>
           <a href="#generate">Generate</a>
@@ -182,7 +183,7 @@ export default function Admin() {
 
         {/* Draft Queue - AI Generated content awaiting review */}
         {(loadingDrafts || (drafts && drafts.length > 0)) && (
-          <div className="mb-10">
+          <div id="drafts" className="mb-10">
             <Card className="border-2 border-yellow-400 dark:border-yellow-500">
               <CardHeader>
                 <CardTitle className="flex items-center gap-3 text-foreground">

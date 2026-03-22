@@ -320,6 +320,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         contentCards.map(card => storage.createCityContent(card))
       );
 
+      // Save highlights to the city record if generated
+      if (generatedContent.highlights && Array.isArray(generatedContent.highlights)) {
+        await storage.updateCity(city.id, { highlights: generatedContent.highlights } as any);
+      }
+
       res.json({ 
         city, 
         content: createdContent, 
