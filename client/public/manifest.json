@@ -5,7 +5,7 @@
   "start_url": "/",
   "display": "standalone",
   "background_color": "#faf9f7",
-  "theme_color": "#0ea5e9",
+  "theme_color": "#F5C842",
   "orientation": "portrait-primary",
   "categories": ["travel", "education", "lifestyle"],
   "lang": "en",
@@ -13,49 +13,15 @@
   "scope": "/",
   "icons": [
     {
-      "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEyIDJDNi40NzcgMiAyIDYuNDc3IDIgMTJTNi40NzcgMjIgMTIgMjIgMjIgMTcuNTIzIDIyIDEyIDIyIDIgMTIgMlptLTEuNSA2SDlWN2gxLjVWOFptMyAwVjdIMTJWOGgxLjVWOHptLTQgNEg5VjExaDEuNVYxMlptMyAwVjExSDEyVjEyaDEuNVYxMlptLTQgNEg5VjE1aDEuNVYxNlptMyAwVjE1SDEyVjE2aDEuNVYxNloiIGZpbGw9IiMwZWE1ZTkiLz4KPHN2Zz4K",
-      "sizes": "48x48",
-      "type": "image/svg+xml"
-    },
-    {
-      "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNzIiIGhlaWdodD0iNzIiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEyIDJDNi40NzcgMiAyIDYuNDc3IDIgMTJTNi40NzcgMjIgMTIgMjIgMjIgMTcuNTIzIDIyIDEyIDIyIDIgMTIgMlptLTEuNSA2SDlWN2gxLjVWOFptMyAwVjdIMTJWOGgxLjVWOHptLTQgNEg5VjExaDEuNVYxMlptMyAwVjExSDEyVjEyaDEuNVYxMlptLTQgNEg5VjE1aDEuNVYxNlptMyAwVjE1SDEyVjE2aDEuNVYxNloiIGZpbGw9IiMwZWE1ZTkiLz4KPHN2Zz4K",
-      "sizes": "72x72",
-      "type": "image/svg+xml"
-    },
-    {
-      "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iOTYiIGhlaWdodD0iOTYiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEyIDJDNi40NzcgMiAyIDYuNDc3IDIgMTJTNi40NzcgMjIgMTIgMjIgMjIgMTcuNTIzIDIyIDEyIDIyIDIgMTIgMlptLTEuNSA2SDlWN2gxLjVWOFptMyAwVjdIMTJWOGgxLjVWOHptLTQgNEg5VjExaDEuNVYxMlptMyAwVjExSDEyVjEyaDEuNVYxMlptLTQgNEg5VjE1aDEuNVYxNlptMyAwVjE1SDEyVjE2aDEuNVYxNloiIGZpbGw9IiMwZWE1ZTkiLz4KPHN2Zz4K",
-      "sizes": "96x96",
-      "type": "image/svg+xml"
-    },
-    {
-      "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTQ0IiBoZWlnaHQ9IjE0NCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cGF0aCBkPSJNMTIgMkM2LjQ3NyAyIDIgNi40NzcgMiAxMlM2LjQ3NyAyMiAxMiAyMiAyMiAxNy41MjMgMjIgMTIgMjIgMiAxMiAyWm0tMS41IDZIOVY3aDEuNVY4Wm0zIDBWN0gxMlY4aDEuNVY4Wm0tNCA0SDlWMTFoMS41VjEyWm0zIDBWMTFIMTJWMTJoMS41VjEyWm0tNCA0SDlWMTVoMS41VjE2Wm0zIDBWMTVIMTJWMTZoMS41VjE2WiIgZmlsbD0iIzBlYTVlOSIvPgo8L3N2Zz4K",
-      "sizes": "144x144",
-      "type": "image/svg+xml"
-    },
-    {
-      "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cGF0aCBkPSJNMTIgMkM2LjQ3NyAyIDIgNi40NzcgMiAxMlM2LjQ3NyAyMiAxMiAyMiAyMiAxNy41MjMgMjIgMTIgMjIgMiAxMiAyWm0tMS41IDZIOVY3aDEuNVY4Wm0zIDBWN0gxMlY4aDEuNVY4Wm0tNCA0SDlWMTFoMS41VjEyWm0zIDBWMTFIMTJWMTJoMS41VjEyWm0tNCA0SDlWMTVoMS41VjE2Wm0zIDBWMTVIMTJWMTZoMS41VjE2WiIgZmlsbD0iIzBlYTVlOSIvPgo8L3N2Zz4K",
+      "src": "/icon-192.png",
       "sizes": "192x192",
-      "type": "image/svg+xml"
+      "type": "image/png"
     },
     {
-      "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cGF0aCBkPSJNMTIgMkM2LjQ3NyAyIDIgNi40NzcgMiAxMlM2LjQ3NyAyMiAxMiAyMiAyMiAxNy41MjMgMjIgMTIgMjIgMiAxMiAyWm0tMS41IDZIOVY3aDEuNVY4Wm0zIDBWN0gxMlY4aDEuNVY4Wm0tNCA0SDlWMTFoMS41VjEyWm0zIDBWMTFIMTJWMTJoMS41VjEyWm0tNCA0SDlWMTVoMS41VjE2Wm0zIDBWMTVIMTJWMTZoMS41VjE2WiIgZmlsbD0iIzBlYTVlOSIvPgo8L3N2Zz4K",
+      "src": "/icon-512.png",
       "sizes": "512x512",
-      "type": "image/svg+xml",
+      "type": "image/png",
       "purpose": "any maskable"
-    }
-  ],
-  "screenshots": [
-    {
-      "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTI4MCIgaGVpZ2h0PSI3MjAiIHZpZXdCb3g9IjAgMCAxMjgwIDcyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjEyODAiIGhlaWdodD0iNzIwIiBmaWxsPSIjZmFmOWY3Ii8+Cjx0ZXh0IHg9IjY0MCIgeT0iMzYwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjMGVhNWU5IiBmb250LXNpemU9IjQ4Ij5EYWlseSBGZWxpeCAtIENpdHkgb2YgdGhlIERheTwvdGV4dD4KPHN2Zz4K",
-      "sizes": "1280x720",
-      "type": "image/svg+xml",
-      "form_factor": "wide"
-    },
-    {
-      "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNzUwIiBoZWlnaHQ9IjEzMzQiIHZpZXdCb3g9IjAgMCA3NTAgMTMzNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9Ijc1MCIgaGVpZ2h0PSIxMzM0IiBmaWxsPSIjZmFmOWY3Ii8+Cjx0ZXh0IHg9IjM3NSIgeT0iNjY3IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjMGVhNWU5IiBmb250LXNpemU9IjM2Ij5EYWlseSBGZWxpeDwvdGV4dD4KPHN2Zz4K",
-      "sizes": "750x1334",
-      "type": "image/svg+xml",
-      "form_factor": "narrow"
     }
   ],
   "shortcuts": [
@@ -66,29 +32,13 @@
       "url": "/?shortcut=today",
       "icons": [
         {
-          "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iOTYiIGhlaWdodD0iOTYiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEyIDJDNi40NzcgMiAyIDYuNDc3IDIgMTJTNi40NzcgMjIgMTIgMjIgMjIgMTcuNTIzIDIyIDEyIDIyIDIgMTIgMlptMCA0YTggOCAwIDEgMSAwIDE2IDggOCAwIDAgMSAwLTE2WiIgZmlsbD0iIzBlYTVlOSIvPgo8L3N2Zz4K",
-          "sizes": "96x96",
-          "type": "image/svg+xml"
-        }
-      ]
-    },
-    {
-      "name": "My Collection",
-      "short_name": "Collection",
-      "description": "View your collected cities",
-      "url": "/?shortcut=collection",
-      "icons": [
-        {
-          "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iOTYiIGhlaWdodD0iOTYiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEyIDIxLjM1TDEwLjU1IDIwLjAzQzUuNCAxNS4zNiAyIDEyLjI4IDIgOC41IDIgNS40MiA0LjQyIDMgNy41IDNjMS43NCAwIDMuNDEgMC44MSA0LjUgMi4wOUMxMy4wOSAzLjgxIDE0Ljc2IDMgMTYuNSAzIDE5LjU4IDMgMjIgNS40MiAyMiA4LjVjMCAzLjc4LTMuNCA2Ljg2LTguNTUgMTEuNTRMMTIgMjEuMzVaIiBmaWxsPSIjZjU5ZTBiIi8+Cjwvc3ZnPgo=",
-          "sizes": "96x96",
-          "type": "image/svg+xml"
+          "src": "/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
         }
       ]
     }
   ],
   "related_applications": [],
-  "prefer_related_applications": false,
-  "edge_side_panel": {
-    "preferred_width": 400
-  }
+  "prefer_related_applications": false
 }
