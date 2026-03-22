@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Library, Search, Filter, MapPin, Globe, Map, Calendar } from "lucide-react";
+import PushSubscribeButton from "@/components/PushSubscribeButton";
 import { CityCard } from "@/components/city-card";
 import { useToast } from "@/hooks/use-toast";
 import { isUnauthorizedError } from "@/lib/authUtils";
@@ -88,6 +89,7 @@ export default function LibraryPage() {
           )}
         </nav>
         <div className="auth-area">
+          <PushSubscribeButton />
           {user ? (
             <div className="user-section">
               <span className="welcome-text">Welcome, {(user as any)?.firstName || 'Explorer'}</span>

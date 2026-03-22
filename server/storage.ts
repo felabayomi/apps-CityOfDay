@@ -6,12 +6,15 @@ import {
   userBucketList,
   userTravelPhotos,
   colorThemes,
+  pushSubscriptions,
   type User,
   type UpsertUser,
   type City,
   type CityContent,
   type UserTravelPhoto,
   type ColorTheme,
+  type PushSubscription,
+  type InsertPushSubscription,
   type InsertCity,
   type InsertCityContent,
   type InsertUserCollectedCity,
@@ -70,6 +73,11 @@ export interface IStorage {
   updateColorTheme(id: string, theme: Partial<InsertColorTheme>): Promise<ColorTheme>;
   deleteColorTheme(id: string): Promise<void>;
   setActiveColorTheme(id: string): Promise<ColorTheme>;
+
+  // Push subscription operations
+  savePushSubscription(sub: InsertPushSubscription): Promise<PushSubscription>;
+  deletePushSubscription(endpoint: string): Promise<void>;
+  getAllPushSubscriptions(): Promise<PushSubscription[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -431,6 +439,24 @@ export class DatabaseStorage implements IStorage {
       .returning();
     
     return activeTheme;
+  }
+
+  // Push subscription operations
+  async savePushSubscription(sub: InsertPushSubscription): Promise<PushSubscription> {
+    const [saved] = await db
+      .insert(pushSubscriptions)
+      .values(sub)
+      .onConflictDoUpdate({ target: pushSubscriptions.endpoint, set: { p256dh: sub.p256dh, auth: sub.auth } })
+      .returning();
+    return saved;
+  }
+
+  async deletePushSubscription(endpoint: string): Promise<void> {
+    await db.delete(pushSubscriptions).where(eq(pushSubscriptions.endpoint, endpoint));
+  }
+
+  async getAllPushSubscriptions(): Promise<PushSubscription[]> {
+    return db.select().from(pushSubscriptions);
   }
 }
 

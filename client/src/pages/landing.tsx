@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Bell, Compass, MapPin, Route, Binoculars, Mountain } from "lucide-react";
+import PushSubscribeButton from "@/components/PushSubscribeButton";
 import { useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import Footer from "@/components/Footer";
@@ -56,6 +57,7 @@ export default function Landing() {
           <img src="/city-discoverer-logo-nobg.png" alt="City Discoverer" className="h-48 w-auto" />
         </div>
         <div className="auth-area">
+          <PushSubscribeButton />
           <a href="/library" className="library-link">Library</a>
         </div>
       </header>

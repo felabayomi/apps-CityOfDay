@@ -114,47 +114,48 @@ async function doBackgroundSync() {
   }
 }
 
-// Push notifications (for future premium features)
+// Push notifications — City Discoverer daily city alerts
 self.addEventListener('push', (event) => {
+  let data = { title: 'City Discoverer', body: 'Your City of the Day is ready!', url: '/' };
+  if (event.data) {
+    try { data = { ...data, ...JSON.parse(event.data.text()) }; } catch (e) {}
+  }
+
   const options = {
-    body: event.data ? event.data.text() : 'New city discovery available!',
-    icon: '/icon-192x192.png',
-    badge: '/badge-72x72.png',
+    body: data.body,
+    icon: '/icon-192.png',
+    badge: '/favicon-32.png',
     vibrate: [100, 50, 100],
-    data: {
-      dateOfArrival: Date.now(),
-      primaryKey: '2'
-    },
+    data: { url: data.url },
     actions: [
-      {
-        action: 'explore',
-        title: 'Explore City',
-        icon: '/icons/checkmark.png'
-      },
-      {
-        action: 'close',
-        title: 'Close',
-        icon: '/icons/xmark.png'
-      }
+      { action: 'open', title: 'Explore Now' },
+      { action: 'close', title: 'Dismiss' }
     ]
   };
 
   event.waitUntil(
-    self.registration.showNotification('Daily Felix', options)
+    self.registration.showNotification(data.title, options)
   );
 });
 
-// Handle notification clicks
+// Handle notification clicks — open the app to the right URL
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
+  const url = (event.notification.data && event.notification.data.url) ? event.notification.data.url : '/';
 
-  if (event.action === 'explore') {
-    event.waitUntil(
-      clients.openWindow('/')
-    );
-  } else if (event.action === 'close') {
-    // Just close the notification
-  }
+  if (event.action === 'close') return;
+
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
+      for (const client of clientList) {
+        if (client.url.includes(self.location.origin) && 'focus' in client) {
+          client.navigate(url);
+          return client.focus();
+        }
+      }
+      return clients.openWindow(url);
+    })
+  );
 });
 
 // Handle messages from the main app

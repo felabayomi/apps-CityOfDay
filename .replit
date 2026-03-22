@@ -40,3 +40,10 @@ externalPort = 80
 
 [agent]
 integrations = ["javascript_stripe:1.0.0", "javascript_log_in_with_replit:1.0.0", "javascript_openai:1.0.0", "javascript_object_storage:1.0.0"]
+
+[userenv]
+
+[userenv.shared]
+VAPID_PUBLIC_KEY = "BNTH85uLgxZB7mj-I6j3nF7bJMFuaQ1pSwOp6ecppgxJA6jtWrF4xxjA4jp-jddaHwxoabmXpa_KAViwJ_FCsbU"
+VAPID_PRIVATE_KEY = "DPyPakJeGkWS-M66WDrPjPU-FQCsQSXb6XduaivwpcQ"
+VAPID_EMAIL = "mailto:wordofday2025@gmail.com"

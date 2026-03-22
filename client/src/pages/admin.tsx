@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { Globe, Wand2, Edit, Trash2, Plus, Eye, MapPin, CalendarIcon, ChevronDown, ChevronRight } from "lucide-react";
+import { Globe, Wand2, Edit, Trash2, Plus, Eye, MapPin, CalendarIcon, ChevronDown, ChevronRight, Bell } from "lucide-react";
 import { AdminCityGenerator } from "@/components/admin-city-generator";
 import { ContentEditor } from "@/components/content-editor";
 import { ColorThemeManager } from "@/components/ColorThemeManager";
@@ -304,6 +304,29 @@ export default function Admin() {
                   >
                     <Eye className="w-3 h-3 mr-2" />
                     Approve Today's Draft Now
+                  </Button>
+                </div>
+
+                {/* Test Push Notification */}
+                <div className="p-4 rounded-md bg-muted/40 border border-border">
+                  <p className="text-sm font-semibold text-foreground mb-1">Test Push Notification</p>
+                  <p className="text-xs text-muted-foreground mb-3">Send a test push notification to all current subscribers to verify the pipeline is working.</p>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={async () => {
+                      try {
+                        const res = await fetch("/api/admin/push/test", { method: "POST", credentials: "include", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ title: "City Discoverer Test", body: "Push notifications are working!" }) });
+                        const data = await res.json();
+                        if (!res.ok) throw new Error(data.message);
+                        toast({ title: "Test sent", description: data.message });
+                      } catch (e: any) {
+                        toast({ title: "Error", description: e.message, variant: "destructive" });
+                      }
+                    }}
+                  >
+                    <Bell className="w-3 h-3 mr-2" />
+                    Send Test Notification
                   </Button>
                 </div>
               </div>

@@ -2,6 +2,7 @@ import cron from "node-cron";
 import { storage } from "./storage";
 import { generateCityContent } from "./openai";
 import { log } from "./vite";
+import { notifyCityOfTheDay, notifyEveningReminder } from "./push";
 
 // Large pool of world cities to cycle through
 const WORLD_CITIES: { name: string; country: string }[] = [
@@ -229,6 +230,10 @@ export async function autoApproveTodaysDrafts() {
         log(`[Scheduler] Auto-approve: approving "${draft.name}" (${draft.id})`);
         await storage.approveDraft(draft.id);
         approved++;
+        // Notify all subscribers that today's city is live
+        notifyCityOfTheDay(draft.name, draft.country).catch(err =>
+          log(`[Scheduler] Push notify error: ${err.message}`)
+        );
       }
     }
 
@@ -270,10 +275,15 @@ export function startScheduler() {
   // Generate tomorrow's draft daily at 3pm Eastern (handles EST/EDT automatically)
   cron.schedule("0 15 * * *", generateTomorrowsDraft, { timezone: "America/New_York" });
 
-  // Auto-approve today's drafts at 9am Eastern (handles EST/EDT automatically)
+  // Auto-approve today's drafts + notify subscribers at 9am Eastern
   cron.schedule("0 9 * * *", autoApproveTodaysDrafts, { timezone: "America/New_York" });
 
-  log("[Scheduler] Started — daily draft generation at 3pm Eastern, auto-approve at 9am Eastern");
+  // Evening reminder at 7pm Eastern for anyone who hasn't visited yet
+  cron.schedule("0 19 * * *", () => {
+    notifyEveningReminder().catch(err => log(`[Scheduler] Evening reminder error: ${err.message}`));
+  }, { timezone: "America/New_York" });
+
+  log("[Scheduler] Started — daily draft generation at 3pm Eastern, auto-approve at 9am Eastern, evening reminder at 7pm Eastern");
 
   // Run catch-up immediately so missed jobs recover after restarts/deployments
   runCatchUpChecks().catch(err => log(`[Scheduler] Catch-up ERROR: ${(err as Error).message}`));

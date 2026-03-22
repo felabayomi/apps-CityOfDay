@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Globe, Bell, Heart, Flame, MapPin, ChevronDown, ChevronRight, Share2, Sparkles } from "lucide-react";
+import PushSubscribeButton from "@/components/PushSubscribeButton";
 import { CityCard } from "@/components/city-card";
 import { useToast } from "@/hooks/use-toast";
 import { useEffect, useState } from "react";
@@ -156,6 +157,7 @@ Agent Support: Send us your booking confirmation for tracking and assistance.`;
           <img src="/city-discoverer-logo-nobg.png" alt="City Discoverer" className="h-48 w-auto" />
         </div>
         <div className="auth-area">
+          <PushSubscribeButton />
           <a href="/" className="home-link">Home</a>
           <a href="/library" className="library-link">Library</a>
           <a href="https://schedez.io/" target="_blank" rel="noopener noreferrer" className="library-link">Plan Less and Travel More</a>

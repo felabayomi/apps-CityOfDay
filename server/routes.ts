@@ -9,6 +9,7 @@ import { eq } from "drizzle-orm";
 import { db } from "./db";
 import { ObjectStorageService } from "./objectStorage";
 import { generateTomorrowsDraft, autoApproveTodaysDrafts } from "./scheduler";
+import { VAPID_PUBLIC_KEY, sendPushToAll } from "./push";
 
 // Simple in-memory cache for daily city content
 const todaysCityCache = {
@@ -208,6 +209,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { scheduledDate } = req.body;
       const city = await storage.approveDraft(req.params.id, scheduledDate ? new Date(scheduledDate) : undefined);
       todaysCityCache.clear();
+      // Send push notification if this city is approved for today (or immediately)
+      const todayStr = new Date().toISOString().split('T')[0];
+      const cityDateStr = city.scheduledDate ? new Date(city.scheduledDate).toISOString().split('T')[0] : todayStr;
+      if (cityDateStr === todayStr && city.status === "approved") {
+        notifyCityOfTheDay(city.name, city.country).catch(err =>
+          console.error("[Routes] Push notify error:", err.message)
+        );
+      }
       res.json(city);
     } catch (error) {
       res.status(500).json({ message: "Failed to approve draft" });
@@ -673,7 +682,47 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Subscription routes removed - app is now completely free
+  // Push notification routes — public (no auth needed, users subscribe from home screen)
+  app.get("/api/push/vapid-public-key", (req, res) => {
+    res.json({ publicKey: VAPID_PUBLIC_KEY });
+  });
+
+  app.post("/api/push/subscribe", async (req, res) => {
+    try {
+      const { endpoint, keys } = req.body;
+      if (!endpoint || !keys?.p256dh || !keys?.auth) {
+        return res.status(400).json({ message: "Invalid subscription data" });
+      }
+      await storage.savePushSubscription({ endpoint, p256dh: keys.p256dh, auth: keys.auth });
+      res.json({ message: "Subscribed successfully" });
+    } catch (error) {
+      console.error("Push subscribe error:", error);
+      res.status(500).json({ message: "Failed to save subscription" });
+    }
+  });
+
+  app.post("/api/push/unsubscribe", async (req, res) => {
+    try {
+      const { endpoint } = req.body;
+      if (!endpoint) return res.status(400).json({ message: "Endpoint required" });
+      await storage.deletePushSubscription(endpoint);
+      res.json({ message: "Unsubscribed successfully" });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to unsubscribe" });
+    }
+  });
+
+  // Admin-only: send a manual push notification (e.g., for testing)
+  app.post("/api/admin/push/test", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const { title, body } = req.body;
+      await sendPushToAll({ title: title || "Test Notification", body: body || "City Discoverer push is working!" });
+      res.json({ message: "Test notification sent" });
+    } catch (error) {
+      console.error("Test push error:", error);
+      res.status(500).json({ message: "Failed to send test notification" });
+    }
+  });
 
   const httpServer = createServer(app);
   return httpServer;
