@@ -23,7 +23,7 @@ import {
   type InsertColorTheme,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc, and, or, gte, lt, lte, asc, isNull, isNotNull, sql } from "drizzle-orm";
+import { eq, desc, and, or, gte, lt, lte, asc, isNull, isNotNull, sql, ne } from "drizzle-orm";
 
 export interface IStorage {
   // User operations (required for Replit Auth)
@@ -147,7 +147,7 @@ export class DatabaseStorage implements IStorage {
 
   async rejectDraft(id: string): Promise<City> {
     const [city] = await db.update(cities)
-      .set({ status: "rejected", updatedAt: new Date() })
+      .set({ status: "rejected", scheduledDate: null, updatedAt: new Date() })
       .where(eq(cities.id, id))
       .returning();
     return city;
@@ -174,7 +174,8 @@ export class DatabaseStorage implements IStorage {
       .where(
         and(
           gte(cities.scheduledDate, startOfDay),
-          lt(cities.scheduledDate, endOfDay)
+          lt(cities.scheduledDate, endOfDay),
+          ne(cities.status, "rejected")
         )
       );
     return city;
