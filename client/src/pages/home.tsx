@@ -153,7 +153,7 @@ Agent Support: Send us your booking confirmation for tracking and assistance.`;
       {/* Navigation Header */}
       <header className="site-header">
         <div className="logo-area">
-          <img src="/city-discoverer-logo.png" alt="City Discoverer" className="h-20 w-auto" />
+          <img src="/city-discoverer-logo-nobg.png" alt="City Discoverer" className="h-32 w-auto" />
         </div>
         <div className="auth-area">
           <a href="/" className="home-link">Home</a>
