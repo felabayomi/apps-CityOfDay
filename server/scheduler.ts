@@ -246,11 +246,11 @@ export async function autoApproveTodaysDrafts() {
 }
 
 export function startScheduler() {
-  // Generate tomorrow's draft daily at 8pm EST = 01:00 UTC
-  cron.schedule("0 1 * * *", generateTomorrowsDraft, { timezone: "UTC" });
+  // Generate tomorrow's draft daily at 2pm EST = 19:00 UTC
+  cron.schedule("0 19 * * *", generateTomorrowsDraft, { timezone: "UTC" });
 
   // Auto-approve today's drafts at 9am EST = 14:00 UTC
   cron.schedule("0 14 * * *", autoApproveTodaysDrafts, { timezone: "UTC" });
 
-  log("[Scheduler] Started — daily draft generation at 8pm EST, auto-approve at 9am EST");
+  log("[Scheduler] Started — daily draft generation at 2pm EST, auto-approve at 9am EST");
 }
