@@ -18,20 +18,20 @@ import { useEffect } from "react";
 import Footer from "@/components/Footer";
 
 export default function Admin() {
-  const { user, isLoading, isAuthenticated } = useAuth();
+  const { user, isLoading, isAuthenticated, authStatus } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [selectedCity, setSelectedCity] = useState<string>("");
   const [openLetters, setOpenLetters] = useState<Set<string>>(new Set());
   const [searchQuery, setSearchQuery] = useState<string>("");
 
-  // Redirect to login if not authenticated or check admin access
+  // Redirect to login only after auth has definitively resolved (not during loading)
   useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
+    if (authStatus === 'pending') return; // still loading — never redirect prematurely
+    if (!isAuthenticated) {
       window.location.href = "/api/login";
       return;
     }
-    
     // Check admin access using server-provided isAdmin flag
     if (user && !(user as any)?.isAdmin) {
       const userEmail = (user as any)?.email || 'unknown';
@@ -40,9 +40,8 @@ export default function Admin() {
         description: `Admin access required. Your email: ${userEmail}`,
         variant: "destructive",
       });
-      return;
     }
-  }, [isAuthenticated, isLoading, user, toast]);
+  }, [authStatus, isAuthenticated, user, toast]);
 
   // Fetch all cities for admin
   const { data: cities, isLoading: loadingCities } = useQuery<any[]>({
