@@ -68,12 +68,12 @@ export default function Landing() {
           <div className="absolute inset-0 flex items-center justify-center text-center">
             <div className="max-w-4xl mx-auto px-4">
               <h2 className="text-4xl md:text-6xl font-bold text-white mb-4">
-                Explore the World<br /><span className="text-yellow-300">One City at a Time</span>
+                Explore America<br /><span className="text-yellow-300">One City at a Time</span>
               </h2>
               <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
                 Your daily guide to city discovery.<br />Curated travel inspiration, cultural insights, and hidden gems.
               </p>
-              <div className="flex justify-center">
+              <div className="flex flex-wrap justify-center gap-3">
                 <Button 
                   size="lg" 
                   className="bg-white text-blue-600 hover:bg-gray-100"
@@ -81,6 +81,14 @@ export default function Landing() {
                   data-testid="button-start-journey"
                 >
                   Start Daily Discovery
+                </Button>
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="border-white text-white hover:bg-white/10"
+                  onClick={() => window.open("https://dailyfelix.org/", "_blank", "noopener,noreferrer")}
+                >
+                  International Cities
                 </Button>
               </div>
             </div>
