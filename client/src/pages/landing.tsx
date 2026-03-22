@@ -264,7 +264,7 @@ export default function Landing() {
                 <Button 
                   size="lg"
                   className="bg-white text-blue-600 hover:bg-gray-100"
-                  onClick={handleViewTodaysCity}
+                  onClick={() => window.open("https://citydiscoverer.ai/subscribe", "_blank")}
                   data-testid="button-join-now"
                 >
                   Join City Discoverer

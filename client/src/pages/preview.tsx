@@ -92,7 +92,7 @@ export default function Preview() {
                   You're viewing a sample of today's city content. Sign in to access the full experience with personalized content, collections, and daily updates.
                 </p>
                 <Button 
-                  onClick={handleSignIn} 
+                  onClick={() => window.open("https://citydiscoverer.ai/subscribe", "_blank")}
                   className="bg-orange-600 hover:bg-orange-700"
                   data-testid="button-join-from-preview"
                 >
