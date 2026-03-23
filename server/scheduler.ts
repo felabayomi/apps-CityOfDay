@@ -191,26 +191,21 @@ async function getNextCityToGenerate(): Promise<{ name: string; country: string 
   return available[Math.floor(Math.random() * available.length)];
 }
 
-// Get tomorrow's date as a UTC midnight Date object
-function getTomorrowUTC(): Date {
-  const now = new Date();
-  const tomorrow = new Date(Date.UTC(
-    now.getUTCFullYear(),
-    now.getUTCMonth(),
-    now.getUTCDate() + 1,
-    0, 0, 0, 0
-  ));
-  return tomorrow;
-}
-
 // Get today's date string in Eastern time (handles EST/EDT automatically)
 function getTodayEastern(): string {
   return new Date().toLocaleDateString("en-CA", { timeZone: "America/New_York" });
 }
 
+// Get tomorrow's date based on Eastern time (not UTC), so 8pm Eastern on the 22nd → March 23, not 24
+function getTomorrowEastern(): Date {
+  const todayEastern = getTodayEastern(); // e.g. "2026-03-22"
+  const [year, month, day] = todayEastern.split("-").map(Number);
+  return new Date(Date.UTC(year, month - 1, day + 1, 0, 0, 0, 0));
+}
+
 export async function generateTomorrowsDraft() {
   try {
-    const tomorrow = getTomorrowUTC();
+    const tomorrow = getTomorrowEastern();
     const tomorrowStr = tomorrow.toISOString().split('T')[0];
 
     log(`[Scheduler] Auto-generate: checking if ${tomorrowStr} already has a city...`);
