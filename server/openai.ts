@@ -241,3 +241,36 @@ export async function textToSpeech(text: string): Promise<Buffer> {
   const buffers = await Promise.all(chunks.map(ttsChunk));
   return Buffer.concat(buffers);
 }
+
+export interface WordTimestamp {
+  word: string;
+  start: number;
+  end: number;
+}
+
+export async function textToSpeechWithTimestamps(text: string): Promise<{
+  buffer: Buffer;
+  timestamps: WordTimestamp[];
+}> {
+  const buffer = await textToSpeech(text);
+
+  try {
+    // Whisper needs a File-like object wrapping the buffer
+    const audioFile = new File([buffer], "audio.mp3", { type: "audio/mpeg" });
+    const transcription = await ttsOpenai.audio.transcriptions.create({
+      file: audioFile as any,
+      model: "whisper-1",
+      response_format: "verbose_json",
+      timestamp_granularities: ["word"],
+    } as any);
+    const timestamps: WordTimestamp[] = ((transcription as any).words ?? []).map((w: any) => ({
+      word: w.word,
+      start: w.start,
+      end: w.end,
+    }));
+    return { buffer, timestamps };
+  } catch (err) {
+    console.warn("[TTS] Whisper timestamps unavailable, proceeding without highlighting:", (err as Error).message);
+    return { buffer, timestamps: [] };
+  }
+}

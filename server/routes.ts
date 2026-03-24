@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
-import { generateCityContent, generateCityImageSuggestions, textToSpeech } from "./openai";
+import { generateCityContent, generateCityImageSuggestions, textToSpeechWithTimestamps } from "./openai";
 import { insertCitySchema, insertCityContentSchema, insertUserTravelPhotoSchema, insertColorThemeSchema, cities } from "@shared/schema";
 import { z } from "zod";
 import { eq } from "drizzle-orm";
@@ -723,16 +723,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const content = await storage.getCityContent(cityId);
 
-      // Return cached audio if it exists
-      if (city.audioUrl) {
-        const base64 = city.audioUrl.replace(/^data:audio\/mpeg;base64,/, "");
-        const buffer = Buffer.from(base64, "base64");
-        res.set("Content-Type", "audio/mpeg");
-        res.set("Content-Length", String(buffer.length));
-        return res.send(buffer);
+      // Return cached audio + timestamps if fully cached (audio + text).
+      // If audioText is missing the cache is stale (pre-highlighting) so we regenerate.
+      if (city.audioUrl && (city as any).audioText) {
+        const audioBase64 = city.audioUrl.replace(/^data:audio\/mpeg;base64,/, "");
+        return res.json({
+          audioBase64,
+          timestamps: (city as any).audioTimestamps ?? [],
+          text: (city as any).audioText ?? "",
+        });
       }
 
-      // Assemble text: name + country + highlights + all card content
+      // Assemble narration text: name + country + highlights + all card content
       const highlightLines = Array.isArray(city.highlights)
         ? (city.highlights as string[]).map((h, i) => `${i + 1}. ${h}`).join("\n")
         : "";
@@ -755,16 +757,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
         .filter(Boolean)
         .join("\n\n");
 
-      // Generate audio
-      const audioBuffer = await textToSpeech(fullText);
+      // Generate audio + Whisper word timestamps in one call
+      const { buffer: audioBuffer, timestamps } = await textToSpeechWithTimestamps(fullText);
 
-      // Cache in DB as base64 data URL
+      // Cache everything in DB
       const dataUrl = `data:audio/mpeg;base64,${audioBuffer.toString("base64")}`;
-      await storage.updateCity(cityId, { audioUrl: dataUrl } as any);
+      await storage.updateCity(cityId, {
+        audioUrl: dataUrl,
+        audioTimestamps: timestamps,
+        audioText: fullText,
+      } as any);
 
-      res.set("Content-Type", "audio/mpeg");
-      res.set("Content-Length", String(audioBuffer.length));
-      return res.send(audioBuffer);
+      return res.json({
+        audioBase64: audioBuffer.toString("base64"),
+        timestamps,
+        text: fullText,
+      });
     } catch (error) {
       console.error("TTS error:", error);
       res.status(500).json({ message: "Failed to generate audio" });
