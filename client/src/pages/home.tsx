@@ -210,12 +210,12 @@ Agent Support: Send us your booking confirmation for tracking and assistance.`;
               </div>
             )}
 
-            {/* Tune-In card — always public on this page */}
+            {/* Voice Player: Play button for admin, Tune-In card for public */}
             <div className="max-w-md mx-auto mb-8">
               <VoicePlayer
                 cityId={todaysCity.id}
                 cityName={todaysCity.name}
-                isAdmin={false}
+                isAdmin={isAdmin}
                 titleRef={cityTitleRef}
                 contentEndRef={contentEndRef}
               />
