@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Bell, Compass, MapPin, Route, Binoculars, Mountain } from "lucide-react";
+import { Bell, Compass, MapPin, Route, Binoculars, Mountain, Radio } from "lucide-react";
 import PushSubscribeButton from "@/components/PushSubscribeButton";
 import { useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
@@ -64,8 +64,8 @@ export default function Landing() {
 
       {/* Hero Section */}
       <section id="discover" className="relative">
-        <div className="h-96 relative overflow-hidden" style={{background: 'linear-gradient(135deg, var(--hero-gradient-start), var(--hero-gradient-end))'}}>
-          <div className="absolute inset-0 flex items-center justify-center text-center">
+        <div className="py-16 relative overflow-hidden" style={{background: 'linear-gradient(135deg, var(--hero-gradient-start), var(--hero-gradient-end))'}}>
+          <div className="flex items-center justify-center text-center">
             <div className="max-w-4xl mx-auto px-4">
               <h2 className="text-4xl md:text-6xl font-bold text-white mb-4">
                 Explore America<br /><span className="text-yellow-300">One City at a Time</span>
@@ -90,6 +90,17 @@ export default function Landing() {
                 >
                   International Cities
                 </Button>
+              </div>
+
+              {/* Tune In card — visible to all visitors */}
+              <div className="mt-6 inline-flex items-center gap-3 px-4 py-2.5 rounded-md bg-white/10 border border-white/25 text-left">
+                <Radio className="h-4 w-4 text-white/80 shrink-0" />
+                <p className="text-sm text-white/90">
+                  Hear today's city read live every day at <strong className="text-white">4pm ET</strong> on{" "}
+                  <a href="https://eacd.us" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 text-yellow-300">
+                    eacd.us
+                  </a>
+                </p>
               </div>
             </div>
           </div>
