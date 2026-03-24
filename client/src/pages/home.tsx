@@ -301,11 +301,16 @@ Agent Support: Send us your booking confirmation for tracking and assistance.`;
               </div>
             )}
 
-            {/* Agent Support CTA - Duplicate in Hero Section */}
+            {/* Agent Support CTA - Hero Section */}
             <div className="mb-8">
-              <p className="text-sm font-bold bg-yellow-100 border border-yellow-300 rounded-md px-4 py-2 max-w-2xl mx-auto text-yellow-800">
+              <a
+                href="https://agent.citydiscoverer.ai/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block text-sm font-bold bg-yellow-100 border border-yellow-300 rounded-md px-4 py-2 max-w-2xl mx-auto text-yellow-800 hover:bg-yellow-200 transition-colors cursor-pointer"
+              >
                 Agent Support: Send us your booking confirmation for tracking and assistance.
-              </p>
+              </a>
             </div>
 
             {/* Display all content cards */}
@@ -336,9 +341,14 @@ Agent Support: Send us your booking confirmation for tracking and assistance.`;
             <p className="text-muted-foreground mb-4 max-w-2xl mx-auto">
               Turn today's inspiration into tomorrow's adventure. Book your experience now.
             </p>
-            <p className="text-sm font-bold bg-yellow-100 border border-yellow-300 rounded-md px-4 py-2 mb-6 max-w-2xl mx-auto text-yellow-800">
+            <a
+              href="https://agent.citydiscoverer.ai/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block text-sm font-bold bg-yellow-100 border border-yellow-300 rounded-md px-4 py-2 mb-6 max-w-2xl mx-auto text-yellow-800 hover:bg-yellow-200 transition-colors cursor-pointer"
+            >
               Agent Support: Send us your booking confirmation for tracking and assistance.
-            </p>
+            </a>
           </div>
           
           {/* Travel Services Grid */}
