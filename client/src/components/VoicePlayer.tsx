@@ -205,21 +205,20 @@ export default function VoicePlayer({ cityId, cityName, isAdmin, titleRef, conte
     setMinimized(false);
   }
 
-  // ─── Public view ────────────────────────────────────────────────────────────
+  // ─── Public view (Tune-In card) ─────────────────────────────────────────────
   if (!isAdmin) {
     return (
-      <div className="flex items-center gap-3 p-3 rounded-md bg-white/10 border border-white/20">
+      <a
+        href="https://eacd.us"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="flex items-center gap-3 p-3 rounded-md bg-white/10 border border-white/20 hover:bg-white/20 transition-colors"
+      >
         <Radio className="h-5 w-5 text-white shrink-0" />
-        <div>
-          <p className="text-sm font-semibold text-white">Hear {cityName} Read Live</p>
-          <p className="text-xs text-white/70">
-            Tune in every day at <strong>4pm ET</strong> on{" "}
-            <a href="https://eacd.us" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2">
-              eacd.us
-            </a>
-          </p>
-        </div>
-      </div>
+        <p className="text-sm font-semibold text-white leading-snug">
+          Hear today's city read live — every day at <span className="text-yellow-300">4pm ET</span> on eacd.us
+        </p>
+      </a>
     );
   }
 
