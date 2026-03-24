@@ -1,0 +1,58 @@
+How the Live Word Highlighting Works
+1. Generate the audio (server-side)
+When you hit play, the server takes the full narration text and sends it to OpenAI's TTS-1-HD (Onyx voice) to generate an MP3 file. For long texts, it splits into 4000-character chunks and concatenates the MP3 buffers together.
+
+2. Get exact word timestamps (server-side — the key step)
+Immediately after generating the audio, the same audio buffer is sent to OpenAI's Whisper transcription model with a special flag:
+
+openai.audio.transcriptions.create({
+  file: audioFile,         // the MP3 you just generated
+  model: 'whisper-1',
+  response_format: 'verbose_json',
+  timestamp_granularities: ['word'],  // ← this is the magic
+})
+Whisper listens to the audio and returns something like:
+
+[
+  { "word": "Daily",    "start": 0.00, "end": 0.32 },
+  { "word": "Felix",    "start": 0.32, "end": 0.65 },
+  { "word": "Riches",   "start": 0.65, "end": 1.10 },
+  ...
+]
+These timestamps are exact — they come from analyzing the actual audio waveform, not estimates. Both the audio and the timestamps are saved to the database so it only runs once per entry.
+
+3. Match and highlight on the frontend
+The narration script text is parsed into individual word tokens. Each word that contains letters or digits gets a sequential index (pure punctuation like — is skipped since TTS doesn't voice it):
+
+// Parse "Daily Felix — Word of the Day" into tokens:
+// "Daily"(0)  "Felix"(1)  "—"(null)  "Word"(2)  "of"(3)  "the"(4)  "Day"(5)
+Each word renders as its own <span>:
+
+<span className={isActive ? "bg-yellow-300 font-semibold" : ""}>
+  {word}
+</span>
+Then the audio element's timeupdate event fires continuously during playback. On each tick, a binary search finds which Whisper word is currently being spoken at audio.currentTime:
+
+function findActiveWord(timestamps, currentTime) {
+  let lo = 0, hi = timestamps.length - 1;
+  while (lo <= hi) {
+    const mid = (lo + hi) >> 1;
+    if (timestamps[mid].end < currentTime)   lo = mid + 1;
+    else if (timestamps[mid].start > currentTime) hi = mid - 1;
+    else return mid; // ← currentTime falls inside this word's window
+  }
+  return lo; // upcoming word
+}
+That index highlights the matching word span. A ref on the active word calls scrollIntoView so the reading panel follows along automatically.
+
+What makes it "perfectly timed"
+The trick is that the same audio file that plays in the browser is the exact one Whisper analyzed. So the timestamps describe that specific recording — not a statistical average of how fast someone speaks. There's no drift because the source of truth is the audio itself.
+
+To reuse this elsewhere
+You need three things:
+
+Any text-to-speech source that gives you an audio file (OpenAI TTS, ElevenLabs, AWS Polly, etc.)
+Feed that audio to Whisper with timestamp_granularities: ['word']
+A frontend that wraps each word in a span and binary-searches the timestamps on timeupdate
+The whole highlighting engine — the parser, binary search, and scroll behavior — lives in client/src/components/VoicePlayer.tsx and is completely self-contained. You can drop it into any project that has audio playback.
+

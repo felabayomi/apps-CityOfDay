@@ -207,16 +207,18 @@ Agent Support: Send us your booking confirmation for tracking and assistance.`;
               </div>
             )}
 
-            {/* Voice Player / Tune-In card */}
-            <div className="max-w-md mx-auto mb-8">
-              <VoicePlayer
-                cityId={todaysCity.id}
-                cityName={todaysCity.name}
-                isAdmin={isAdmin}
-                titleRef={cityTitleRef}
-                contentEndRef={contentEndRef}
-              />
-            </div>
+            {/* Voice Player — admin only */}
+            {isAdmin && (
+              <div className="max-w-md mx-auto mb-8">
+                <VoicePlayer
+                  cityId={todaysCity.id}
+                  cityName={todaysCity.name}
+                  isAdmin={true}
+                  titleRef={cityTitleRef}
+                  contentEndRef={contentEndRef}
+                />
+              </div>
+            )}
 
             {/* Sample Itinerary HTML Section - TEMPORARILY HIDDEN 
             {todaysCity?.sampleItinerary && (
