@@ -7,9 +7,12 @@ import { useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import Footer from "@/components/Footer";
 import { getCurrentCardType, getNextCardType, formatTimeUntilNext } from "@/lib/timeBasedContent";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function Landing() {
   const [, setLocation] = useLocation();
+  const { user } = useAuth();
+  const isAdmin = !!(user as any)?.isAdmin;
   
   // Get timezone offset for accurate city scheduling
   const tzOffset = -new Date().getTimezoneOffset(); // Convert to minutes east of UTC
@@ -59,6 +62,9 @@ export default function Landing() {
         <div className="auth-area">
           <PushSubscribeButton />
           <a href="/library" className="library-link">Library</a>
+          {isAdmin && (
+            <a href="/admin/felixdgreat" className="library-link" style={{color: 'var(--accent-bar-background, #f59e0b)', fontWeight: 600}}>Admin</a>
+          )}
         </div>
       </header>
 
