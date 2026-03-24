@@ -207,12 +207,12 @@ Agent Support: Send us your booking confirmation for tracking and assistance.`;
               </div>
             )}
 
-            {/* Voice Player — full player for admin, Tune-In card for public */}
+            {/* Tune-In card — always public on this page */}
             <div className="max-w-md mx-auto mb-8">
               <VoicePlayer
                 cityId={todaysCity.id}
                 cityName={todaysCity.name}
-                isAdmin={isAdmin}
+                isAdmin={false}
                 titleRef={cityTitleRef}
                 contentEndRef={contentEndRef}
               />

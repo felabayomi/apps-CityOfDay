@@ -16,6 +16,7 @@ import { useToast } from "@/hooks/use-toast";
 import { isUnauthorizedError } from "@/lib/authUtils";
 import { useEffect } from "react";
 import Footer from "@/components/Footer";
+import VoicePlayer from "@/components/VoicePlayer";
 
 export default function Admin() {
   const { user, isLoading, isAuthenticated, authStatus } = useAuth();
@@ -42,6 +43,14 @@ export default function Admin() {
       });
     }
   }, [authStatus, isAuthenticated, user, toast]);
+
+  // Fetch today's published city (for voice player)
+  const { data: todayData } = useQuery<{ city: any }>({
+    queryKey: ["/api/cities/today"],
+    retry: false,
+    enabled: !!user,
+  });
+  const todaysCity = todayData?.city;
 
   // Fetch all cities for admin
   const { data: cities, isLoading: loadingCities } = useQuery<any[]>({
@@ -177,6 +186,25 @@ export default function Admin() {
           <h2 className="text-3xl font-bold text-foreground mb-4">Content Management Dashboard</h2>
           <p className="text-xl text-muted-foreground">Generate and manage your daily city content</p>
         </div>
+
+        {/* AI Voice Reader — admin-only player for today's city */}
+        {todaysCity && (
+          <div className="mb-8">
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base">AI Voice Reader — {todaysCity.name}</CardTitle>
+                <p className="text-xs text-muted-foreground">Reads today's city aloud with live word highlighting. Auto-plays at 4pm ET.</p>
+              </CardHeader>
+              <CardContent>
+                <VoicePlayer
+                  cityId={todaysCity.id}
+                  cityName={todaysCity.name}
+                  isAdmin={true}
+                />
+              </CardContent>
+            </Card>
+          </div>
+        )}
 
         {/* Draft Queue - AI Generated content awaiting review */}
         {(loadingDrafts || (drafts && drafts.length > 0)) && (
