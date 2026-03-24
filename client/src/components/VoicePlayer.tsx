@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback, type RefObject } from "react";
 import { Button } from "@/components/ui/button";
-import { Play, Pause, Square, Radio, Volume2 } from "lucide-react";
+import { Play, Pause, Square, Radio, Volume2, Mic, Minimize2, ChevronDown, ChevronUp, X } from "lucide-react";
 
 interface WordTimestamp {
   word: string;
@@ -10,7 +10,6 @@ interface WordTimestamp {
 
 interface Token {
   text: string;
-  /** null for pure-punctuation tokens that TTS doesn't voice */
   tsIndex: number | null;
 }
 
@@ -46,40 +45,26 @@ function formatCountdown(secs: number): string {
   return `${m}:${s.toString().padStart(2, "0")}`;
 }
 
-/**
- * Split narration text into tokens. Words that contain at least one alphanumeric
- * character get a sequential tsIndex so they map to Whisper timestamps.
- * Pure-punctuation runs (dashes, em-dashes, etc.) get tsIndex = null.
- */
 function tokenize(text: string): Token[] {
   if (!text) return [];
-  // Split on whitespace but keep the whitespace as separate tokens for layout
   const raw = text.split(/(\s+)/);
   let tsIndex = 0;
   return raw.map(chunk => {
-    if (/\s+/.test(chunk)) return { text: chunk, tsIndex: null };
+    if (/^\s+$/.test(chunk)) return { text: chunk, tsIndex: null };
     const hasAlphanum = /[a-zA-Z0-9]/.test(chunk);
-    if (hasAlphanum) {
-      return { text: chunk, tsIndex: tsIndex++ };
-    }
+    if (hasAlphanum) return { text: chunk, tsIndex: tsIndex++ };
     return { text: chunk, tsIndex: null };
   });
 }
 
-/** Binary search: find the timestamp index whose window contains currentTime. */
 function findActiveWord(timestamps: WordTimestamp[], currentTime: number): number {
   if (!timestamps.length) return -1;
-  let lo = 0;
-  let hi = timestamps.length - 1;
+  let lo = 0, hi = timestamps.length - 1;
   while (lo <= hi) {
     const mid = (lo + hi) >> 1;
-    if (timestamps[mid].end < currentTime) {
-      lo = mid + 1;
-    } else if (timestamps[mid].start > currentTime) {
-      hi = mid - 1;
-    } else {
-      return mid;
-    }
+    if (timestamps[mid].end < currentTime) lo = mid + 1;
+    else if (timestamps[mid].start > currentTime) hi = mid - 1;
+    else return mid;
   }
   return lo < timestamps.length ? lo : timestamps.length - 1;
 }
@@ -93,31 +78,24 @@ export default function VoicePlayer({ cityId, cityName, isAdmin, titleRef, conte
   const [timestamps, setTimestamps] = useState<WordTimestamp[]>([]);
   const [tokens, setTokens] = useState<Token[]>([]);
   const [activeWordIdx, setActiveWordIdx] = useState(-1);
+  const [isCached, setIsCached] = useState(false);
+  const [isSynced, setIsSynced] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [minimized, setMinimized] = useState(false);
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const audioBlobUrlRef = useRef<string | null>(null);
   const autoPlayFiredRef = useRef(false);
   const activeWordRef = useRef<HTMLSpanElement | null>(null);
   const textPanelRef = useRef<HTMLDivElement | null>(null);
+  const timestampsRef = useRef<WordTimestamp[]>([]);
 
-  // Scroll active word into view within the text panel
   const scrollActiveWord = useCallback(() => {
     if (activeWordRef.current && textPanelRef.current) {
       activeWordRef.current.scrollIntoView({ block: "center", behavior: "smooth" });
     }
   }, []);
 
-  // Auto-scroll page in sync with audio (old behavior, kept as fallback)
-  const autoScrollToProgress = useCallback((prog: number) => {
-    if (!titleRef?.current || !contentEndRef?.current) return;
-    const titleTop = titleRef.current.getBoundingClientRect().top + window.scrollY - 90;
-    const endBottom = contentEndRef.current.getBoundingClientRect().bottom + window.scrollY;
-    const scrollRange = endBottom - titleTop - window.innerHeight * 0.45;
-    const targetY = titleTop + scrollRange * (prog / 100);
-    window.scrollTo({ top: Math.max(0, targetY), behavior: "smooth" });
-  }, [titleRef, contentEndRef]);
-
-  // Cleanup on unmount
   useEffect(() => {
     return () => {
       audioRef.current?.pause();
@@ -125,14 +103,12 @@ export default function VoicePlayer({ cityId, cityName, isAdmin, titleRef, conte
     };
   }, []);
 
-  // Countdown tick — admin only
   useEffect(() => {
     if (!isAdmin) return;
     const interval = setInterval(() => setSecsLeft(getSecsUntil4pm()), 1000);
     return () => clearInterval(interval);
   }, [isAdmin]);
 
-  // Auto-fire at 4pm ET
   useEffect(() => {
     if (!isAdmin || audioState !== "idle" || autoPlayFiredRef.current) return;
     if (secsLeft === 0) {
@@ -142,7 +118,6 @@ export default function VoicePlayer({ cityId, cityName, isAdmin, titleRef, conte
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [secsLeft, isAdmin, audioState]);
 
-  // Scroll when active word changes
   useEffect(() => {
     if (activeWordIdx >= 0) scrollActiveWord();
   }, [activeWordIdx, scrollActiveWord]);
@@ -160,6 +135,8 @@ export default function VoicePlayer({ cityId, cityName, isAdmin, titleRef, conte
     }
 
     setAudioState("loading");
+    setModalOpen(true);
+    setMinimized(false);
 
     try {
       const res = await fetch(`/api/tts/${cityId}`, {
@@ -174,12 +151,13 @@ export default function VoicePlayer({ cityId, cityName, isAdmin, titleRef, conte
         text: string;
       };
 
-      // Store timestamps + parse tokens
+      setIsCached(true);
+      setIsSynced(data.timestamps.length > 0);
       setTimestamps(data.timestamps);
+      timestampsRef.current = data.timestamps;
       setTokens(tokenize(data.text));
       setActiveWordIdx(-1);
 
-      // Build blob URL from base64
       const binaryStr = atob(data.audioBase64);
       const bytes = new Uint8Array(binaryStr.length);
       for (let i = 0; i < binaryStr.length; i++) bytes[i] = binaryStr.charCodeAt(i);
@@ -190,22 +168,12 @@ export default function VoicePlayer({ cityId, cityName, isAdmin, titleRef, conte
       const audio = new Audio(url);
       audioRef.current = audio;
 
-      let lastScrolledAt = -5;
       audio.addEventListener("timeupdate", () => {
         if (!audio.duration) return;
         const prog = (audio.currentTime / audio.duration) * 100;
         setProgress(prog);
-
-        // Word highlighting
-        if (data.timestamps.length > 0) {
-          const idx = findActiveWord(data.timestamps, audio.currentTime);
-          setActiveWordIdx(idx);
-        }
-
-        // Page auto-scroll every 3s (only when no timestamps — timestamps scroll via panel)
-        if (data.timestamps.length === 0 && audio.currentTime - lastScrolledAt >= 3) {
-          lastScrolledAt = audio.currentTime;
-          autoScrollToProgress(prog);
+        if (timestampsRef.current.length > 0) {
+          setActiveWordIdx(findActiveWord(timestampsRef.current, audio.currentTime));
         }
       });
 
@@ -219,6 +187,7 @@ export default function VoicePlayer({ cityId, cityName, isAdmin, titleRef, conte
       setAudioState("playing");
     } catch {
       setAudioState("idle");
+      setModalOpen(false);
     }
   }
 
@@ -232,6 +201,8 @@ export default function VoicePlayer({ cityId, cityName, isAdmin, titleRef, conte
     setAudioState("idle");
     setProgress(0);
     setActiveWordIdx(-1);
+    setModalOpen(false);
+    setMinimized(false);
   }
 
   // ─── Public view ────────────────────────────────────────────────────────────
@@ -252,111 +223,181 @@ export default function VoicePlayer({ cityId, cityName, isAdmin, titleRef, conte
     );
   }
 
-  // ─── Admin view ─────────────────────────────────────────────────────────────
-  const hasHighlighting = tokens.length > 0 && timestamps.length > 0;
-  const showPanel = (audioState === "playing" || audioState === "paused") && tokens.length > 0;
+  // ─── Admin: inline trigger button ────────────────────────────────────────────
+  const hasTokens = tokens.length > 0;
 
   return (
-    <div className="w-full max-w-md mx-auto rounded-md bg-white/10 border border-white/20 p-4">
-      {/* Header */}
-      <div className="flex items-center gap-2 mb-3">
-        <Volume2 className="h-4 w-4 text-white/80" />
-        <span className="text-sm font-semibold text-white">AI Voice Reader</span>
-        <span className="ml-auto text-xs text-white/60">
-          {audioState === "idle" && secsLeft > 300 && "Auto-plays at 4:00 PM ET"}
-          {audioState === "idle" && secsLeft > 0 && secsLeft <= 300 && (
-            <span className="animate-pulse text-yellow-300">
-              Auto-plays in {formatCountdown(secsLeft)}
-            </span>
-          )}
-          {audioState === "loading" && "Generating audio..."}
-        </span>
-      </div>
-
-      {/* Progress bar */}
-      <div className="h-1 w-full bg-white/20 rounded-full mb-3 overflow-hidden">
-        <div
-          className="h-full bg-white rounded-full transition-all duration-500"
-          style={{ width: `${progress}%` }}
-        />
-      </div>
-
-      {/* Live word-highlighting panel */}
-      {showPanel && (
-        <div
-          ref={textPanelRef}
-          className="mb-3 max-h-40 overflow-y-auto rounded-md bg-black/30 p-3 text-sm leading-relaxed text-white/90 scroll-smooth"
-          style={{ wordBreak: "break-word" }}
-        >
-          {tokens.map((token, i) => {
-            if (/^\s+$/.test(token.text)) {
-              return <span key={i}>{token.text}</span>;
-            }
-            const isActive =
-              hasHighlighting &&
-              token.tsIndex !== null &&
-              token.tsIndex === activeWordIdx;
-            return (
-              <span
-                key={i}
-                ref={isActive ? activeWordRef : undefined}
-                className={
-                  isActive
-                    ? "bg-yellow-300 text-black font-semibold rounded px-0.5"
-                    : token.tsIndex === null
-                    ? "text-white/50"
-                    : "text-white/90"
-                }
-              >
-                {token.text}
+    <>
+      {/* Inline trigger */}
+      <div className="w-full max-w-md mx-auto rounded-md bg-white/10 border border-white/20 p-4">
+        <div className="flex items-center gap-2 mb-3">
+          <Volume2 className="h-4 w-4 text-white/80" />
+          <span className="text-sm font-semibold text-white">AI Voice Reader</span>
+          <span className="ml-auto text-xs text-white/60">
+            {audioState === "idle" && secsLeft > 300 && "Auto-plays at 4:00 PM ET"}
+            {audioState === "idle" && secsLeft > 0 && secsLeft <= 300 && (
+              <span className="animate-pulse text-yellow-300">
+                Auto-plays in {formatCountdown(secsLeft)}
               </span>
-            );
-          })}
+            )}
+          </span>
         </div>
-      )}
 
-      {/* Controls */}
-      <div className="flex items-center gap-2">
         <Button
           size="default"
           variant="ghost"
-          className="flex-1 text-white border border-white/30"
-          onClick={handleListen}
+          className="w-full text-white border border-white/30"
+          onClick={audioState === "idle" ? handleListen : () => setModalOpen(true)}
           disabled={audioState === "loading"}
           data-testid="button-voice-play"
         >
           {audioState === "loading" ? (
             <span className="flex items-center gap-2">
               <span className="w-4 h-4 border-2 border-white/60 border-t-white rounded-full animate-spin" />
-              Generating...
+              Generating audio...
             </span>
-          ) : audioState === "playing" ? (
-            <span className="flex items-center gap-2"><Pause className="w-4 h-4" /> Pause</span>
-          ) : audioState === "paused" ? (
-            <span className="flex items-center gap-2"><Play className="w-4 h-4" /> Resume</span>
+          ) : audioState === "playing" || audioState === "paused" ? (
+            <span className="flex items-center gap-2"><Volume2 className="w-4 h-4" /> Open Live Reader</span>
           ) : (
             <span className="flex items-center gap-2"><Play className="w-4 h-4" /> Play</span>
           )}
         </Button>
-
-        {audioState !== "idle" && (
-          <Button
-            size="icon"
-            variant="ghost"
-            className="text-white border border-white/30"
-            onClick={handleStop}
-            data-testid="button-voice-stop"
-          >
-            <Square className="w-4 h-4" />
-          </Button>
-        )}
       </div>
 
-      {audioState === "idle" && (
-        <p className="mt-2 text-center text-xs text-white/40">
-          {hasHighlighting ? "Live word highlighting ready" : "Play to generate audio with live word highlighting"}
-        </p>
+      {/* ── Floating reading modal ── */}
+      {modalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40">
+          <div
+            className="bg-white rounded-xl shadow-2xl w-full max-w-2xl flex flex-col overflow-hidden"
+            style={{ maxHeight: minimized ? "auto" : "80vh" }}
+          >
+            {/* Header */}
+            <div className="px-4 pt-4 pb-0">
+              <div className="flex items-start gap-3">
+                {/* Mic icon */}
+                <div className="shrink-0 w-10 h-10 rounded-full bg-purple-600 flex items-center justify-center">
+                  <Mic className="w-5 h-5 text-white" />
+                </div>
+
+                {/* Title + badges + status */}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="font-semibold text-gray-900 text-sm truncate">
+                      Daily Reading — {cityName}
+                    </span>
+                    {isCached && (
+                      <span className="text-xs px-1.5 py-0.5 rounded bg-green-100 text-green-700 font-medium">cached</span>
+                    )}
+                    {isSynced && (
+                      <span className="text-xs px-1.5 py-0.5 rounded bg-blue-100 text-blue-700 font-medium">synced</span>
+                    )}
+                  </div>
+                  <p className="text-xs text-gray-500 mt-0.5">
+                    {audioState === "loading" && "Generating audio..."}
+                    {audioState === "playing" && "Now playing..."}
+                    {audioState === "paused" && "Paused"}
+                    {audioState === "idle" && "Ready"}
+                  </p>
+                </div>
+
+                {/* Controls */}
+                <div className="flex items-center gap-1 shrink-0">
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    className="w-9 h-9 rounded-full bg-purple-600 hover:bg-purple-700 text-white"
+                    onClick={handleListen}
+                    disabled={audioState === "loading"}
+                    data-testid="button-voice-play-modal"
+                  >
+                    {audioState === "playing"
+                      ? <Pause className="w-4 h-4" />
+                      : <Play className="w-4 h-4" />}
+                  </Button>
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    className="w-8 h-8 text-gray-500"
+                    onClick={() => setMinimized(m => !m)}
+                    title={minimized ? "Expand" : "Minimize"}
+                  >
+                    {minimized ? <ChevronDown className="w-4 h-4" /> : <ChevronUp className="w-4 h-4" />}
+                  </Button>
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    className="w-8 h-8 text-gray-500"
+                    onClick={handleStop}
+                    data-testid="button-voice-stop-modal"
+                    title="Stop and close"
+                  >
+                    <X className="w-4 h-4" />
+                  </Button>
+                </div>
+              </div>
+
+              {/* Progress bar */}
+              <div className="mt-3 h-1 w-full bg-gray-200 rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-purple-500 rounded-full transition-all duration-300"
+                  style={{ width: `${progress}%` }}
+                />
+              </div>
+            </div>
+
+            {/* Live reading body */}
+            {!minimized && (
+              <div className="flex-1 flex flex-col overflow-hidden">
+                {/* Section label */}
+                <div className="flex items-center gap-2 px-4 pt-4 pb-2">
+                  <span className="w-2 h-2 rounded-full bg-red-500 shrink-0" />
+                  <span className="text-xs font-semibold tracking-widest text-gray-500 uppercase">Live Reading</span>
+                </div>
+
+                {/* Scrollable text */}
+                <div
+                  ref={textPanelRef}
+                  className="flex-1 overflow-y-auto px-4 pb-4 text-sm leading-7 text-gray-800"
+                  style={{ minHeight: "200px" }}
+                >
+                  {hasTokens ? (
+                    tokens.map((token, i) => {
+                      if (/^\s+$/.test(token.text)) {
+                        return <span key={i}>{token.text}</span>;
+                      }
+                      const isActive =
+                        isSynced &&
+                        token.tsIndex !== null &&
+                        token.tsIndex === activeWordIdx;
+                      return (
+                        <span
+                          key={i}
+                          ref={isActive ? activeWordRef : undefined}
+                          className={
+                            isActive
+                              ? "bg-yellow-300 font-semibold rounded px-0.5"
+                              : token.tsIndex === null
+                              ? "text-gray-400"
+                              : ""
+                          }
+                        >
+                          {token.text}
+                        </span>
+                      );
+                    })
+                  ) : (
+                    <p className="text-gray-400 italic">
+                      {audioState === "loading"
+                        ? "Generating audio and syncing word timestamps..."
+                        : "No text available for this reading."}
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
       )}
-    </div>
+    </>
   );
 }
