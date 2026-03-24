@@ -6,15 +6,23 @@ import { Globe, Bell, Heart, Flame, MapPin, ChevronDown, ChevronRight, Share2, S
 import PushSubscribeButton from "@/components/PushSubscribeButton";
 import { CityCard } from "@/components/city-card";
 import { useToast } from "@/hooks/use-toast";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Footer from "@/components/Footer";
 import { ShareButton } from "@/components/ShareButton";
 import { getCurrentCardType, getNextCardType, formatTimeUntilNext, type CardDisplayType } from "@/lib/timeBasedContent";
 import * as Collapsible from "@radix-ui/react-collapsible";
+import VoicePlayer from "@/components/VoicePlayer";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function Home() {
   const { toast } = useToast();
-  
+  const { user } = useAuth();
+  const isAdmin = !!(user as any)?.isAdmin;
+
+  // Refs for auto-scroll sync
+  const cityTitleRef = useRef<HTMLHeadingElement>(null);
+  const contentEndRef = useRef<HTMLDivElement>(null);
+
   // Time-based content state
   const [currentCardInfo, setCurrentCardInfo] = useState(getCurrentCardType());
   const [nextCardInfo, setNextCardInfo] = useState(getNextCardType());
@@ -168,7 +176,7 @@ Agent Support: Send us your booking confirmation for tracking and assistance.`;
       {todaysCity && (
         <section className="relative overflow-hidden py-20 text-white" style={{background: 'linear-gradient(135deg, var(--hero-gradient-start), var(--hero-gradient-end))'}}>
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h1 className="text-4xl md:text-6xl font-bold mb-6 text-white">
+            <h1 ref={cityTitleRef} className="text-4xl md:text-6xl font-bold mb-6 text-white">
               {todaysCity.name}
             </h1>
             <p className="text-xl md:text-2xl mb-8 text-white/90">
@@ -198,6 +206,17 @@ Agent Support: Send us your booking confirmation for tracking and assistance.`;
                 </ul>
               </div>
             )}
+
+            {/* Voice Player / Tune-In card */}
+            <div className="max-w-md mx-auto mb-8">
+              <VoicePlayer
+                cityId={todaysCity.id}
+                cityName={todaysCity.name}
+                isAdmin={isAdmin}
+                titleRef={cityTitleRef}
+                contentEndRef={contentEndRef}
+              />
+            </div>
 
             {/* Sample Itinerary HTML Section - TEMPORARILY HIDDEN 
             {todaysCity?.sampleItinerary && (
@@ -419,7 +438,8 @@ Agent Support: Send us your booking confirmation for tracking and assistance.`;
         </div>
       </section>
 
-      {/* Camera and collection features removed - app is now fully public */}
+      {/* Scroll anchor — used by VoicePlayer auto-scroll */}
+      <div ref={contentEndRef} />
 
       <Footer />
     </div>

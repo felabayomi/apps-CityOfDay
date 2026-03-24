@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
-import { generateCityContent, generateCityImageSuggestions } from "./openai";
+import { generateCityContent, generateCityImageSuggestions, textToSpeech } from "./openai";
 import { insertCitySchema, insertCityContentSchema, insertUserTravelPhotoSchema, insertColorThemeSchema, cities } from "@shared/schema";
 import { z } from "zod";
 import { eq } from "drizzle-orm";
@@ -709,6 +709,65 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({ message: "Unsubscribed successfully" });
     } catch (error) {
       res.status(500).json({ message: "Failed to unsubscribe" });
+    }
+  });
+
+  // TTS: generate (or return cached) MP3 for a city — admin only
+  app.post("/api/tts/:cityId", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const { cityId } = req.params;
+
+      // Fetch city + content
+      const city = await storage.getCityById(cityId);
+      if (!city) return res.status(404).json({ message: "City not found" });
+
+      const content = await storage.getCityContent(cityId);
+
+      // Return cached audio if it exists
+      if (city.audioUrl) {
+        const base64 = city.audioUrl.replace(/^data:audio\/mpeg;base64,/, "");
+        const buffer = Buffer.from(base64, "base64");
+        res.set("Content-Type", "audio/mpeg");
+        res.set("Content-Length", String(buffer.length));
+        return res.send(buffer);
+      }
+
+      // Assemble text: name + country + highlights + all card content
+      const highlightLines = Array.isArray(city.highlights)
+        ? (city.highlights as string[]).map((h, i) => `${i + 1}. ${h}`).join("\n")
+        : "";
+
+      const cardOrder = ["morning", "afternoon", "evening", "bonus", "luxury", "wildlife"];
+      const cardLines = cardOrder
+        .map(type => {
+          const card = content.find(c => c.cardType === type);
+          if (!card) return null;
+          return `${card.title}\n${card.content}`;
+        })
+        .filter(Boolean)
+        .join("\n\n");
+
+      const fullText = [
+        `${city.name}, ${city.country}.`,
+        highlightLines,
+        cardLines,
+      ]
+        .filter(Boolean)
+        .join("\n\n");
+
+      // Generate audio
+      const audioBuffer = await textToSpeech(fullText);
+
+      // Cache in DB as base64 data URL
+      const dataUrl = `data:audio/mpeg;base64,${audioBuffer.toString("base64")}`;
+      await storage.updateCity(cityId, { audioUrl: dataUrl } as any);
+
+      res.set("Content-Type", "audio/mpeg");
+      res.set("Content-Length", String(audioBuffer.length));
+      return res.send(audioBuffer);
+    } catch (error) {
+      console.error("TTS error:", error);
+      res.status(500).json({ message: "Failed to generate audio" });
     }
   });
 

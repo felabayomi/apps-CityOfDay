@@ -5,6 +5,12 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY_ENV_VAR || "default_key" 
 });
 
+// Separate client for TTS — must use the Replit AI Integrations proxy (gpt-audio model)
+const ttsOpenai = new OpenAI({
+  apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
+  baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
+});
+
 export interface CityContentGeneration {
   morning: {
     title: string;
@@ -197,4 +203,41 @@ export async function generateCityImageSuggestions(cityName: string, cardType: s
     console.error("Error generating image suggestions:", error);
     throw new Error("Failed to generate image suggestions: " + (error as Error).message);
   }
+}
+
+// ─── Text-to-Speech ──────────────────────────────────────────────────────────
+
+function splitChunks(text: string, max = 2000): string[] {
+  const chunks: string[] = [];
+  let remaining = text;
+  while (remaining.length > max) {
+    let cut = remaining.lastIndexOf(". ", max);
+    if (cut === -1) cut = remaining.lastIndexOf(" ", max);
+    if (cut === -1) cut = max;
+    else cut += 1;
+    chunks.push(remaining.slice(0, cut).trim());
+    remaining = remaining.slice(cut).trim();
+  }
+  if (remaining.length > 0) chunks.push(remaining);
+  return chunks;
+}
+
+async function ttsChunk(text: string): Promise<Buffer> {
+  const response = await ttsOpenai.chat.completions.create({
+    model: "gpt-audio",
+    modalities: ["text", "audio"],
+    audio: { voice: "onyx", format: "mp3" },
+    messages: [
+      { role: "system", content: "You are an assistant that performs text-to-speech." },
+      { role: "user", content: `Repeat the following text verbatim: ${text}` },
+    ],
+  } as any);
+  const audioData = (response.choices[0]?.message as any)?.audio?.data ?? "";
+  return Buffer.from(audioData, "base64");
+}
+
+export async function textToSpeech(text: string): Promise<Buffer> {
+  const chunks = splitChunks(text);
+  const buffers = await Promise.all(chunks.map(ttsChunk));
+  return Buffer.concat(buffers);
 }
