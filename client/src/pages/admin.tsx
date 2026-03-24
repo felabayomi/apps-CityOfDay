@@ -163,12 +163,13 @@ export default function Admin() {
           <span className="tagline">Admin Panel</span>
         </div>
         <nav className="nav-links admin-nav-links">
-          <a href="/">Home</a>
+          <a href="/admin/felixdgreat">Dashboard</a>
           <a href="#drafts">Drafts</a>
           <a href="#scheduler">Scheduler</a>
           <a href="#cities">Cities</a>
           <a href="#calendar">Calendar</a>
           <a href="#generate">Generate</a>
+          <a href="/home">Public View</a>
         </nav>
         <div className="auth-area">
           <div className="user-section">
