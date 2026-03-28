@@ -177,7 +177,16 @@ Agent Support: Send us your booking confirmation for tracking and assistance.`;
 
       {/* Hero Section - Full layout exactly like city detail page */}
       {todaysCity && (
-        <section className="relative overflow-hidden py-20 text-white" style={{background: 'linear-gradient(135deg, var(--hero-gradient-start), var(--hero-gradient-end))'}}>
+        <section
+          className="relative overflow-hidden py-20 text-white"
+          style={todaysCity.imageUrl ? {
+            backgroundImage: `linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.65)), url(${todaysCity.imageUrl})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+          } : {
+            background: 'linear-gradient(135deg, var(--hero-gradient-start), var(--hero-gradient-end))'
+          }}
+        >
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h1 ref={cityTitleRef} className="text-4xl md:text-6xl font-bold mb-6 text-white">
               {todaysCity.name}
