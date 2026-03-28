@@ -71,6 +71,40 @@ export class ObjectStorageService {
     });
   }
 
+  // Gets the bucket name from PRIVATE_OBJECT_DIR env var.
+  getBucketName(): string {
+    const dir = process.env.PRIVATE_OBJECT_DIR || "";
+    if (!dir) throw new Error("PRIVATE_OBJECT_DIR not set");
+    // e.g. /repl-default-bucket-xxx/.private  →  repl-default-bucket-xxx
+    const parts = dir.split("/").filter(Boolean);
+    return parts[0];
+  }
+
+  // Uploads a city hero image buffer to object storage. Returns the object path.
+  async uploadCityImage(cityId: string, buffer: Buffer): Promise<string> {
+    const bucketName = this.getBucketName();
+    const objectName = `public/city-images/${cityId}.png`;
+    const bucket = objectStorageClient.bucket(bucketName);
+    const file = bucket.file(objectName);
+    await file.save(buffer, { contentType: "image/png", resumable: false });
+    return `/${bucketName}/${objectName}`;
+  }
+
+  // Streams a city image from object storage to the response.
+  async streamCityImage(cityId: string, res: Response): Promise<void> {
+    const bucketName = this.getBucketName();
+    const objectName = `public/city-images/${cityId}.png`;
+    const bucket = objectStorageClient.bucket(bucketName);
+    const file = bucket.file(objectName);
+    const [exists] = await file.exists();
+    if (!exists) {
+      res.status(404).json({ error: "Image not found" });
+      return;
+    }
+    res.set({ "Content-Type": "image/png", "Cache-Control": "public, max-age=86400" });
+    file.createReadStream().pipe(res);
+  }
+
   // Downloads an object to the response.
   async downloadObject(file: File, res: Response, cacheTtlSec: number = 3600) {
     try {

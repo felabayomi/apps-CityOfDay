@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
-import { generateCityContent, generateCityImageSuggestions, textToSpeechWithTimestamps } from "./openai";
+import { generateCityContent, generateCityImageSuggestions, generateCityHeroImage, textToSpeechWithTimestamps } from "./openai";
 import { insertCitySchema, insertCityContentSchema, insertUserTravelPhotoSchema, insertColorThemeSchema, cities } from "@shared/schema";
 import { z } from "zod";
 import { eq } from "drizzle-orm";
@@ -357,6 +357,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
         await storage.updateCity(city.id, { highlights: generatedContent.highlights } as any);
       }
 
+      // Auto-generate hero image via DALL-E 3 (non-blocking — runs after response)
+      const objStorage = new ObjectStorageService();
+      setImmediate(async () => {
+        try {
+          const imgBuffer = await generateCityHeroImage(finalCityName, finalCountry);
+          await objStorage.uploadCityImage(city.id, imgBuffer);
+          await storage.updateCity(city.id, { imageUrl: `/api/city-image/${city.id}` } as any);
+          console.log(`Auto-generated hero image for ${finalCityName} (id: ${city.id})`);
+        } catch (imgErr) {
+          console.error(`Image generation failed for ${finalCityName}:`, imgErr);
+        }
+      });
+
       res.json({ 
         city, 
         content: createdContent, 
@@ -602,6 +615,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching user photos:", error);
       res.status(500).json({ message: "Failed to fetch photos" });
+    }
+  });
+
+  // Serve city hero image from object storage
+  app.get("/api/city-image/:cityId", async (req, res) => {
+    try {
+      const objStorage = new ObjectStorageService();
+      await objStorage.streamCityImage(req.params.cityId, res);
+    } catch (error) {
+      console.error("Error serving city image:", error);
+      if (!res.headersSent) res.status(500).json({ error: "Failed to serve image" });
+    }
+  });
+
+  // Admin: on-demand image generation for a city
+  app.post("/api/admin/cities/:id/generate-image", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const city = await storage.getCityById(req.params.id);
+      if (!city) return res.status(404).json({ message: "City not found" });
+
+      const objStorage = new ObjectStorageService();
+      const imgBuffer = await generateCityHeroImage(city.name, city.country || "USA");
+      await objStorage.uploadCityImage(city.id, imgBuffer);
+      await storage.updateCity(city.id, { imageUrl: `/api/city-image/${city.id}` } as any);
+
+      res.json({ imageUrl: `/api/city-image/${city.id}` });
+    } catch (error) {
+      console.error("Error generating city image:", error);
+      res.status(500).json({ message: "Failed to generate image: " + (error as Error).message });
     }
   });
 

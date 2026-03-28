@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { Globe, Wand2, Edit, Trash2, Plus, Eye, MapPin, CalendarIcon, ChevronDown, ChevronRight, Bell } from "lucide-react";
+import { Globe, Wand2, Edit, Trash2, Plus, Eye, MapPin, CalendarIcon, ChevronDown, ChevronRight, Bell, ImageIcon } from "lucide-react";
 import { AdminCityGenerator } from "@/components/admin-city-generator";
 import { ContentEditor } from "@/components/content-editor";
 import { ColorThemeManager } from "@/components/ColorThemeManager";
@@ -142,6 +142,24 @@ export default function Admin() {
     },
   });
 
+  // Generate image mutation
+  const generateImageMutation = useMutation({
+    mutationFn: async (cityId: string) => {
+      const res = await fetch(`/api/admin/cities/${cityId}/generate-image`, {
+        method: "POST",
+        credentials: "include",
+      });
+      if (!res.ok) throw new Error("Failed to generate image");
+      return res.json();
+    },
+    onSuccess: () => {
+      toast({ title: "Image Generated", description: "AI hero image created and saved." });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/drafts"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/cities"] });
+    },
+    onError: () => toast({ title: "Error", description: "Failed to generate image.", variant: "destructive" }),
+  });
+
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
@@ -235,14 +253,39 @@ export default function Admin() {
                   <div className="space-y-3">
                     {drafts?.map((draft: any) => (
                       <div key={draft.id} className="flex flex-col gap-3 p-4 rounded-md bg-muted/40 border border-border sm:flex-row sm:items-center sm:justify-between">
-                        <div className="min-w-0">
-                          <p className="font-semibold text-foreground">{draft.name}</p>
-                          <p className="text-sm text-muted-foreground">{draft.country}</p>
-                          <p className="text-xs text-muted-foreground mt-1">
-                            Generated {new Date(draft.createdAt).toLocaleDateString()} at {new Date(draft.createdAt).toLocaleTimeString()}
-                          </p>
+                        <div className="flex gap-3 min-w-0 items-center">
+                          {draft.imageUrl ? (
+                            <img
+                              src={draft.imageUrl}
+                              alt={draft.name}
+                              className="w-16 h-10 object-cover rounded-md flex-shrink-0"
+                              style={{ minWidth: '4rem' }}
+                            />
+                          ) : (
+                            <div className="w-16 h-10 rounded-md bg-muted flex items-center justify-center flex-shrink-0">
+                              <ImageIcon className="w-4 h-4 text-muted-foreground" />
+                            </div>
+                          )}
+                          <div className="min-w-0">
+                            <p className="font-semibold text-foreground">{draft.name}</p>
+                            <p className="text-sm text-muted-foreground">{draft.country}</p>
+                            <p className="text-xs text-muted-foreground mt-1">
+                              Generated {new Date(draft.createdAt).toLocaleDateString()} at {new Date(draft.createdAt).toLocaleTimeString()}
+                            </p>
+                          </div>
                         </div>
                         <div className="flex flex-wrap items-center gap-2 flex-shrink-0">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => generateImageMutation.mutate(draft.id)}
+                            disabled={generateImageMutation.isPending}
+                            title={draft.imageUrl ? "Regenerate AI image" : "Generate AI image"}
+                            data-testid={`button-generate-image-${draft.id}`}
+                          >
+                            <ImageIcon className="w-3 h-3 mr-1" />
+                            {generateImageMutation.isPending ? "Generating..." : draft.imageUrl ? "Regen Image" : "Gen Image"}
+                          </Button>
                           <Button
                             size="sm"
                             variant="outline"

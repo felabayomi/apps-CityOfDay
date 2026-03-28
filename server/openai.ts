@@ -166,6 +166,25 @@ Respond with JSON in this exact format:
   }
 }
 
+export async function generateCityHeroImage(cityName: string, country: string): Promise<Buffer> {
+  const prompt = `Breathtaking travel photography of ${cityName}, ${country}. Iconic city skyline or landmark scene at golden hour. Vibrant colors, cinematic composition, professional travel magazine quality. Wide angle landscape shot. Photorealistic. No text, no watermarks, no people in foreground.`;
+
+  const response = await openai.images.generate({
+    model: "dall-e-3",
+    prompt,
+    n: 1,
+    size: "1792x1024",
+    quality: "standard",
+    response_format: "url",
+  });
+
+  const imageUrl = response.data[0].url!;
+  const fetchRes = await fetch(imageUrl);
+  if (!fetchRes.ok) throw new Error("Failed to download DALL-E image");
+  const arrayBuffer = await fetchRes.arrayBuffer();
+  return Buffer.from(arrayBuffer);
+}
+
 export async function generateCityImageSuggestions(cityName: string, cardType: string): Promise<string[]> {
   try {
     const prompt = `Suggest 3 specific, searchable image queries for ${cityName} for a ${cardType} travel card. 
