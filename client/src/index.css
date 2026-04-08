@@ -218,12 +218,12 @@
   padding: 0.75rem 2rem;
   height: 6rem;
   overflow: visible;
-  border-bottom: 1px solid var(--primary-yellow);
-  background: linear-gradient(to right, #E8E1D5, #E0D7C7);
+  border-bottom: 2px solid var(--primary-yellow);
+  background: var(--header-bg, #002455);
   position: sticky;
   top: 0;
   z-index: 999;
-  box-shadow: var(--shadow-card);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
 }
 
 .logo-area {
@@ -248,12 +248,12 @@
 .brand-name {
   font-size: 1rem;
   font-weight: 700;
-  color: var(--text-dark);
+  color: var(--header-text, #FFFFFF);
 }
 
 .tagline {
   font-size: 1.5rem;
-  color: var(--accent-blue);
+  color: var(--primary-yellow);
   margin-left: 0.5rem;
   font-weight: 700;
 }
@@ -266,13 +266,13 @@
 .nav-links a {
   margin: 0 1rem;
   text-decoration: none;
-  color: var(--text-dark);
+  color: var(--header-text, #FFFFFF);
   font-weight: 500;
   transition: color 0.2s ease-in-out;
 }
 
 .nav-links a:hover {
-  color: var(--accent-blue);
+  color: var(--primary-yellow);
 }
 
 .auth-area {
@@ -282,7 +282,7 @@
 }
 
 .library-link, .admin-link {
-  color: var(--text-dark);
+  color: var(--header-text, #FFFFFF);
   text-decoration: none;
   font-weight: 500;
   font-size: 0.95rem;
