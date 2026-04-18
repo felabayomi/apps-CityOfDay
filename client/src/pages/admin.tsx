@@ -354,11 +354,25 @@ export default function Admin() {
                     variant="outline"
                     onClick={async () => {
                       try {
-                        const res = await fetch("/api/admin/scheduler/generate-tomorrow", { method: "POST", credentials: "include" });
+                        const res = await fetch("/api/admin/scheduler/generate-tomorrow", { method: "POST", credentials: "include", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ force: false }) });
                         const data = await res.json();
+                        if (res.status === 409) {
+                          // Already has a draft — offer to force-replace if orphaned
+                          const doForce = window.confirm(`Skipped: ${data.message}\n\nIf this draft has no content (orphaned), click OK to delete it and generate a fresh one.`);
+                          if (doForce) {
+                            const res2 = await fetch("/api/admin/scheduler/generate-tomorrow", { method: "POST", credentials: "include", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ force: true }) });
+                            const data2 = await res2.json();
+                            if (!res2.ok && res2.status !== 409) throw new Error(data2.message);
+                            toast({ title: res2.ok ? "Draft Generated" : "Skipped", description: data2.message });
+                            queryClient.invalidateQueries({ queryKey: ["/api/admin/drafts"] });
+                            queryClient.invalidateQueries({ queryKey: ["/api/admin/cities"] });
+                          }
+                          return;
+                        }
                         if (!res.ok) throw new Error(data.message);
-                        toast({ title: "Generation triggered", description: data.message });
+                        toast({ title: "Draft Generated", description: data.message });
                         queryClient.invalidateQueries({ queryKey: ["/api/admin/drafts"] });
+                        queryClient.invalidateQueries({ queryKey: ["/api/admin/cities"] });
                       } catch (e: any) {
                         toast({ title: "Error", description: e.message, variant: "destructive" });
                       }

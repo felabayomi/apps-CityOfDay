@@ -9,26 +9,27 @@ import { eq } from "drizzle-orm";
 import { db } from "./db";
 import { ObjectStorageService } from "./objectStorage";
 import { generateTomorrowsDraft, autoApproveTodaysDrafts } from "./scheduler";
-import { VAPID_PUBLIC_KEY, sendPushToAll } from "./push";
+import { getVapidPublicKey, initVapid, notifyEveningReminder, sendPushToAll } from "./push";
+import { ensureCityOfDayCompatibility } from "./dbCompat";
 
 // Simple in-memory cache for daily city content
 const todaysCityCache = {
   data: null as any,
   timestamp: 0,
   ttl: 15 * 60 * 1000, // 15 minutes in milliseconds
-  
+
   get() {
     if (Date.now() - this.timestamp > this.ttl) {
       return null; // Cache expired
     }
     return this.data;
   },
-  
+
   set(data: any) {
     this.data = data;
     this.timestamp = Date.now();
   },
-  
+
   clear() {
     this.data = null;
     this.timestamp = 0;
@@ -36,37 +37,92 @@ const todaysCityCache = {
 };
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  try {
+    await ensureCityOfDayCompatibility();
+  } catch (error) {
+    console.error("[Startup] Compatibility migration skipped:", error);
+  }
+
   // Auth middleware
   await setupAuth(app);
+
+  const isCronAuthorized = (req: any) => {
+    if (Boolean(req.headers["x-vercel-cron"])) {
+      return true;
+    }
+
+    const configuredSecret = String(process.env.CRON_SECRET || "").trim();
+    if (!configuredSecret) {
+      return false;
+    }
+
+    const providedSecret = String(req.headers["x-cron-secret"] || req.query?.secret || "").trim();
+    return providedSecret === configuredSecret;
+  };
 
   // Auth routes
   app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
       const user = await storage.getUser(userId);
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
-      }
-      
-      // Add isAdmin flag based on server-side check
-      const adminEmail = process.env.ADMIN_EMAIL;
-      const userEmail = req.user.claims.email?.toLowerCase();
-      const isAdmin = adminEmail && userEmail === adminEmail.toLowerCase();
-      
-      // Debug admin access
-      console.log("🔐 ADMIN ACCESS CHECK:");
-      console.log("   User email:", userEmail);
-      console.log("   Admin email from env:", adminEmail);
-      console.log("   Emails match:", isAdmin);
-      console.log("   Raw claims:", req.user.claims);
-      
+
       res.json({
-        ...user,
-        isAdmin
+        id: userId,
+        email: req.user?.email,
+        firstName: user?.firstName || req.user?.email?.split("@")[0] || "Explorer",
+        lastName: user?.lastName || null,
+        profileImageUrl: user?.profileImageUrl || null,
+        discoveredCities: user?.discoveredCities || 0,
+        bucketListCities: user?.bucketListCities || 0,
+        currentStreak: user?.currentStreak || 0,
+        isAdmin: Boolean(req.user?.isAdmin),
       });
     } catch (error) {
       console.error("Error fetching user:", error);
       res.status(500).json({ message: "Failed to fetch user" });
+    }
+  });
+
+  app.get('/api/cron/generate-tomorrow', async (req: any, res) => {
+    try {
+      if (!isCronAuthorized(req)) {
+        return res.status(401).json({ message: 'Unauthorized cron invocation' });
+      }
+
+      await generateTomorrowsDraft();
+      res.json({ ok: true, message: 'Tomorrow draft generation executed.' });
+    } catch (error: any) {
+      console.error('[Cron] generate-tomorrow failed:', error);
+      res.status(500).json({ message: error?.message || 'Cron generation failed' });
+    }
+  });
+
+  app.get('/api/cron/auto-approve', async (req: any, res) => {
+    try {
+      if (!isCronAuthorized(req)) {
+        return res.status(401).json({ message: 'Unauthorized cron invocation' });
+      }
+
+      await autoApproveTodaysDrafts();
+      todaysCityCache.clear();
+      res.json({ ok: true, message: 'Today auto-approve executed.' });
+    } catch (error: any) {
+      console.error('[Cron] auto-approve failed:', error);
+      res.status(500).json({ message: error?.message || 'Cron auto-approve failed' });
+    }
+  });
+
+  app.get('/api/cron/evening-reminder', async (req: any, res) => {
+    try {
+      if (!isCronAuthorized(req)) {
+        return res.status(401).json({ message: 'Unauthorized cron invocation' });
+      }
+
+      await notifyEveningReminder();
+      res.json({ ok: true, message: 'Evening reminder executed.' });
+    } catch (error: any) {
+      console.error('[Cron] evening-reminder failed:', error);
+      res.status(500).json({ message: error?.message || 'Cron evening reminder failed' });
     }
   });
 
@@ -75,21 +131,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       // Get timezone offset from query parameter (JavaScript getTimezoneOffset returns minutes west of UTC)
       const tzOffsetMinutes = req.query.tzOffset ? parseInt(req.query.tzOffset as string) : undefined;
-      
+
       // Add no-cache headers to prevent stale data in production
       res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
       res.setHeader('Pragma', 'no-cache');
       res.setHeader('Expires', '0');
-      
+
       // Fetch fresh data from database (no caching)
       const todaysCity = await storage.getTodaysCity(tzOffsetMinutes);
       if (!todaysCity) {
         return res.status(404).json({ message: "No city published for today" });
       }
-      
+
       const content = await storage.getCityContent(todaysCity.id);
       const responseData = { city: todaysCity, content };
-      
+
       res.json(responseData);
     } catch (error) {
       console.error("Error fetching today's city:", error);
@@ -114,12 +170,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Get all published cities except today's city
       const allPublishedCities = await storage.getPublishedCities();
       const todaysCity = await storage.getTodaysCity();
-      
+
       // Filter out today's city from the library
-      const libraryCities = allPublishedCities.filter(city => 
+      const libraryCities = allPublishedCities.filter(city =>
         !todaysCity || city.id !== todaysCity.id
       );
-      
+
       res.json(libraryCities);
     } catch (error) {
       console.error("Error fetching library cities:", error);
@@ -132,12 +188,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Get all published cities except today's city  
       const allPublishedCities = await storage.getPublishedCities();
       const todaysCity = await storage.getTodaysCity();
-      
+
       // Filter out today's city from the library
-      const libraryCities = allPublishedCities.filter(city => 
+      const libraryCities = allPublishedCities.filter(city =>
         !todaysCity || city.id !== todaysCity.id
       );
-      
+
       const citiesWithContent = await Promise.all(
         libraryCities.map(async (city) => {
           const content = await storage.getCityContent(city.id);
@@ -158,7 +214,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!city) {
         return res.status(404).json({ message: "City not found" });
       }
-      
+
       const content = await storage.getCityContent(city.id);
       res.json({ city, content });
     } catch (error) {
@@ -169,18 +225,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Admin check middleware
   const isAdmin = (req: any, res: any, next: any) => {
-    const userEmail = req.user?.claims?.email;
-    const adminEmail = process.env.ADMIN_EMAIL;
-    
-    if (!adminEmail) {
-      console.error("ADMIN_EMAIL environment variable not set");
-      return res.status(500).json({ message: "Admin configuration error" });
-    }
-    
-    if (userEmail !== adminEmail) {
+    if (!req.user?.isAdmin) {
       return res.status(403).json({ message: "Admin access required" });
     }
-    
+
     next();
   };
 
@@ -235,10 +283,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Manual scheduler triggers
   app.post("/api/admin/scheduler/generate-tomorrow", isAuthenticated, isAdmin, async (req, res) => {
     try {
-      await generateTomorrowsDraft();
-      // Return fresh drafts after generation
+      const force = req.body?.force === true;
+      const result = await generateTomorrowsDraft(force);
       const drafts = await storage.getDraftCities();
-      res.json({ message: "Tomorrow's draft generation triggered", drafts });
+      if (result.generated) {
+        res.json({ message: `Draft created for ${result.cityName}`, drafts });
+      } else {
+        res.status(409).json({ message: result.skippedReason || "Skipped — already scheduled.", drafts });
+      }
     } catch (error) {
       res.status(500).json({ message: "Generation failed: " + (error as Error).message });
     }
@@ -257,22 +309,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/admin/cities/generate", isAuthenticated, isAdmin, async (req, res) => {
     try {
       const { cityName, country, focus = "balanced", autoPublish = false, scheduledDate, sampleItinerary } = req.body;
-      
+
       if (!cityName) {
         return res.status(400).json({ message: "City name is required" });
       }
-      
+
       // Handle flexible city name format
       let finalCityName = cityName.trim();
       let finalCountry = country?.trim() || "";
-      
+
       // If city name contains comma and no country provided, extract country from city name
       if (cityName.includes(',') && !finalCountry) {
         const parts = cityName.split(',').map((part: string) => part.trim());
         finalCityName = parts[0];
         finalCountry = parts.slice(1).join(', ');
       }
-      
+
       // If still no country, require it
       if (!finalCountry) {
         return res.status(400).json({ message: "Country is required (or include state/region in city name)" });
@@ -286,7 +338,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Generate content using OpenAI
       const generatedContent = await generateCityContent(finalCityName, finalCountry, focus);
-      
+
       // Check if date is already scheduled (if scheduledDate provided)
       if (scheduledDate) {
         const existingScheduled = await storage.getCityByScheduledDate(scheduledDate);
@@ -305,7 +357,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         scheduledDate: scheduledDate ? new Date(scheduledDate) : null,
         sampleItinerary: sampleItinerary || null,
       };
-      
+
       const city = await storage.createCity(cityData);
 
       // Create content cards
@@ -318,7 +370,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         },
         {
           cityId: city.id,
-          cardType: "afternoon", 
+          cardType: "afternoon",
           title: generatedContent.afternoon.title,
           content: generatedContent.afternoon.content,
         },
@@ -370,10 +422,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       });
 
-      res.json({ 
-        city, 
-        content: createdContent, 
-        generated: generatedContent 
+      res.json({
+        city,
+        content: createdContent,
+        generated: generatedContent
       });
     } catch (error) {
       console.error("Error generating city content:", error);
@@ -399,20 +451,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.put("/api/admin/cities/:id/publish", isAuthenticated, isAdmin, async (req, res) => {
     try {
       console.log('Publishing city:', req.params.id);
-      
+
       // Use storage layer but with minimal data to avoid timestamp conflicts
       const city = await storage.updateCity(req.params.id, {
         isPublished: true,
         publishedDate: new Date() // Always use current server time
       });
-      
+
       // Clear cache when city is published
       todaysCityCache.clear();
-      
+
       if (!city) {
         return res.status(404).json({ message: "City not found" });
       }
-      
+
       res.json(city);
     } catch (error) {
       console.error("Error publishing city:", error);
@@ -425,14 +477,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Only allow specific fields to be updated to avoid timestamp field conflicts
       const allowedFields = ['name', 'country', 'isPublished', 'isPinned', 'publishedDate', 'scheduledDate', 'cityCtaLinks', 'morningCtaLink', 'afternoonCtaLink', 'eveningCtaLink', 'bonusCtaLink', 'luxuryCtaLink', 'wildlifeCtaLink', 'sampleItinerary', 'highlights', 'status'];
       const updateData: any = {};
-      
+
       // Only copy allowed fields
       for (const field of allowedFields) {
         if (req.body[field] !== undefined) {
           updateData[field] = req.body[field];
         }
       }
-      
+
       // Handle date conversions - only convert valid date strings
       if (updateData.publishedDate && typeof updateData.publishedDate === 'string') {
         const date = new Date(updateData.publishedDate);
@@ -442,7 +494,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           delete updateData.publishedDate; // Remove invalid date
         }
       }
-      
+
       if (updateData.scheduledDate && typeof updateData.scheduledDate === 'string') {
         const date = new Date(updateData.scheduledDate);
         if (!isNaN(date.getTime())) {
@@ -451,11 +503,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
           delete updateData.scheduledDate; // Remove invalid date
         }
       }
-      
+
       console.log('Filtered update data:', updateData);
       console.log('Type check - publishedDate:', typeof updateData.publishedDate, updateData.publishedDate);
       console.log('Type check - scheduledDate:', typeof updateData.scheduledDate, updateData.scheduledDate);
-      
+
       const city = await storage.updateCity(req.params.id, updateData);
       res.json(city);
     } catch (error) {
@@ -595,7 +647,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         ...req.body,
         userId,
       });
-      
+
       const photo = await storage.createTravelPhoto(photoData);
       res.json(photo);
     } catch (error) {
@@ -635,12 +687,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const city = await storage.getCityById(req.params.id);
       if (!city) return res.status(404).json({ message: "City not found" });
 
-      const objStorage = new ObjectStorageService();
       const imgBuffer = await generateCityHeroImage(city.name, city.country || "USA");
-      await objStorage.uploadCityImage(city.id, imgBuffer);
-      await storage.updateCity(city.id, { imageUrl: `/api/city-image/${city.id}` } as any);
+      let imageUrl = `/api/city-image/${city.id}`;
 
-      res.json({ imageUrl: `/api/city-image/${city.id}` });
+      try {
+        const objStorage = new ObjectStorageService();
+        await objStorage.uploadCityImage(city.id, imgBuffer);
+      } catch (storageError) {
+        console.warn("Falling back to inline image storage:", storageError);
+        imageUrl = `data:image/png;base64,${imgBuffer.toString("base64")}`;
+      }
+
+      await storage.updateCity(city.id, { imageUrl } as any);
+      res.json({ imageUrl });
     } catch (error) {
       console.error("Error generating city image:", error);
       res.status(500).json({ message: "Failed to generate image: " + (error as Error).message });
@@ -725,8 +784,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Push notification routes — public (no auth needed, users subscribe from home screen)
-  app.get("/api/push/vapid-public-key", (req, res) => {
-    res.json({ publicKey: VAPID_PUBLIC_KEY });
+  app.get("/api/push/vapid-public-key", async (_req, res) => {
+    try {
+      await initVapid();
+      const publicKey = await getVapidPublicKey();
+      if (!publicKey) {
+        return res.status(503).json({ message: "Push not available yet" });
+      }
+
+      res.json({ publicKey });
+    } catch (error) {
+      console.error("Push key error:", error);
+      res.status(500).json({ message: "Failed to get VAPID key" });
+    }
   });
 
   app.post("/api/push/subscribe", async (req, res) => {

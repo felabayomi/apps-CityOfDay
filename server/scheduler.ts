@@ -206,7 +206,7 @@ function getTomorrowEastern(): Date {
   return new Date(Date.UTC(year, month - 1, day + 1, 0, 0, 0, 0));
 }
 
-export async function generateTomorrowsDraft() {
+export async function generateTomorrowsDraft(force = false): Promise<{ generated: boolean; cityName?: string; skippedReason?: string }> {
   try {
     const tomorrow = getTomorrowEastern();
     const tomorrowStr = tomorrow.toISOString().split('T')[0];
@@ -216,15 +216,27 @@ export async function generateTomorrowsDraft() {
     // Check if tomorrow already has a scheduled city (draft or published)
     const existing = await storage.getCityByScheduledDate(tomorrowStr);
     if (existing) {
-      log(`[Scheduler] Auto-generate: ${tomorrowStr} already has "${existing.name}" — skipping`);
-      return;
+      // In force mode, delete the existing draft if it has no content (orphaned)
+      if (force && !existing.isPublished) {
+        const existingContent = await storage.getCityContent(existing.id);
+        if (existingContent.length === 0) {
+          log(`[Scheduler] Auto-generate: force=true — deleting orphaned draft "${existing.name}" (no content)`);
+          await storage.deleteCity(existing.id);
+        } else {
+          log(`[Scheduler] Auto-generate: force=true but "${existing.name}" has content — skipping`);
+          return { generated: false, skippedReason: `"${existing.name}" is already scheduled for ${tomorrowStr} and has content. Delete it first to regenerate.` };
+        }
+      } else if (!force) {
+        log(`[Scheduler] Auto-generate: ${tomorrowStr} already has "${existing.name}" — skipping`);
+        return { generated: false, skippedReason: `"${existing.name}" is already scheduled for ${tomorrowStr}.` };
+      }
     }
 
     // Pick the next city
     const cityToGenerate = await getNextCityToGenerate();
     if (!cityToGenerate) {
       log("[Scheduler] Auto-generate: All cities in the pool have been generated");
-      return;
+      return { generated: false, skippedReason: "All cities in the pool have already been generated." };
     }
 
     log(`[Scheduler] Auto-generate: Generating ${cityToGenerate.name}, ${cityToGenerate.country} for ${tomorrowStr}`);
@@ -256,13 +268,15 @@ export async function generateTomorrowsDraft() {
       await Promise.all(contentCards.map(card => storage.createCityContent(card)));
     } catch (contentErr) {
       log(`[Scheduler] Auto-generate: Content card creation failed for ${city.id} — cleaning up orphaned city`);
-      await storage.deleteCity(city.id).catch(() => {});
+      await storage.deleteCity(city.id).catch(() => { });
       throw contentErr;
     }
 
     log(`[Scheduler] Auto-generate: Draft created — ${cityToGenerate.name} scheduled for ${tomorrowStr} (id: ${city.id})`);
+    return { generated: true, cityName: `${cityToGenerate.name}, ${cityToGenerate.country}` };
   } catch (error) {
     log(`[Scheduler] Auto-generate ERROR: ${(error as Error).message}`);
+    throw error;
   }
 }
 
