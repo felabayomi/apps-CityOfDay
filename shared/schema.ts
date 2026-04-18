@@ -48,7 +48,7 @@ export const cities = pgTable("cities", {
   // state: varchar("state"), // For US cities, Canadian provinces, etc. - TO BE ADDED LATER
   // region: varchar("region"), // Broader geographic regions like "Mediterranean", "Southeast Asia" - TO BE ADDED LATER
   scheduledDate: timestamp("scheduled_date"), // When content should appear to users
-  publishedDate: timestamp("published_date"), // When admin published it
+  publishedDate: timestamp("publish_date"), // When admin published it
   isPublished: boolean("is_published").default(false),
   status: varchar("status").default("draft"), // 'draft' | 'published' | 'rejected'
   isPinned: boolean("is_pinned").default(false),
@@ -62,7 +62,7 @@ export const cities = pgTable("cities", {
   wildlifeCtaLink: varchar("wildlife_cta_link"), // Link for "Explore Nature" button
   // Social media share templates - NEW FIELDS
   morningShareTemplate: varchar("morning_share_template").default("Wake up in {CITY}! 🌄"),
-  afternoonShareTemplate: varchar("afternoon_share_template").default("Spend the afternoon in {CITY}! 🏙️"), 
+  afternoonShareTemplate: varchar("afternoon_share_template").default("Spend the afternoon in {CITY}! 🏙️"),
   eveningShareTemplate: varchar("evening_share_template").default("Evening vibes in {CITY}! 🌆"),
   bonusShareTemplate: varchar("bonus_share_template").default("Hidden gem in {CITY}! 💎"),
   luxuryShareTemplate: varchar("luxury_share_template").default("Luxury awaits in {CITY}! ✨"),
@@ -82,7 +82,7 @@ export const cities = pgTable("cities", {
 export const cityContent = pgTable("city_content", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   cityId: varchar("city_id").references(() => cities.id, { onDelete: "cascade" }),
-  cardType: varchar("card_type").notNull(), // morning, afternoon, evening, bonus, luxury, wildlife
+  cardType: varchar("type").notNull(), // morning, afternoon, evening, bonus, luxury, wildlife
   title: varchar("title").notNull(),
   content: text("content").notNull(),
   imageUrl: varchar("image_url"),
