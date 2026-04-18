@@ -84,7 +84,7 @@ export const cityContent = pgTable("city_content", {
   cityId: varchar("city_id").references(() => cities.id, { onDelete: "cascade" }),
   cardType: varchar("type").notNull(), // morning, afternoon, evening, bonus, luxury, wildlife
   title: varchar("title").notNull(),
-  content: text("content").notNull(),
+  content: text("description").notNull(),
   imageUrl: varchar("image_url"),
   affiliateLinks: jsonb("affiliate_links"), // array of {text, url, type}
   createdAt: timestamp("created_at").defaultNow(),
