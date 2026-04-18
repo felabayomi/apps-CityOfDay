@@ -1,15 +1,17 @@
 import OpenAI from "openai";
 
 // the newest OpenAI model is "gpt-5" which was released August 7, 2025. do not change this unless explicitly requested by the user
-const openai = new OpenAI({ 
-  apiKey: process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY_ENV_VAR || "default_key" 
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY_ENV_VAR || "default_key"
 });
 
 // Separate client for TTS — must use the Replit AI Integrations proxy (gpt-audio model)
-const ttsOpenai = new OpenAI({
-  apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
-  baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
-});
+const ttsOpenai = process.env.AI_INTEGRATIONS_OPENAI_API_KEY && process.env.AI_INTEGRATIONS_OPENAI_BASE_URL
+  ? new OpenAI({
+    apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
+    baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
+  })
+  : openai;
 
 export interface CityContentGeneration {
   morning: {
@@ -60,6 +62,10 @@ export async function generateCityContent(cityName: string, country: string, foc
     const focusDescription = focusPrompts[focus as keyof typeof focusPrompts] || focusPrompts.balanced;
 
     const prompt = `Generate comprehensive daily travel content for ${cityName}, ${country}, ${focusDescription}.
+
+  This destination is in the United States. Keep all writing in a USA domestic travel context only.
+  Do not frame this as an international destination, foreign city guide, or overseas trip.
+  Do not mention passports, international flights, currency exchange, or cross-border travel.
 
 Create exactly 6 content cards in JSON format:
 
@@ -147,7 +153,7 @@ Respond with JSON in this exact format:
       messages: [
         {
           role: "system",
-          content: "You are a travel-savvy friend who creates casual, wanderlust-sparking city content. Write like curated Instagram captions — vivid, sensory, modern, and approachable. Avoid literary or academic tone. Spark curiosity with light, friendly language. Always respond with valid JSON."
+          content: "You are a travel-savvy friend who creates casual, wanderlust-sparking city content for USA destinations only. Write like curated Instagram captions — vivid, sensory, modern, and approachable. Avoid literary or academic tone. Spark curiosity with light, friendly language. Never treat the destination as international or overseas. Always respond with valid JSON."
         },
         {
           role: "user",
@@ -159,6 +165,20 @@ Respond with JSON in this exact format:
     });
 
     const result = JSON.parse(response.choices[0].message.content!);
+
+    // Validate all required card fields are present before returning
+    const requiredCards = ["morning", "afternoon", "evening", "bonus", "luxury", "wildlife"] as const;
+    for (const cardType of requiredCards) {
+      if (!result[cardType] || typeof result[cardType].title !== "string" || typeof result[cardType].content !== "string") {
+        console.error(`[OpenAI] Missing or malformed card "${cardType}" in response:`, JSON.stringify(result).slice(0, 500));
+        throw new Error(`AI response missing required card: ${cardType}`);
+      }
+    }
+    if (!Array.isArray(result.highlights) || result.highlights.length === 0) {
+      console.error("[OpenAI] Missing highlights in response");
+      throw new Error("AI response missing highlights array");
+    }
+
     return result as CityContentGeneration;
   } catch (error) {
     console.error("Error generating city content:", error);
@@ -191,18 +211,18 @@ export async function generateCityImageSuggestions(cityName: string, cardType: s
     
     Each suggestion should be:
     - Specific enough to find quality stock photos
-    - Relevant to ${cardType === 'morning' ? 'landmarks and morning scenes' : 
-                   cardType === 'afternoon' ? 'local food and cultural activities' :
-                   cardType === 'evening' ? 'budget-friendly activities and practical scenes' :
-                   cardType === 'bonus' ? 'historical or cultural scenes' :
-                   cardType === 'luxury' ? 'luxury hotels, fine dining, and premium experiences' :
-                   'nature, wildlife, parks, and outdoor activities'}
+    - Relevant to ${cardType === 'morning' ? 'landmarks and morning scenes' :
+        cardType === 'afternoon' ? 'local food and cultural activities' :
+          cardType === 'evening' ? 'budget-friendly activities and practical scenes' :
+            cardType === 'bonus' ? 'historical or cultural scenes' :
+              cardType === 'luxury' ? 'luxury hotels, fine dining, and premium experiences' :
+                'nature, wildlife, parks, and outdoor activities'}
     - Professional travel photography style
     
     Return as JSON array of strings: ["query1", "query2", "query3"]`;
 
     const response = await openai.chat.completions.create({
-      model: "gpt-5", 
+      model: "gpt-5",
       messages: [
         {
           role: "system",

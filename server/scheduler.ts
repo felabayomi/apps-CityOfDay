@@ -1,8 +1,11 @@
 import cron from "node-cron";
 import { storage } from "./storage";
 import { generateCityContent } from "./openai";
-import { log } from "./vite";
 import { notifyCityOfTheDay, notifyEveningReminder } from "./push";
+
+const log = (message: string) => {
+  console.log(message);
+};
 
 // US cities only — all 50 states represented
 const WORLD_CITIES: { name: string; country: string }[] = [
@@ -241,15 +244,21 @@ export async function generateTomorrowsDraft() {
       highlights: (generatedContent.highlights || null) as any,
     });
 
-    // Create all content cards
-    const cardTypes = ["morning", "afternoon", "evening", "bonus", "luxury", "wildlife"] as const;
-    const contentCards = cardTypes.map(type => ({
-      cityId: city.id,
-      cardType: type,
-      title: generatedContent[type].title,
-      content: generatedContent[type].content,
-    }));
-    await Promise.all(contentCards.map(card => storage.createCityContent(card)));
+    // Create all content cards — if this fails, delete the orphaned city to keep DB consistent
+    try {
+      const cardTypes = ["morning", "afternoon", "evening", "bonus", "luxury", "wildlife"] as const;
+      const contentCards = cardTypes.map(type => ({
+        cityId: city.id,
+        cardType: type,
+        title: generatedContent[type].title,
+        content: generatedContent[type].content,
+      }));
+      await Promise.all(contentCards.map(card => storage.createCityContent(card)));
+    } catch (contentErr) {
+      log(`[Scheduler] Auto-generate: Content card creation failed for ${city.id} — cleaning up orphaned city`);
+      await storage.deleteCity(city.id).catch(() => {});
+      throw contentErr;
+    }
 
     log(`[Scheduler] Auto-generate: Draft created — ${cityToGenerate.name} scheduled for ${tomorrowStr} (id: ${city.id})`);
   } catch (error) {
