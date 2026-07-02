@@ -10,6 +10,7 @@ import Admin from "@/pages/admin";
 import Preview from "@/pages/preview";
 import CityDetail from "@/pages/city-detail";
 import LibraryPage from "@/pages/library";
+import AuthPage from "@/pages/auth";
 import { useAuth } from "@/hooks/useAuth";
 import { ActiveThemeProvider } from "@/components/ActiveThemeProvider";
 
@@ -22,11 +23,12 @@ function Router() {
       <Route path="/preview" component={Preview} />
       <Route path="/city/:id" component={CityDetail} />
       <Route path="/library" component={LibraryPage} />
-      
+      <Route path="/auth" component={AuthPage} />
+
       {/* Protected routes that handle their own auth */}
       <Route path="/admin" component={Admin} />
       <Route path="/admin/felixdgreat" component={Admin} />
-      
+
       <Route component={NotFound} />
     </Switch>
   );
