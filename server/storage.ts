@@ -25,6 +25,11 @@ import {
 import { db } from "./db";
 import { eq, desc, and, or, gte, lt, lte, asc, isNull, isNotNull, sql, ne } from "drizzle-orm";
 
+const usaCityWhere = or(
+  eq(cities.country, "USA"),
+  sql`${cities.country} LIKE '%, USA'`
+);
+
 export interface IStorage {
   // User operations (required for Replit Auth)
   getUser(id: string): Promise<User | undefined>;
@@ -117,17 +122,21 @@ export class DatabaseStorage implements IStorage {
 
   // City operations
   async getAllCities(): Promise<City[]> {
-    return await db.select().from(cities).orderBy(desc(cities.createdAt));
+    return await db.select().from(cities).where(usaCityWhere).orderBy(desc(cities.createdAt));
   }
 
   async getDraftCities(): Promise<City[]> {
     return await db.select().from(cities)
-      .where(eq(cities.status, "draft"))
+      .where(and(eq(cities.status, "draft"), usaCityWhere))
       .orderBy(desc(cities.createdAt));
   }
 
   async getPublishedCities(): Promise<City[]> {
-    return await db.select().from(cities).where(eq(cities.isPublished, true)).orderBy(desc(cities.publishedDate));
+    return await db
+      .select()
+      .from(cities)
+      .where(and(eq(cities.isPublished, true), usaCityWhere))
+      .orderBy(desc(cities.publishedDate));
   }
 
   async approveDraft(id: string, scheduledDate?: Date): Promise<City> {
@@ -139,7 +148,7 @@ export class DatabaseStorage implements IStorage {
         scheduledDate: scheduledDate || null,
         updatedAt: new Date(),
       })
-      .where(eq(cities.id, id))
+      .where(and(eq(cities.id, id), usaCityWhere))
       .returning();
     todaysCityCache: null; // signal to clear cache
     return city;
@@ -148,18 +157,18 @@ export class DatabaseStorage implements IStorage {
   async rejectDraft(id: string): Promise<City> {
     const [city] = await db.update(cities)
       .set({ status: "rejected", scheduledDate: null, updatedAt: new Date() })
-      .where(eq(cities.id, id))
+      .where(and(eq(cities.id, id), usaCityWhere))
       .returning();
     return city;
   }
 
   async getCityById(id: string): Promise<City | undefined> {
-    const [city] = await db.select().from(cities).where(eq(cities.id, id));
+    const [city] = await db.select().from(cities).where(and(eq(cities.id, id), usaCityWhere));
     return city;
   }
 
   async getCityByName(name: string): Promise<City | undefined> {
-    const [city] = await db.select().from(cities).where(eq(cities.name, name));
+    const [city] = await db.select().from(cities).where(and(eq(cities.name, name), usaCityWhere));
     return city;
   }
 
@@ -167,12 +176,13 @@ export class DatabaseStorage implements IStorage {
     const targetDate = new Date(date);
     const startOfDay = new Date(targetDate.getFullYear(), targetDate.getMonth(), targetDate.getDate());
     const endOfDay = new Date(targetDate.getFullYear(), targetDate.getMonth(), targetDate.getDate() + 1);
-    
+
     const [city] = await db
       .select()
       .from(cities)
       .where(
         and(
+          usaCityWhere,
           gte(cities.scheduledDate, startOfDay),
           lt(cities.scheduledDate, endOfDay),
           ne(cities.status, "rejected")
@@ -182,56 +192,62 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createCity(cityData: InsertCity): Promise<City> {
-    const [city] = await db.insert(cities).values(cityData).returning();
+    const normalizedCityData = {
+      ...cityData,
+      publishedDate: cityData.publishedDate ?? new Date(),
+    };
+
+    const [city] = await db.insert(cities).values(normalizedCityData).returning();
     return city;
   }
 
   async updateCity(id: string, cityData: Partial<InsertCity>): Promise<City> {
     console.log('Storage updateCity - received data:', cityData);
-    
+
     // Ensure all date fields are proper Date objects
     const sanitizedData = { ...cityData };
-    
+
     if (sanitizedData.publishedDate && typeof sanitizedData.publishedDate === 'string') {
       sanitizedData.publishedDate = new Date(sanitizedData.publishedDate);
     }
     if (sanitizedData.scheduledDate && typeof sanitizedData.scheduledDate === 'string') {
       sanitizedData.scheduledDate = new Date(sanitizedData.scheduledDate);
     }
-    
+
     console.log('Storage updateCity - sanitized data:', sanitizedData);
-    
+
     const [city] = await db
       .update(cities)
       .set({ ...sanitizedData, updatedAt: new Date() })
-      .where(eq(cities.id, id))
+      .where(and(eq(cities.id, id), usaCityWhere))
       .returning();
     return city;
   }
 
   async deleteCity(id: string): Promise<void> {
-    await db.delete(cities).where(eq(cities.id, id));
+    await db.delete(cities).where(and(eq(cities.id, id), usaCityWhere));
   }
 
   async getTodaysCity(tzOffsetMinutes?: number): Promise<City | undefined> {
     // Use client timezone offset to determine the correct local calendar date
     const offsetMs = (tzOffsetMinutes || 0) * 60 * 1000;
     const clientNow = new Date(Date.now() + offsetMs); // Convert to client local time
-    
+
     // Get UTC midnight bounds for the client's current calendar date
     // This matches cities scheduled at 00:00:00Z for the target date
     const year = clientNow.getFullYear();
-    const month = clientNow.getMonth(); 
+    const month = clientNow.getMonth();
     const date = clientNow.getDate();
     const startOfDay = new Date(Date.UTC(year, month, date, 0, 0, 0));
     const endOfDay = new Date(Date.UTC(year, month, date + 1, 0, 0, 0));
-    
+
     // FIXED: First try to find a city specifically scheduled for today
     let result = await db
       .select()
       .from(cities)
       .where(
         and(
+          usaCityWhere,
           eq(cities.isPublished, true),
           gte(cities.scheduledDate, startOfDay),
           lt(cities.scheduledDate, endOfDay)
@@ -239,7 +255,7 @@ export class DatabaseStorage implements IStorage {
       )
       .orderBy(desc(cities.publishedDate))
       .limit(1);
-    
+
     // If no city is scheduled for today, find published cities that are NOT scheduled for future dates
     if (result.length === 0) {
       result = await db
@@ -247,6 +263,7 @@ export class DatabaseStorage implements IStorage {
         .from(cities)
         .where(
           and(
+            usaCityWhere,
             eq(cities.isPublished, true),
             or(
               // Cities with no scheduled date (general published content)
@@ -259,7 +276,7 @@ export class DatabaseStorage implements IStorage {
         .orderBy(desc(cities.publishedDate))
         .limit(1);
     }
-    
+
     return result[0];
   }
 
@@ -267,7 +284,7 @@ export class DatabaseStorage implements IStorage {
     return await db
       .select()
       .from(cities)
-      .where(isNotNull(cities.scheduledDate))
+      .where(and(isNotNull(cities.scheduledDate), usaCityWhere))
       .orderBy(asc(cities.scheduledDate));
   }
 
@@ -297,13 +314,13 @@ export class DatabaseStorage implements IStorage {
   // User interactions
   async addCityToCollection(userId: string, cityId: string): Promise<void> {
     await db.insert(userCollectedCities).values({ userId, cityId }).onConflictDoNothing();
-    
+
     // Update user stats
     const collectedCount = await db
       .select({ count: sql<number>`count(*)` })
       .from(userCollectedCities)
       .where(eq(userCollectedCities.userId, userId));
-    
+
     await this.updateUserStats(userId, { discoveredCities: collectedCount[0].count });
   }
 
@@ -318,13 +335,13 @@ export class DatabaseStorage implements IStorage {
 
   async addCityToBucketList(userId: string, cityId: string): Promise<void> {
     await db.insert(userBucketList).values({ userId, cityId }).onConflictDoNothing();
-    
+
     // Update user stats
     const bucketListCount = await db
       .select({ count: sql<number>`count(*)` })
       .from(userBucketList)
       .where(eq(userBucketList.userId, userId));
-    
+
     await this.updateUserStats(userId, { bucketListCities: bucketListCount[0].count });
   }
 
@@ -343,7 +360,7 @@ export class DatabaseStorage implements IStorage {
       .from(userCollectedCities)
       .innerJoin(cities, eq(userCollectedCities.cityId, cities.id))
       .where(eq(userCollectedCities.userId, userId));
-    
+
     return result.map(r => r.city);
   }
 
@@ -353,7 +370,7 @@ export class DatabaseStorage implements IStorage {
       .from(userBucketList)
       .innerJoin(cities, eq(userBucketList.cityId, cities.id))
       .where(eq(userBucketList.userId, userId));
-    
+
     return result.map(r => r.city);
   }
 
@@ -431,14 +448,14 @@ export class DatabaseStorage implements IStorage {
     await db
       .update(colorThemes)
       .set({ isActive: false, updatedAt: new Date() });
-    
+
     // Then activate the selected theme
     const [activeTheme] = await db
       .update(colorThemes)
       .set({ isActive: true, updatedAt: new Date() })
       .where(eq(colorThemes.id, id))
       .returning();
-    
+
     return activeTheme;
   }
 

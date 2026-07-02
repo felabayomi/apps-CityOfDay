@@ -10,6 +10,9 @@ import { eq } from "drizzle-orm";
 const SESSION_TTL_MS = 7 * 24 * 60 * 60 * 1000;
 const LOGIN_CODE_TTL_MS = 10 * 60 * 1000;
 const LOGIN_CODE_RESEND_COOLDOWN_MS = 30 * 1000;
+const sessionConnectionString = cleanEnv(
+  process.env.CITYOFDAY_DATABASE_URL || process.env.DATABASE_URL || "",
+);
 
 type SessionAuthUser = {
   id: string;
@@ -118,7 +121,7 @@ export async function setupAuth(app: Express) {
     session({
       secret: process.env.SESSION_SECRET || "cityofday-auth-secret",
       store: new pgStore({
-        conString: process.env.DATABASE_URL,
+        conString: sessionConnectionString,
         createTableIfMissing: true,
         ttl: SESSION_TTL_MS,
         tableName: "sessions",

@@ -47,6 +47,11 @@ const logCronTrace = (event: string, payload: Record<string, unknown>) => {
   console.log(JSON.stringify({ event, ...payload }));
 };
 
+const isUsLocationLabel = (value: string) => {
+  const normalized = value.trim().toLowerCase();
+  return normalized === "usa" || normalized === "united states" || normalized.endsWith(", usa") || normalized.endsWith(", u.s.a.") || normalized.endsWith(", u.s.a") || normalized.includes("state") || normalized.includes("california") || normalized.includes("new york") || normalized.includes("texas") || normalized.includes("florida") || normalized.includes("illinois") || normalized.includes("pennsylvania") || normalized.includes("massachusetts") || normalized.includes("michigan") || normalized.includes("north carolina") || normalized.includes("south carolina") || normalized.includes("georgia") || normalized.includes("virginia") || normalized.includes("washington") || normalized.includes("oregon") || normalized.includes("arizona") || normalized.includes("colorado") || normalized.includes("utah") || normalized.includes("nevada") || normalized.includes("alabama") || normalized.includes("tennessee") || normalized.includes("kentucky") || normalized.includes("missouri") || normalized.includes("minnesota") || normalized.includes("wisconsin") || normalized.includes("ohio") || normalized.includes("indiana") || normalized.includes("iowa") || normalized.includes("kansas") || normalized.includes("nebraska") || normalized.includes("south dakota") || normalized.includes("north dakota") || normalized.includes("idaho") || normalized.includes("montana") || normalized.includes("wyoming") || normalized.includes("alaska") || normalized.includes("hawaii") || normalized.includes("new mexico") || normalized.includes("oklahoma") || normalized.includes("louisiana") || normalized.includes("arkansas") || normalized.includes("mississippi") || normalized.includes("west virginia") || normalized.includes("delaware") || normalized.includes("maryland") || normalized.includes("new jersey") || normalized.includes("connecticut") || normalized.includes("rhode island") || normalized.includes("vermont") || normalized.includes("new hampshire") || normalized.includes("maine");
+};
+
 export async function registerRoutes(app: Express): Promise<Server> {
   try {
     await ensureCityOfDayCompatibility();
@@ -385,6 +390,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "State or region is required (or include it in city name)" });
       }
 
+      if (!isUsLocationLabel(finalStateOrRegion)) {
+        return res.status(400).json({ message: "CityOfDay only accepts US states or USA labels." });
+      }
+
       // Check if city already exists
       const existingCity = await storage.getCityByName(finalCityName);
       if (existingCity) {
@@ -492,6 +501,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/admin/cities", isAuthenticated, isAdmin, async (req, res) => {
     try {
       const validatedData = insertCitySchema.parse(req.body);
+      if (!isUsLocationLabel(String(validatedData.country || ""))) {
+        return res.status(400).json({ message: "CityOfDay only accepts US states or USA labels." });
+      }
       const city = await storage.createCity(validatedData);
       res.json(city);
     } catch (error) {
