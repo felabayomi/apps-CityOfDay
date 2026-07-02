@@ -371,18 +371,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Handle flexible city name format
       let finalCityName = cityName.trim();
-      let finalCountry = country?.trim() || "";
+      let finalStateOrRegion = country?.trim() || "";
 
-      // If city name contains comma and no country provided, extract country from city name
-      if (cityName.includes(',') && !finalCountry) {
+      // If city name contains comma and no state/region provided, extract it from city name
+      if (cityName.includes(',') && !finalStateOrRegion) {
         const parts = cityName.split(',').map((part: string) => part.trim());
         finalCityName = parts[0];
-        finalCountry = parts.slice(1).join(', ');
+        finalStateOrRegion = parts.slice(1).join(', ');
       }
 
-      // If still no country, require it
-      if (!finalCountry) {
-        return res.status(400).json({ message: "Country is required (or include state/region in city name)" });
+      // If still no state/region, require it
+      if (!finalStateOrRegion) {
+        return res.status(400).json({ message: "State or region is required (or include it in city name)" });
       }
 
       // Check if city already exists
@@ -392,7 +392,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Generate content using OpenAI
-      const generatedContent = await generateCityContent(finalCityName, finalCountry, focus);
+      const generatedContent = await generateCityContent(finalCityName, finalStateOrRegion, focus);
 
       // Check if date is already scheduled (if scheduledDate provided)
       if (scheduledDate) {
@@ -469,7 +469,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const objStorage = new ObjectStorageService();
       setImmediate(async () => {
         try {
-          const imgBuffer = await generateCityHeroImage(finalCityName, finalCountry);
+          const imgBuffer = await generateCityHeroImage(finalCityName, finalStateOrRegion);
           await objStorage.uploadCityImage(city.id, imgBuffer);
           await storage.updateCity(city.id, { imageUrl: `/api/city-image/${city.id}` } as any);
           console.log(`Auto-generated hero image for ${finalCityName} (id: ${city.id})`);

@@ -265,15 +265,16 @@ export async function generateTomorrowsDraft(force = false): Promise<{
       };
     }
 
-    log(`[Scheduler] Auto-generate: Generating ${cityToGenerate.name}, ${cityToGenerate.country} for ${tomorrowStr}`);
+    const stateOrRegion = cityToGenerate.country;
+    log(`[Scheduler] Auto-generate: Generating ${cityToGenerate.name}, ${stateOrRegion} for ${tomorrowStr}`);
 
     // Generate content via OpenAI
-    const generatedContent = await generateCityContent(cityToGenerate.name, cityToGenerate.country);
+    const generatedContent = await generateCityContent(cityToGenerate.name, stateOrRegion);
 
     // Create the draft city with scheduledDate = tomorrow
     const city = await storage.createCity({
       name: cityToGenerate.name,
-      country: cityToGenerate.country,
+      country: stateOrRegion,
       isPublished: false,
       status: "draft",
       // DB requires published_date non-null; drafts still remain hidden via isPublished=false.
@@ -302,7 +303,7 @@ export async function generateTomorrowsDraft(force = false): Promise<{
     log(`[Scheduler] Auto-generate: Draft created — ${cityToGenerate.name} scheduled for ${tomorrowStr} (id: ${city.id})`);
     return {
       generated: true,
-      cityName: `${cityToGenerate.name}, ${cityToGenerate.country}`,
+      cityName: `${cityToGenerate.name}, ${stateOrRegion}`,
       cityId: city.id,
       publishDate: tomorrowStr,
       status: city.status,

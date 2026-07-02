@@ -47,7 +47,7 @@ export interface CityContentGeneration {
   highlights: string[]; // 5 scannable key facts about the city
 }
 
-export async function generateCityContent(cityName: string, country: string, focus: string = "balanced"): Promise<CityContentGeneration> {
+export async function generateCityContent(cityName: string, stateOrRegion: string, focus: string = "balanced"): Promise<CityContentGeneration> {
   try {
     const focusPrompts = {
       balanced: "covering landmarks, food, culture, and budget tips equally",
@@ -61,7 +61,9 @@ export async function generateCityContent(cityName: string, country: string, foc
 
     const focusDescription = focusPrompts[focus as keyof typeof focusPrompts] || focusPrompts.balanced;
 
-    const prompt = `Generate comprehensive daily travel content for ${cityName}, ${country}, ${focusDescription}.
+    const prompt = `Generate comprehensive daily travel content for ${cityName}, ${stateOrRegion}, ${focusDescription}.
+
+  For this project, the second value is a US state, territory, or region label, not a country.
 
   This destination is in the United States. Keep all writing in a USA domestic travel context only.
   Do not frame this as an international destination, foreign city guide, or overseas trip.
@@ -186,8 +188,8 @@ Respond with JSON in this exact format:
   }
 }
 
-export async function generateCityHeroImage(cityName: string, country: string): Promise<Buffer> {
-  const prompt = `Breathtaking travel photography of ${cityName}, ${country}. Iconic city skyline or landmark scene at golden hour. Vibrant colors, cinematic composition, professional travel magazine quality. Wide angle landscape shot. Photorealistic. No text, no watermarks, no people in foreground.`;
+export async function generateCityHeroImage(cityName: string, stateOrRegion: string): Promise<Buffer> {
+  const prompt = `Breathtaking travel photography of ${cityName}, ${stateOrRegion}. Iconic city skyline or landmark scene at golden hour. Vibrant colors, cinematic composition, professional travel magazine quality. Wide angle landscape shot. Photorealistic. No text, no watermarks, no people in foreground.`;
 
   const response = await openai.images.generate({
     model: "dall-e-3",
