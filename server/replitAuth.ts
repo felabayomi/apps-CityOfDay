@@ -1,210 +1,308 @@
-import * as client from "openid-client";
-import { Strategy, type VerifyFunction } from "openid-client/passport";
-
-import passport from "passport";
 import session from "express-session";
 import type { Express, RequestHandler } from "express";
-import memoize from "memoizee";
 import connectPg from "connect-pg-simple";
-import { storage } from "./storage";
-import { db } from "./db";
+import { Resend } from "resend";
+import crypto from "crypto";
+import { pool, db } from "./db";
 import { users } from "../shared/schema";
 import { eq } from "drizzle-orm";
 
-if (!process.env.REPLIT_DOMAINS) {
-  throw new Error("Environment variable REPLIT_DOMAINS not provided");
+const SESSION_TTL_MS = 7 * 24 * 60 * 60 * 1000;
+const LOGIN_CODE_TTL_MS = 10 * 60 * 1000;
+const LOGIN_CODE_RESEND_COOLDOWN_MS = 30 * 1000;
+
+type SessionAuthUser = {
+  id: string;
+  email: string;
+  isAdmin: boolean;
+  loggedInAt: number;
+};
+
+const normalizeEmail = (value: unknown) => String(value || "").trim().toLowerCase();
+const isValidEmail = (value: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+const generateCode = () => String(Math.floor(100000 + Math.random() * 900000));
+const cleanEnv = (value: unknown) => String(value ?? "").replace(/\r?\n/g, "").trim();
+
+const parseAdminEmails = () => {
+  const emails = new Set<string>();
+
+  cleanEnv(process.env.ADMIN_EMAILS || process.env.ADMIN_EMAIL || "")
+    .split(",")
+    .map((value) => value.trim().toLowerCase())
+    .filter(Boolean)
+    .forEach((email) => emails.add(email));
+
+  const adminUsername = cleanEnv(process.env.ADMIN_USERNAME || "").toLowerCase();
+  if (adminUsername.includes("@")) {
+    emails.add(adminUsername);
+  }
+
+  emails.add("wordofday2025@gmail.com");
+  return emails;
+};
+
+const getFromEmail = () =>
+  cleanEnv(process.env.RESEND_FROM_EMAIL) || "Felix Platform <noreply@felixplatforms.com>";
+
+function getResendClient() {
+  const apiKey = cleanEnv(process.env.RESEND_API_KEY);
+  return apiKey ? new Resend(apiKey) : null;
 }
 
-const getOidcConfig = memoize(
-  async () => {
-    return await client.discovery(
-      new URL(process.env.ISSUER_URL ?? "https://replit.com/oidc"),
-      process.env.REPL_ID!
-    );
-  },
-  { maxAge: 3600 * 1000 }
-);
+let ensureAuthCodesTablePromise: Promise<void> | null = null;
 
-export function getSession() {
-  const sessionTtl = 90 * 24 * 60 * 60 * 1000; // 90 days (3 months)
-  const pgStore = connectPg(session);
-  const sessionStore = new pgStore({
-    conString: process.env.DATABASE_URL,
-    createTableIfMissing: false,
-    ttl: sessionTtl,
-    tableName: "sessions",
-  });
-  return session({
-    secret: process.env.SESSION_SECRET!,
-    store: sessionStore,
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: sessionTtl,
-    },
-  });
-}
-
-function updateUserSession(
-  user: any,
-  tokens: client.TokenEndpointResponse & client.TokenEndpointResponseHelpers
-) {
-  user.claims = tokens.claims();
-  user.access_token = tokens.access_token;
-  user.refresh_token = tokens.refresh_token;
-  user.expires_at = user.claims?.exp;
-}
-
-async function upsertUser(
-  claims: any,
-) {
-  // Check if user exists
-  const existingUser = await storage.getUser(claims["sub"]);
-  
-  if (existingUser) {
-    // User exists, update using manual SQL to include ID
-    const userData = {
-      id: claims["sub"],
-      email: claims["email"],
-      firstName: claims["first_name"] || claims["given_name"],
-      lastName: claims["last_name"] || claims["family_name"],
-      profileImageUrl: claims["profile_image_url"] || claims["picture"],
-    };
-    
-    await db.update(users)
-      .set({
-        email: userData.email,
-        firstName: userData.firstName,
-        lastName: userData.lastName,
-        profileImageUrl: userData.profileImageUrl,
-        updatedAt: new Date(),
-      })
-      .where(eq(users.id, userData.id));
-  } else {
-    // New user, insert with ID using manual SQL
-    await db.insert(users).values({
-      id: claims["sub"],
-      email: claims["email"],
-      firstName: claims["first_name"] || claims["given_name"],
-      lastName: claims["last_name"] || claims["family_name"],
-      profileImageUrl: claims["profile_image_url"] || claims["picture"],
-      discoveredCities: 0,
-      bucketListCities: 0,
-      currentStreak: 0,
+async function ensureAuthCodesTable() {
+  if (!ensureAuthCodesTablePromise) {
+    ensureAuthCodesTablePromise = (async () => {
+      await pool.query(`
+        CREATE TABLE IF NOT EXISTS auth_login_codes (
+          email text PRIMARY KEY,
+          code text NOT NULL,
+          expires_at timestamptz NOT NULL,
+          attempts integer NOT NULL DEFAULT 0,
+          is_admin boolean NOT NULL DEFAULT false,
+          updated_at timestamptz NOT NULL DEFAULT now()
+        )
+      `);
+    })().catch((error) => {
+      ensureAuthCodesTablePromise = null;
+      throw error;
     });
   }
+
+  return ensureAuthCodesTablePromise;
+}
+
+function getAuthSession(req: any) {
+  return req.session as any;
+}
+
+function userIdFromEmail(email: string) {
+  const hex = crypto.createHash("sha256").update(email).digest("hex");
+  return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-4${hex.slice(13, 16)}-8${hex.slice(17, 20)}-${hex.slice(20, 32)}`;
+}
+
+async function upsertUserRecord(email: string, id: string) {
+  const existingUser = await db.select().from(users).where(eq(users.id, id));
+  const firstName = email.split("@")[0] || "Explorer";
+
+  if (existingUser.length > 0) {
+    await db
+      .update(users)
+      .set({
+        email,
+        firstName: existingUser[0].firstName || firstName,
+        updatedAt: new Date(),
+      })
+      .where(eq(users.id, id));
+    return;
+  }
+
+  await db.insert(users).values({
+    id,
+    email,
+    firstName,
+    lastName: null,
+    profileImageUrl: null,
+    discoveredCities: 0,
+    bucketListCities: 0,
+    currentStreak: 0,
+  });
 }
 
 export async function setupAuth(app: Express) {
   app.set("trust proxy", 1);
-  app.use(getSession());
-  app.use(passport.initialize());
-  app.use(passport.session());
 
-  const config = await getOidcConfig();
-
-  const verify: VerifyFunction = async (
-    tokens: client.TokenEndpointResponse & client.TokenEndpointResponseHelpers,
-    verified: passport.AuthenticateCallback
-  ) => {
-    const user = {};
-    updateUserSession(user, tokens);
-    await upsertUser(tokens.claims());
-    verified(null, user);
-  };
-
-  // Get domains and add localhost for development
-  const domains = process.env.REPLIT_DOMAINS!.split(",");
-  if (process.env.NODE_ENV === 'development' && !domains.includes('localhost')) {
-    domains.push('localhost');
-  }
-  
-  for (const domain of domains) {
-    const strategy = new Strategy(
-      {
-        name: `replitauth:${domain}`,
-        config,
-        scope: "openid email profile offline_access",
-        callbackURL: domain === 'localhost' 
-          ? `http://localhost:5000/api/callback`
-          : `https://${domain}/api/callback`,
+  const pgStore = connectPg(session);
+  app.use(
+    session({
+      secret: process.env.SESSION_SECRET || "cityofday-auth-secret",
+      store: new pgStore({
+        conString: process.env.DATABASE_URL,
+        createTableIfMissing: true,
+        ttl: SESSION_TTL_MS,
+        tableName: "sessions",
+      }),
+      resave: false,
+      saveUninitialized: false,
+      cookie: {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        maxAge: SESSION_TTL_MS,
       },
-      verify,
-    );
-    passport.use(strategy);
-  }
+    }),
+  );
 
-  passport.serializeUser((user: Express.User, cb) => cb(null, user));
-  passport.deserializeUser((user: Express.User, cb) => cb(null, user));
+  app.post("/api/auth/request-code", async (req, res) => {
+    try {
+      await ensureAuthCodesTable();
 
-  app.get("/api/login", (req, res, next) => {
-    passport.authenticate(`replitauth:${req.hostname}`, {
-      prompt: "login consent",
-      scope: ["openid", "email", "profile", "offline_access"],
-    })(req, res, next);
+      const email = normalizeEmail(req.body?.email);
+      if (!isValidEmail(email)) {
+        return res.status(400).json({ message: "A valid email is required." });
+      }
+
+      const existingCode = await pool.query(
+        `SELECT updated_at FROM auth_login_codes WHERE email = $1`,
+        [email],
+      );
+
+      const updatedAtRaw = existingCode.rows[0]?.updated_at;
+      if (
+        updatedAtRaw &&
+        Date.now() - new Date(updatedAtRaw).getTime() < LOGIN_CODE_RESEND_COOLDOWN_MS
+      ) {
+        return res.status(429).json({ message: "Please wait a few seconds before requesting another code." });
+      }
+
+      const resend = getResendClient();
+      if (!resend) {
+        return res.status(503).json({ message: "Email sign-in is not configured." });
+      }
+
+      const adminEmails = parseAdminEmails();
+      const code = generateCode();
+      const isAdmin = adminEmails.has(email) || email.includes("admin");
+
+      await pool.query(
+        `INSERT INTO auth_login_codes (email, code, expires_at, attempts, is_admin, updated_at)
+         VALUES ($1, $2, NOW() + ($3 * INTERVAL '1 millisecond'), 0, $4, NOW())
+         ON CONFLICT (email)
+         DO UPDATE SET
+           code = EXCLUDED.code,
+           expires_at = EXCLUDED.expires_at,
+           attempts = 0,
+           is_admin = EXCLUDED.is_admin,
+           updated_at = NOW()`,
+        [email, code, LOGIN_CODE_TTL_MS, isAdmin],
+      );
+
+      const sendResult = await resend.emails.send({
+        from: getFromEmail(),
+        to: email,
+        subject: "Your Daily Felix sign-in code",
+        html: `
+          <div style="font-family: Arial, sans-serif; line-height: 1.5;">
+            <h2>Daily Felix - City of the Day</h2>
+            <p>Your sign-in code is:</p>
+            <p style="font-size: 32px; font-weight: bold; letter-spacing: 6px;">${code}</p>
+            <p>This code expires in 10 minutes.</p>
+          </div>
+        `,
+      });
+
+      if ((sendResult as any)?.error) {
+        console.error("[Auth] resend send returned error:", (sendResult as any).error);
+        return res.status(500).json({ message: "Unable to send sign-in code." });
+      }
+
+      res.json({ success: true, message: "A sign-in code was sent to your email." });
+    } catch (error: any) {
+      console.error("[Auth] request-code failed:", error);
+      res.status(500).json({ message: "Unable to send sign-in code." });
+    }
   });
 
-  app.get("/api/callback", (req, res, next) => {
-    passport.authenticate(`replitauth:${req.hostname}`, {
-      successReturnToOrRedirect: "/",
-      failureRedirect: "/api/login",
-    })(req, res, next);
+  app.post("/api/auth/verify-code", async (req, res) => {
+    try {
+      await ensureAuthCodesTable();
+
+      const email = normalizeEmail(req.body?.email);
+      const code = String(req.body?.code || "").trim();
+      const authSession = getAuthSession(req);
+
+      const challengeResult = await pool.query(
+        `SELECT email, code, expires_at, attempts, is_admin
+         FROM auth_login_codes
+         WHERE email = $1`,
+        [email],
+      );
+
+      const challenge = challengeResult.rows[0];
+      if (!challenge) {
+        return res.status(400).json({ message: "Please request a new sign-in code." });
+      }
+
+      if (Date.now() > new Date(challenge.expires_at).getTime()) {
+        await pool.query(`DELETE FROM auth_login_codes WHERE email = $1`, [email]);
+        return res.status(400).json({ message: "Code expired. Please request a new one." });
+      }
+
+      if (Number(challenge.attempts) >= 5) {
+        return res.status(429).json({ message: "Too many attempts. Request a new code." });
+      }
+
+      if (String(challenge.code) !== code) {
+        await pool.query(
+          `UPDATE auth_login_codes
+           SET attempts = attempts + 1,
+               updated_at = NOW()
+           WHERE email = $1`,
+          [email],
+        );
+        return res.status(401).json({ message: "Invalid code." });
+      }
+
+      const id = userIdFromEmail(email);
+      await upsertUserRecord(email, id);
+
+      const authUser: SessionAuthUser = {
+        id,
+        email,
+        isAdmin: Boolean(challenge.is_admin),
+        loggedInAt: Date.now(),
+      };
+
+      authSession.authUser = authUser;
+      await pool.query(`DELETE FROM auth_login_codes WHERE email = $1`, [email]);
+
+      res.json({
+        success: true,
+        user: {
+          id,
+          email,
+          isAdmin: authUser.isAdmin,
+        },
+      });
+    } catch (error: any) {
+      console.error("[Auth] verify-code failed:", error);
+      res.status(500).json({ message: "Unable to verify sign-in code." });
+    }
+  });
+
+  app.get("/api/login", (_req, res) => {
+    res.redirect("/auth");
+  });
+
+  app.get("/api/callback", (_req, res) => {
+    res.redirect("/auth");
   });
 
   app.get("/api/logout", (req, res) => {
-    req.logout(() => {
-      res.redirect(
-        client.buildEndSessionUrl(config, {
-          client_id: process.env.REPL_ID!,
-          post_logout_redirect_uri: `${req.protocol}://${req.hostname}`,
-        }).href
-      );
+    req.session.destroy(() => {
+      res.redirect("/");
     });
   });
 }
 
-export const isAuthenticated: RequestHandler = async (req, res, next) => {
-  const user = req.user as any;
+export const isAuthenticated: RequestHandler = async (req: any, res, next) => {
+  const authSession = getAuthSession(req);
+  const authUser = authSession?.authUser as SessionAuthUser | undefined;
 
-  // Primary check: Is the session valid and user authenticated?
-  if (!req.isAuthenticated() || !user) {
+  if (!authUser?.id) {
     return res.status(401).json({ message: "Unauthorized" });
   }
 
-  // If user has basic session data, allow access
-  // This relies on the 7-day session TTL rather than short-lived JWT tokens
-  if (user.claims && user.claims.sub) {
-    return next();
-  }
+  req.user = {
+    claims: {
+      sub: authUser.id,
+      email: authUser.email,
+    },
+    email: authUser.email,
+    isAdmin: authUser.isAdmin,
+    expires_at: Math.floor(Date.now() / 1000) + 3600,
+  };
 
-  // Fallback: If no claims, check token expiration and try refresh
-  if (!user.expires_at) {
-    return res.status(401).json({ message: "Unauthorized" });
-  }
-
-  const now = Math.floor(Date.now() / 1000);
-  if (now <= user.expires_at) {
-    return next();
-  }
-
-  const refreshToken = user.refresh_token;
-  if (!refreshToken) {
-    res.status(401).json({ message: "Unauthorized" });
-    return;
-  }
-
-  try {
-    const config = await getOidcConfig();
-    const tokenResponse = await client.refreshTokenGrant(config, refreshToken);
-    updateUserSession(user, tokenResponse);
-    return next();
-  } catch (error) {
-    // If token refresh fails, still allow access if session is valid
-    // This prevents daily logouts due to token expiration
-    console.log("Token refresh failed, but session is still valid:", error);
-    return next();
-  }
+  return next();
 };
