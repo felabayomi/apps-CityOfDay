@@ -32,7 +32,7 @@ export default function Home() {
   // Share itinerary functionality
   const handleShareItinerary = async () => {
     if (!todaysCity) return;
-    
+
     // Create concise Twitter-style snippet under 280 characters
     const shareText = `🏛 ${todaysCity.name}, ${todaysCity.country} Itinerary
 Come to explore. Stay to discover what makes this city unforgettable.
@@ -64,9 +64,9 @@ Come to explore. Stay to discover what makes this city unforgettable.
   // Share Travel Showcase functionality
   const handleShareTravelShowcase = async (city: any) => {
     if (!city) return;
-    
+
     const ctaLinksFormatted = city.cityCtaLinks?.map((link: any) => `${link.text}\n${link.url}`).join('\n\n') || '';
-    
+
     const shareText = `${city.name} Travel Showcase
 Curated itineraries, sample flights, and exclusive deals
 
@@ -105,25 +105,25 @@ Agent Support: Send us your booking confirmation for tracking and assistance.`;
 
     // Update every minute to keep time display fresh
     const interval = setInterval(updateCardInfo, 60000);
-    
+
     return () => clearInterval(interval);
   }, []);
 
 
   // Get timezone offset for accurate city scheduling
   const tzOffset = -new Date().getTimezoneOffset(); // Convert to minutes east of UTC
-  
+
   // Fetch today's city
-  const { data: todaysCityData, isLoading: loadingToday } = useQuery<{city: any, content: any[]}>({
+  const { data: todaysCityData, isLoading: loadingToday } = useQuery<{ city: any, content: any[] }>({
     queryKey: ["/api/cities/today", tzOffset],
-    queryFn: () => 
+    queryFn: () =>
       fetch(`/api/cities/today?tzOffset=${tzOffset}`)
         .then(res => res.json()),
     retry: false,
   });
 
   const handleSignIn = () => {
-    window.location.href = "/api/login";
+    window.location.href = "/auth";
   };
 
   if (loadingToday) {
@@ -170,7 +170,7 @@ Agent Support: Send us your booking confirmation for tracking and assistance.`;
           <a href="/library" className="library-link">Library</a>
           <a href="https://schedez.io/" target="_blank" rel="noopener noreferrer" className="library-link schedez-link">Plan Less and Travel More</a>
           {isAdmin && (
-            <a href="/admin/felixdgreat" className="library-link" style={{color: 'var(--accent-bar-background, #f59e0b)', fontWeight: 600}}>Admin</a>
+            <a href="/admin/felixdgreat" className="library-link" style={{ color: 'var(--accent-bar-background, #f59e0b)', fontWeight: 600 }}>Admin</a>
           )}
         </div>
       </header>
@@ -195,10 +195,10 @@ Agent Support: Send us your booking confirmation for tracking and assistance.`;
               {todaysCity.country}
             </p>
             <div className="space-y-2 mb-8">
-              <p className="text-xl mb-4" style={{color: '#FFF'}}>
+              <p className="text-xl mb-4" style={{ color: '#FFF' }}>
                 Explore Morning Discovery, Afternoon Culture, Evening Experiences, Bonus Facts, Luxury Experiences, and Wildlife — all at once
               </p>
-              <div className="w-24 h-1 mx-auto rounded-full mt-4" style={{background: 'linear-gradient(135deg, var(--hero-gradient-start), var(--accent-bar-bg))'}}></div>
+              <div className="w-24 h-1 mx-auto rounded-full mt-4" style={{ background: 'linear-gradient(135deg, var(--hero-gradient-start), var(--accent-bar-bg))' }}></div>
             </div>
 
             {/* City Highlights */}
@@ -300,7 +300,7 @@ Agent Support: Send us your booking confirmation for tracking and assistance.`;
                 </div>
                 <div className="flex flex-col gap-3 md:gap-4 max-w-2xl mx-auto">
                   {todaysCity.cityCtaLinks.map((link: any, index: number) => (
-                    <Button 
+                    <Button
                       key={`custom-${index}`}
                       className="bg-white text-primary hover:bg-gray-100 border-2 border-white/20 text-sm md:text-base px-4 md:px-6 py-3 md:py-4 h-auto min-h-[60px] whitespace-normal leading-tight w-full text-center"
                       onClick={() => window.open(link.url, '_blank')}
@@ -345,7 +345,7 @@ Agent Support: Send us your booking confirmation for tracking and assistance.`;
       )}
 
       {/* Travel Booking Hub - Always visible */}
-      <section className="py-16" style={{backgroundColor: '#f8f9fa'}}>
+      <section className="py-16" style={{ backgroundColor: '#f8f9fa' }}>
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
 
           <div className="text-center mb-8">
@@ -362,17 +362,17 @@ Agent Support: Send us your booking confirmation for tracking and assistance.`;
               Agent Support: Send us your booking confirmation for tracking and assistance.
             </a>
           </div>
-          
+
           {/* Travel Services Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            
+
             {/* Book Hotels Card */}
             <Card className="hover:shadow-lg transition-shadow">
               <CardContent className="p-6">
                 <h5 className="text-lg font-semibold mb-4">Book Hotels</h5>
                 <p className="text-sm text-muted-foreground mb-4">Find and book accommodations worldwide with competitive rates and exclusive deals.</p>
-                <Button 
-                  className="w-full bg-primary hover:bg-primary/90" 
+                <Button
+                  className="w-full bg-primary hover:bg-primary/90"
                   data-testid="button-book-hotels"
                   onClick={() => window.open('https://resmax.globaltravel.net/?custom1=GT20038250&custom2=resmax', '_blank')}
                 >
@@ -386,8 +386,8 @@ Agent Support: Send us your booking confirmation for tracking and assistance.`;
               <CardContent className="p-6">
                 <h5 className="text-lg font-semibold mb-4">Find Tours</h5>
                 <p className="text-sm text-muted-foreground mb-4">Discover amazing experiences and guided tours to make the most of your destination.</p>
-                <Button 
-                  className="w-full bg-primary hover:bg-primary/90" 
+                <Button
+                  className="w-full bg-primary hover:bg-primary/90"
                   data-testid="button-find-tours"
                   onClick={() => window.open('https://www.viator.com/?pid=P00113651&uid=U00350276&mcid=58086&currency=USD', '_blank')}
                 >
@@ -401,8 +401,8 @@ Agent Support: Send us your booking confirmation for tracking and assistance.`;
               <CardContent className="p-6">
                 <h5 className="text-lg font-semibold mb-4">Search Flights</h5>
                 <p className="text-sm text-muted-foreground mb-4">Compare and book flights from multiple airlines to get the best deals for your trip.</p>
-                <Button 
-                  className="w-full bg-primary hover:bg-primary/90" 
+                <Button
+                  className="w-full bg-primary hover:bg-primary/90"
                   data-testid="button-search-flights"
                   onClick={() => window.open('https://globaltravel.airfareassist.com/agentsearch?cmp=R400000', '_blank')}
                 >
@@ -416,8 +416,8 @@ Agent Support: Send us your booking confirmation for tracking and assistance.`;
               <CardContent className="p-6">
                 <h5 className="text-lg font-semibold mb-4">Car Rental</h5>
                 <p className="text-sm text-muted-foreground mb-4">Rent a car for ultimate freedom and flexibility during your travels.</p>
-                <Button 
-                  className="w-full bg-primary hover:bg-primary/90" 
+                <Button
+                  className="w-full bg-primary hover:bg-primary/90"
                   data-testid="button-car-rental"
                   onClick={() => window.open('https://rezervco.carhire-solutions.com/', '_blank')}
                 >
@@ -431,8 +431,8 @@ Agent Support: Send us your booking confirmation for tracking and assistance.`;
               <CardContent className="p-6">
                 <h5 className="text-lg font-semibold mb-4">Smart Travel Companion</h5>
                 <p className="text-sm text-muted-foreground mb-4">Get AI-powered travel insights and recommendations tailored to your preferences.</p>
-                <Button 
-                  className="w-full bg-primary hover:bg-primary/90" 
+                <Button
+                  className="w-full bg-primary hover:bg-primary/90"
                   data-testid="button-travel-companion"
                   onClick={() => window.open('https://detect.citydiscoverer.ai/', '_blank')}
                 >
@@ -446,8 +446,8 @@ Agent Support: Send us your booking confirmation for tracking and assistance.`;
               <CardContent className="p-6">
                 <h5 className="text-lg font-semibold mb-4">Itinerary Planner</h5>
                 <p className="text-sm text-muted-foreground mb-4">Plan your perfect trip with our intelligent itinerary planning tools.</p>
-                <Button 
-                  className="w-full bg-primary hover:bg-primary/90" 
+                <Button
+                  className="w-full bg-primary hover:bg-primary/90"
                   data-testid="button-itinerary-planner"
                   onClick={() => window.open('https://plan.citydiscoverer.ai/', '_blank')}
                 >

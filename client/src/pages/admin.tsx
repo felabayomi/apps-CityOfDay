@@ -30,7 +30,7 @@ export default function Admin() {
   useEffect(() => {
     if (authStatus === 'pending') return; // still loading — never redirect prematurely
     if (!isAuthenticated) {
-      window.location.href = "/api/login";
+      window.location.href = "/auth";
       return;
     }
     // Check admin access using server-provided isAdmin flag
@@ -130,10 +130,10 @@ export default function Admin() {
     },
     onError: (error) => {
       if (isUnauthorizedError(error)) {
-        window.location.href = "/api/login";
+        window.location.href = "/auth";
         return;
       }
-      
+
       toast({
         title: "Delete Failed",
         description: "Failed to delete city. Please try again.",
@@ -341,7 +341,7 @@ export default function Admin() {
                 Auto-Publish Scheduler
               </CardTitle>
               <p className="text-sm text-muted-foreground">
-                Every day at <strong>3pm Eastern</strong> the system generates tomorrow's city as a draft. If you haven't approved it by <strong>9am Eastern</strong> on the scheduled day, it auto-publishes.
+                Every day at <strong>3pm Eastern</strong> the system generates tomorrow's city as a draft. It auto-publishes at <strong>12am Eastern</strong> (midnight) on the scheduled day.
               </p>
             </CardHeader>
             <CardContent>
@@ -385,7 +385,7 @@ export default function Admin() {
                 </div>
                 <div className="p-4 rounded-md bg-muted/40 border border-border">
                   <p className="text-sm font-semibold text-foreground mb-1">Auto-Approve</p>
-                  <p className="text-xs text-muted-foreground mb-3">Runs at 9am EST — finds today's scheduled draft and publishes it if you haven't manually approved it yet.</p>
+                  <p className="text-xs text-muted-foreground mb-3">Runs at 12am EST (midnight) — finds today's scheduled draft and publishes it automatically.</p>
                   <Button
                     size="sm"
                     variant="outline"
@@ -458,7 +458,7 @@ export default function Admin() {
 
           {/* Content Editor */}
           <div>
-            <ContentEditor 
+            <ContentEditor
               selectedCityId={selectedCity}
               onCityChange={setSelectedCity}
             />
@@ -513,7 +513,7 @@ export default function Admin() {
                       {alphabet.map(letter => {
                         const cityCount = citiesByLetter[letter]?.length || 0;
                         const hasContent = cityCount > 0;
-                        
+
                         return (
                           <button
                             key={letter}
@@ -521,8 +521,8 @@ export default function Admin() {
                             disabled={!hasContent}
                             className={`
                               relative p-4 rounded-lg border transition-all duration-200
-                              ${hasContent 
-                                ? 'border-primary/20 bg-primary/5 hover:bg-primary/10 hover:border-primary/30 cursor-pointer' 
+                              ${hasContent
+                                ? 'border-primary/20 bg-primary/5 hover:bg-primary/10 hover:border-primary/30 cursor-pointer'
                                 : 'border-muted bg-muted/20 cursor-not-allowed opacity-50'
                               }
                               ${openLetters.has(letter) ? 'ring-2 ring-primary/20 bg-primary/10' : ''}
@@ -548,7 +548,7 @@ export default function Admin() {
                     {Array.from(openLetters).map(letter => {
                       const letterCities = citiesByLetter[letter] || [];
                       if (letterCities.length === 0) return null;
-                      
+
                       return (
                         <Collapsible key={letter} open={true}>
                           <div className="border border-primary/20 rounded-lg p-4 bg-primary/5">
@@ -578,29 +578,28 @@ export default function Admin() {
                                       <h5 className="font-medium text-foreground text-sm">{city.name}</h5>
                                       <p className="text-xs text-muted-foreground">{city.country}</p>
                                     </div>
-                                    <span className={`text-xs px-2 py-1 rounded-full ml-2 ${
-                                      city.isPublished 
-                                        ? 'bg-green-100 text-green-700' 
-                                        : 'bg-muted text-muted-foreground'
-                                    }`}>
+                                    <span className={`text-xs px-2 py-1 rounded-full ml-2 ${city.isPublished
+                                      ? 'bg-green-100 text-green-700'
+                                      : 'bg-muted text-muted-foreground'
+                                      }`}>
                                       {city.isPublished ? 'Live' : 'Draft'}
                                     </span>
                                   </div>
-                                  
+
                                   {city.scheduledDate && (
                                     <div className="flex items-center text-xs text-accent mt-2">
                                       <CalendarIcon className="w-3 h-3 mr-1" />
                                       <span className="bg-accent/10 px-2 py-1 rounded">
-                                        {new Date(city.scheduledDate).toLocaleDateString('en-US', { 
+                                        {new Date(city.scheduledDate).toLocaleDateString('en-US', {
                                           weekday: 'short',
-                                          month: 'short', 
+                                          month: 'short',
                                           day: 'numeric',
                                           year: 'numeric'
                                         })}
                                       </span>
                                     </div>
                                   )}
-                                  
+
                                   {city.isPinned && (
                                     <div className="mt-2">
                                       <span className="text-xs px-2 py-1 rounded-full bg-secondary/10 text-secondary">
@@ -648,7 +647,7 @@ export default function Admin() {
                   data-testid="input-search-cities"
                 />
               </div>
-              
+
               {loadingCities ? (
                 <div className="flex items-center justify-center py-8">
                   <div className="animate-spin w-6 h-6 border-4 border-primary border-t-transparent rounded-full" />
@@ -658,92 +657,91 @@ export default function Admin() {
                   {cities
                     .filter((city: any) => {
                       if (!searchQuery.trim()) return true;
-                      
+
                       const query = searchQuery.toLowerCase();
                       const cityName = city.name.toLowerCase();
                       const country = city.country.toLowerCase();
                       const createdDate = new Date(city.createdAt).toLocaleDateString();
-                      
-                      return cityName.includes(query) || 
-                             country.includes(query) || 
-                             createdDate.includes(query);
+
+                      return cityName.includes(query) ||
+                        country.includes(query) ||
+                        createdDate.includes(query);
                     })
                     .map((city: any) => (
-                    <div 
-                      key={city.id} 
-                      className="flex flex-col gap-3 p-4 border border-border rounded-lg hover:bg-muted/30 transition-colors sm:flex-row sm:items-center sm:justify-between"
-                    >
-                      <div className="min-w-0">
-                        <h4 className="font-semibold text-foreground">
-                          {city.name}, {city.country}
-                        </h4>
-                        <div className="flex flex-wrap items-center gap-2 mt-2">
-                          <span className={`text-xs px-2 py-1 rounded-full ${
-                            city.isPublished 
-                              ? 'bg-green-100 text-green-700 border border-green-200' 
+                      <div
+                        key={city.id}
+                        className="flex flex-col gap-3 p-4 border border-border rounded-lg hover:bg-muted/30 transition-colors sm:flex-row sm:items-center sm:justify-between"
+                      >
+                        <div className="min-w-0">
+                          <h4 className="font-semibold text-foreground">
+                            {city.name}, {city.country}
+                          </h4>
+                          <div className="flex flex-wrap items-center gap-2 mt-2">
+                            <span className={`text-xs px-2 py-1 rounded-full ${city.isPublished
+                              ? 'bg-green-100 text-green-700 border border-green-200'
                               : 'bg-muted text-muted-foreground'
-                          }`}>
-                            {city.isPublished ? 'Published' : 'Draft'}
-                          </span>
-                          {city.scheduledDate && (
-                            <span className="text-xs px-2 py-1 rounded-full bg-accent/10 text-accent border border-accent/20">
-                              Scheduled: {new Date(city.scheduledDate).toLocaleDateString()}
+                              }`}>
+                              {city.isPublished ? 'Published' : 'Draft'}
                             </span>
-                          )}
-                          {city.isPinned && (
-                            <span className="text-xs px-2 py-1 rounded-full bg-secondary/10 text-secondary">
-                              Pinned
+                            {city.scheduledDate && (
+                              <span className="text-xs px-2 py-1 rounded-full bg-accent/10 text-accent border border-accent/20">
+                                Scheduled: {new Date(city.scheduledDate).toLocaleDateString()}
+                              </span>
+                            )}
+                            {city.isPinned && (
+                              <span className="text-xs px-2 py-1 rounded-full bg-secondary/10 text-secondary">
+                                Pinned
+                              </span>
+                            )}
+                            <span className="text-xs text-muted-foreground">
+                              Created: {new Date(city.createdAt).toLocaleDateString()}
                             </span>
-                          )}
-                          <span className="text-xs text-muted-foreground">
-                            Created: {new Date(city.createdAt).toLocaleDateString()}
-                          </span>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center space-x-2 flex-shrink-0">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => {
+                              setSelectedCity(city.id);
+                              // Scroll to the content editor
+                              setTimeout(() => {
+                                const editorElement = document.querySelector('[data-testid="content-editor-card"]');
+                                if (editorElement) {
+                                  editorElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                }
+                              }, 100);
+                            }}
+                            data-testid={`button-edit-${city.name.toLowerCase().replace(/\s+/g, '-')}`}
+                          >
+                            <Edit className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => window.open(`/city/${city.id}`, '_blank')}
+                            data-testid={`button-view-${city.name.toLowerCase().replace(/\s+/g, '-')}`}
+                          >
+                            <Eye className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => {
+                              if (window.confirm(`Are you sure you want to delete "${city.name}, ${city.country}"? This action cannot be undone and will delete all content cards.`)) {
+                                deleteCityMutation.mutate(city.id);
+                              }
+                            }}
+                            data-testid={`button-delete-${city.name.toLowerCase().replace(/\s+/g, '-')}`}
+                            disabled={deleteCityMutation.isPending}
+                            className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
                         </div>
                       </div>
-                      
-                      <div className="flex items-center space-x-2 flex-shrink-0">
-                        <Button 
-                          variant="ghost" 
-                          size="sm"
-                          onClick={() => {
-                            setSelectedCity(city.id);
-                            // Scroll to the content editor
-                            setTimeout(() => {
-                              const editorElement = document.querySelector('[data-testid="content-editor-card"]');
-                              if (editorElement) {
-                                editorElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                              }
-                            }, 100);
-                          }}
-                          data-testid={`button-edit-${city.name.toLowerCase().replace(/\s+/g, '-')}`}
-                        >
-                          <Edit className="w-4 h-4" />
-                        </Button>
-                        <Button 
-                          variant="ghost" 
-                          size="sm"
-                          onClick={() => window.open(`/city/${city.id}`, '_blank')}
-                          data-testid={`button-view-${city.name.toLowerCase().replace(/\s+/g, '-')}`}
-                        >
-                          <Eye className="w-4 h-4" />
-                        </Button>
-                        <Button 
-                          variant="ghost" 
-                          size="sm"
-                          onClick={() => {
-                            if (window.confirm(`Are you sure you want to delete "${city.name}, ${city.country}"? This action cannot be undone and will delete all content cards.`)) {
-                              deleteCityMutation.mutate(city.id);
-                            }
-                          }}
-                          data-testid={`button-delete-${city.name.toLowerCase().replace(/\s+/g, '-')}`}
-                          disabled={deleteCityMutation.isPending}
-                          className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
+                    ))}
                 </div>
               ) : (
                 <div className="text-center py-8 text-muted-foreground">

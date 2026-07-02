@@ -7,7 +7,7 @@ import Footer from "@/components/Footer";
 
 export default function Preview() {
   const handleSignIn = () => {
-    window.location.href = "/api/login";
+    window.location.href = "/auth";
   };
 
   // Sample preview data - showing what daily content looks like
@@ -29,7 +29,7 @@ export default function Preview() {
       contentType: "landmark"
     },
     {
-      id: "2", 
+      id: "2",
       timeOfDay: "afternoon",
       title: "Taste of Asheville, North Carolina",
       description: "Order Appalachian rainbow trout and grits—a plate that tastes like these mountains. Crisp-skinned local Sunburst trout meets creamy, stone-ground grits, often brightened with lemon, ramps, or a brown-butter drizzle.",
@@ -38,7 +38,7 @@ export default function Preview() {
     },
     {
       id: "3",
-      timeOfDay: "evening", 
+      timeOfDay: "evening",
       title: "Budget Smart",
       description: "Trade pricey rooftop tabs for a golden-hour picnic with million-dollar views—free. Swing by French Broad Food Co‑op or a local market for baguette, local cheese, cured meats, and seasonal fruit (about $12–15 per person).",
       imageUrl: "https://res.cloudinary.com/do26xsbby/image/upload/c_pad,b_gen_fill,ar_16:9/v1757467315/ChatGPT_Image_Sep_9_2025_09_21_34_PM_tyqetu.png",
@@ -87,7 +87,7 @@ export default function Preview() {
                 <p className="text-orange-700 mb-3">
                   You're viewing a sample of today's city content. Sign in to access the full experience with personalized content, collections, and daily updates.
                 </p>
-                <Button 
+                <Button
                   onClick={() => window.open("https://citydiscoverer.ai/subscribe", "_blank")}
                   className="bg-orange-600 hover:bg-orange-700"
                   data-testid="button-join-from-preview"
@@ -103,8 +103,8 @@ export default function Preview() {
         <div className="mb-8">
           <div className="flex items-center gap-4 mb-4">
             <div className="w-16 h-16 rounded-full overflow-hidden">
-              <img 
-                src={sampleCity.imageUrl} 
+              <img
+                src={sampleCity.imageUrl}
                 alt={sampleCity.name}
                 className="w-full h-full object-cover"
               />
@@ -127,7 +127,7 @@ export default function Preview() {
         {/* Sample Content Cards */}
         <div className="grid md:grid-cols-2 gap-6 mb-8">
           {sampleContent.map((content) => (
-            <CityCard 
+            <CityCard
               key={content.id}
               content={content}
               isPreview={true}
@@ -143,7 +143,7 @@ export default function Preview() {
               This is just a taste! Join City Discoverer to get fresh city content every day, build your travel collection, and discover your next adventure.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button 
+              <Button
                 size="lg"
                 className="bg-white text-blue-600 hover:bg-gray-100"
                 onClick={handleSignIn}
@@ -151,7 +151,7 @@ export default function Preview() {
               >
                 Start Your Daily Discovery
               </Button>
-              <Button 
+              <Button
                 size="lg"
                 variant="outline"
                 className="border-white text-white hover:bg-white hover:text-blue-600"

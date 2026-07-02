@@ -24,7 +24,7 @@ export function AdminCityGenerator() {
   const [autoPublish, setAutoPublish] = useState(false);
   const [scheduledDate, setScheduledDate] = useState<Date | undefined>(undefined);
   const [sampleItinerary, setSampleItinerary] = useState("");
-  
+
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -38,7 +38,7 @@ export function AdminCityGenerator() {
         title: "City Generated Successfully!",
         description: `Created content for ${data.city.name}, ${data.city.country}`,
       });
-      
+
       // Reset form
       setCityName("");
       setCountry("");
@@ -46,10 +46,10 @@ export function AdminCityGenerator() {
       setAutoPublish(false);
       setScheduledDate(undefined);
       setSampleItinerary("");
-      
+
       // Refresh cities list
       queryClient.invalidateQueries({ queryKey: ["/api/admin/cities"] });
-      
+
       if (autoPublish) {
         queryClient.invalidateQueries({ queryKey: ["/api/cities/today"] });
       }
@@ -62,11 +62,11 @@ export function AdminCityGenerator() {
           variant: "destructive",
         });
         setTimeout(() => {
-          window.location.href = "/api/login";
+          window.location.href = "/auth";
         }, 500);
         return;
       }
-      
+
       toast({
         title: "Generation Failed",
         description: (error as Error).message || "Failed to generate city content. Please try again.",
@@ -77,7 +77,7 @@ export function AdminCityGenerator() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!cityName.trim()) {
       toast({
         title: "Missing Information",
@@ -86,7 +86,7 @@ export function AdminCityGenerator() {
       });
       return;
     }
-    
+
     if (!country.trim() && !cityName.includes(',')) {
       toast({
         title: "Missing Information",
@@ -129,7 +129,7 @@ export function AdminCityGenerator() {
             />
             <p className="text-xs text-muted-foreground">You can enter just the city name or include state/region</p>
           </div>
-          
+
           <div className="space-y-2">
             <Label htmlFor="country" className="text-foreground">Country <span className="text-muted-foreground">(optional if city name includes state/region)</span></Label>
             <Input
@@ -142,7 +142,7 @@ export function AdminCityGenerator() {
               data-testid="input-country"
             />
           </div>
-          
+
           <div className="space-y-2">
             <Label htmlFor="focus" className="text-foreground">Content Focus</Label>
             <Select value={focus} onValueChange={setFocus}>
@@ -207,8 +207,8 @@ export function AdminCityGenerator() {
           </div>
 
           <div className="flex items-center space-x-2">
-            <Checkbox 
-              id="autoPublish" 
+            <Checkbox
+              id="autoPublish"
               checked={autoPublish}
               onCheckedChange={(checked) => setAutoPublish(checked as boolean)}
               data-testid="checkbox-auto-publish"
@@ -218,8 +218,8 @@ export function AdminCityGenerator() {
             </Label>
           </div>
 
-          <Button 
-            type="submit" 
+          <Button
+            type="submit"
             className="w-full"
             disabled={generateCityMutation.isPending}
             data-testid="button-generate-content"

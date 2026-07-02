@@ -9,7 +9,7 @@ export function useAuth() {
 
   // isPending stays true until the first successful (or failed) response arrives.
   // isLoading (isPending && isFetching) can briefly be false before fetching starts,
-  // which caused premature redirect to /api/login on first visit.
+  // which caused premature redirect to /auth on first visit.
   return {
     user,
     isLoading: isPending,

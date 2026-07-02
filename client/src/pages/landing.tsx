@@ -13,13 +13,13 @@ export default function Landing() {
   const [, setLocation] = useLocation();
   const { user } = useAuth();
   const isAdmin = !!(user as any)?.isAdmin;
-  
+
   // Get timezone offset for accurate city scheduling
   const tzOffset = -new Date().getTimezoneOffset(); // Convert to minutes east of UTC
-  
+
   const { data: todaysCityData, isLoading } = useQuery({
     queryKey: ['/api/cities/today', tzOffset],
-    queryFn: () => 
+    queryFn: () =>
       fetch(`/api/cities/today?tzOffset=${tzOffset}`)
         .then(res => res.json()),
     retry: false,
@@ -29,7 +29,7 @@ export default function Landing() {
   const currentCardInfo = getCurrentCardType();
   const nextCardInfo = getNextCardType();
   const timeUntilNext = formatTimeUntilNext();
-  
+
   // Get the current content based on time
   const getCurrentContent = () => {
     if (currentCardInfo.type === 'preview') {
@@ -38,14 +38,14 @@ export default function Landing() {
     }
     return (todaysCityData as any)?.content?.find((c: any) => c.cardType === currentCardInfo.type);
   };
-  
+
   const currentContent = getCurrentContent();
   const city = (todaysCityData as any)?.city;
-  
+
   const handleSignIn = () => {
-    window.location.href = "/api/login";
+    window.location.href = "/auth";
   };
-  
+
   const handleViewTodaysCity = () => {
     // Go directly to the public city view - no authentication needed
     setLocation("/home");
@@ -63,14 +63,14 @@ export default function Landing() {
           <PushSubscribeButton />
           <a href="/library" className="library-link">Library</a>
           {isAdmin && (
-            <a href="/admin/felixdgreat" className="library-link" style={{color: 'var(--accent-bar-background, #f59e0b)', fontWeight: 600}}>Admin</a>
+            <a href="/admin/felixdgreat" className="library-link" style={{ color: 'var(--accent-bar-background, #f59e0b)', fontWeight: 600 }}>Admin</a>
           )}
         </div>
       </header>
 
       {/* Hero Section */}
       <section id="discover" className="relative">
-        <div className="py-16 relative overflow-hidden" style={{background: 'linear-gradient(135deg, var(--hero-gradient-start), var(--hero-gradient-end))'}}>
+        <div className="py-16 relative overflow-hidden" style={{ background: 'linear-gradient(135deg, var(--hero-gradient-start), var(--hero-gradient-end))' }}>
           <div className="flex items-center justify-center text-center">
             <div className="max-w-4xl mx-auto px-4">
               <h2 className="text-4xl md:text-6xl font-bold text-white mb-4">
@@ -80,8 +80,8 @@ export default function Landing() {
                 Your daily guide to city discovery.<br />Curated travel inspiration, cultural insights, and hidden gems.
               </p>
               <div className="flex flex-wrap justify-center gap-3">
-                <Button 
-                  size="lg" 
+                <Button
+                  size="lg"
                   className="bg-white text-blue-600 hover:bg-gray-100"
                   onClick={handleViewTodaysCity}
                   data-testid="button-start-journey"
@@ -117,7 +117,7 @@ export default function Landing() {
       <section className="py-16 bg-background">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           {isLoading ? (
-            <div className="bg-gradient-to-br rounded-2xl p-8 text-center text-white shadow-2xl" style={{background: 'linear-gradient(135deg, var(--hero-gradient-start), var(--hero-gradient-end))'}}>
+            <div className="bg-gradient-to-br rounded-2xl p-8 text-center text-white shadow-2xl" style={{ background: 'linear-gradient(135deg, var(--hero-gradient-start), var(--hero-gradient-end))' }}>
               <div className="animate-pulse">
                 <div className="h-4 bg-white/20 rounded w-48 mx-auto mb-6"></div>
                 <div className="h-8 bg-white/20 rounded-full w-32 mx-auto mb-8"></div>
@@ -128,20 +128,20 @@ export default function Landing() {
               </div>
             </div>
           ) : city ? (
-            <div className="bg-gradient-to-br rounded-2xl p-8 text-center text-white shadow-2xl relative" style={{background: 'linear-gradient(135deg, var(--hero-gradient-start), var(--hero-gradient-end))'}}>
+            <div className="bg-gradient-to-br rounded-2xl p-8 text-center text-white shadow-2xl relative" style={{ background: 'linear-gradient(135deg, var(--hero-gradient-start), var(--hero-gradient-end))' }}>
               <p className="text-sm uppercase tracking-wide mb-4 text-white/80">
-                {new Date().toLocaleDateString('en-US', { 
-                  weekday: 'long', 
-                  year: 'numeric', 
-                  month: 'long', 
+                {new Date().toLocaleDateString('en-US', {
+                  weekday: 'long',
+                  year: 'numeric',
+                  month: 'long',
                   day: 'numeric'
                 }).toUpperCase()}
               </p>
-              
+
               <div className="bg-white/20 backdrop-blur-sm rounded-full inline-block px-8 py-3 mb-8">
                 <h3 className="text-2xl font-bold">{city.name}, {city.country}</h3>
               </div>
-              
+
               {currentContent ? (
                 /* Current Time Content */
                 <>
@@ -156,16 +156,16 @@ export default function Landing() {
                 /* Loading current content */
                 <p className="text-lg mb-6">Loading today's {currentCardInfo.label.toLowerCase()}...</p>
               )}
-              
-              <Button 
-                size="lg" 
+
+              <Button
+                size="lg"
                 className="bg-white/20 hover:bg-white/30 border border-white/30 text-white backdrop-blur-sm mb-6"
                 onClick={handleViewTodaysCity}
                 data-testid="button-visit-city"
               >
                 {currentCardInfo.type === 'preview' ? 'Discover' : 'Explore'} {city.name}
               </Button>
-              
+
               {/* Next Content Footer */}
               <div className="bg-black/40 backdrop-blur-sm rounded-lg px-4 py-3 border border-white/20">
                 <div className="flex items-center justify-between">
@@ -180,7 +180,7 @@ export default function Landing() {
               </div>
             </div>
           ) : (
-            <div className="bg-gradient-to-br rounded-2xl p-8 text-center text-white shadow-2xl" style={{background: 'linear-gradient(135deg, #0038A8, #008ED6)'}}>
+            <div className="bg-gradient-to-br rounded-2xl p-8 text-center text-white shadow-2xl" style={{ background: 'linear-gradient(135deg, #0038A8, #008ED6)' }}>
               <p className="text-lg">No city available for today</p>
             </div>
           )}
@@ -188,7 +188,7 @@ export default function Landing() {
       </section>
 
       {/* Features Section */}
-      <section className="py-16 relative overflow-hidden" 
+      <section className="py-16 relative overflow-hidden"
         style={{
           backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.35), rgba(255, 255, 255, 0.35)), url('https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=1200&h=800&fit=crop&crop=center')`,
           backgroundSize: 'cover',
@@ -210,7 +210,7 @@ export default function Landing() {
                   <div className="w-20 h-20 mx-auto bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center mb-4">
                     <Mountain className="w-10 h-10 text-white" />
                   </div>
-                  <Badge style={{backgroundColor: 'var(--primary-yellow)', color: 'var(--text-dark)'}}>
+                  <Badge style={{ backgroundColor: 'var(--primary-yellow)', color: 'var(--text-dark)' }}>
                     Morning
                   </Badge>
                 </div>
@@ -228,7 +228,7 @@ export default function Landing() {
                   <div className="w-20 h-20 mx-auto bg-gradient-to-br from-blue-500 to-blue-700 rounded-full flex items-center justify-center mb-4">
                     <Compass className="w-10 h-10 text-white" />
                   </div>
-                  <Badge style={{backgroundColor: 'var(--accent-blue)', color: 'var(--text-light)'}}>
+                  <Badge style={{ backgroundColor: 'var(--accent-blue)', color: 'var(--text-light)' }}>
                     Afternoon
                   </Badge>
                 </div>
@@ -246,7 +246,7 @@ export default function Landing() {
                   <div className="w-20 h-20 mx-auto bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center mb-4">
                     <Route className="w-10 h-10 text-white" />
                   </div>
-                  <Badge style={{backgroundColor: 'var(--primary-yellow)', color: 'var(--text-dark)'}}>
+                  <Badge style={{ backgroundColor: 'var(--primary-yellow)', color: 'var(--text-dark)' }}>
                     Evening
                   </Badge>
                 </div>
@@ -264,7 +264,7 @@ export default function Landing() {
                   <div className="w-20 h-20 mx-auto bg-gradient-to-br from-blue-500 to-blue-700 rounded-full flex items-center justify-center mb-4">
                     <Binoculars className="w-10 h-10 text-white" />
                   </div>
-                  <Badge style={{backgroundColor: 'var(--accent-blue)', color: 'var(--text-light)'}}>
+                  <Badge style={{ backgroundColor: 'var(--accent-blue)', color: 'var(--text-light)' }}>
                     Bonus
                   </Badge>
                 </div>
@@ -284,7 +284,7 @@ export default function Landing() {
                 <p className="text-white/90 mb-4 max-w-2xl mx-auto">
                   Join thousands of travelers discovering new cities every day. Start your journey now.
                 </p>
-                <Button 
+                <Button
                   size="lg"
                   className="bg-white text-blue-600 hover:bg-gray-100"
                   onClick={() => window.open("https://citydiscoverer.ai/subscribe", "_blank")}
@@ -312,7 +312,7 @@ export default function Landing() {
             <h3 className="text-2xl font-bold text-foreground mb-4">Trusted Travel Partnerships</h3>
             <div className="w-16 h-1 bg-gradient-travel mx-auto rounded-full mb-6"></div>
           </div>
-          
+
           <div className="space-y-6">
             <p className="text-lg text-foreground font-medium">
               City Discoverer builds partnerships with trusted travel providers.
