@@ -250,7 +250,8 @@ export async function generateTomorrowsDraft(force = false): Promise<{ generated
       country: cityToGenerate.country,
       isPublished: false,
       status: "draft",
-      publishedDate: null,
+      // DB requires published_date non-null; drafts still remain hidden via isPublished=false.
+      publishedDate: tomorrow,
       scheduledDate: tomorrow,
       sampleItinerary: null,
       highlights: (generatedContent.highlights || null) as any,
@@ -341,15 +342,15 @@ export function startScheduler() {
   // Generate tomorrow's draft daily at 3pm Eastern (handles EST/EDT automatically)
   cron.schedule("0 15 * * *", generateTomorrowsDraft, { timezone: "America/New_York" });
 
-  // Auto-approve today's drafts + notify subscribers at 9am Eastern
-  cron.schedule("0 9 * * *", autoApproveTodaysDrafts, { timezone: "America/New_York" });
+  // Auto-approve today's drafts + notify subscribers at midnight Eastern
+  cron.schedule("0 0 * * *", autoApproveTodaysDrafts, { timezone: "America/New_York" });
 
   // Evening reminder at 7pm Eastern for anyone who hasn't visited yet
   cron.schedule("0 19 * * *", () => {
     notifyEveningReminder().catch(err => log(`[Scheduler] Evening reminder error: ${err.message}`));
   }, { timezone: "America/New_York" });
 
-  log("[Scheduler] Started — daily draft generation at 3pm Eastern, auto-approve at 9am Eastern, evening reminder at 7pm Eastern");
+  log("[Scheduler] Started — daily draft generation at 3pm Eastern, auto-approve at midnight Eastern, evening reminder at 7pm Eastern");
 
   // Run catch-up immediately so missed jobs recover after restarts/deployments
   runCatchUpChecks().catch(err => log(`[Scheduler] Catch-up ERROR: ${(err as Error).message}`));
