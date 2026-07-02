@@ -25,10 +25,12 @@ import {
 import { db } from "./db";
 import { eq, desc, and, or, gte, lt, lte, asc, isNull, isNotNull, sql, ne } from "drizzle-orm";
 
-const usaCityWhere = or(
+const cityOfDayScopeWhere = eq(cities.appScope, "cityofday");
+const usaCountryWhere = or(
   eq(cities.country, "USA"),
   sql`${cities.country} LIKE '%, USA'`
 );
+const usaCityWhere = and(cityOfDayScopeWhere, usaCountryWhere);
 
 export interface IStorage {
   // User operations (required for Replit Auth)
@@ -194,6 +196,7 @@ export class DatabaseStorage implements IStorage {
   async createCity(cityData: InsertCity): Promise<City> {
     const normalizedCityData = {
       ...cityData,
+      appScope: "cityofday",
       publishedDate: cityData.publishedDate ?? new Date(),
     };
 

@@ -20,6 +20,7 @@ export async function ensureCityOfDayCompatibility() {
             await pool.query(`
         ALTER TABLE cities
           ADD COLUMN IF NOT EXISTS scheduled_date timestamptz,
+          ADD COLUMN IF NOT EXISTS app_scope varchar,
           ADD COLUMN IF NOT EXISTS is_published boolean DEFAULT false,
           ADD COLUMN IF NOT EXISTS is_pinned boolean DEFAULT false,
           ADD COLUMN IF NOT EXISTS city_cta_links jsonb,
@@ -40,6 +41,28 @@ export async function ensureCityOfDayCompatibility() {
           ADD COLUMN IF NOT EXISTS highlights jsonb,
           ADD COLUMN IF NOT EXISTS audio_timestamps jsonb,
           ADD COLUMN IF NOT EXISTS audio_text text
+      `);
+
+            await pool.query(`
+        UPDATE cities
+        SET app_scope = 'cityofday'
+        WHERE app_scope IS NULL
+          AND (
+            COALESCE(LOWER(country), '') IN ('usa', 'united states', 'united states of america', 'u.s.a', 'u.s.')
+            OR country ILIKE '%, USA'
+            OR country ILIKE '%, U.S.A.'
+          )
+      `);
+
+            await pool.query(`
+        UPDATE cities
+        SET app_scope = 'citydayint'
+        WHERE app_scope IS NULL
+      `);
+
+            await pool.query(`
+        CREATE INDEX IF NOT EXISTS cities_app_scope_idx
+          ON cities (app_scope)
       `);
 
             await pool.query(`
