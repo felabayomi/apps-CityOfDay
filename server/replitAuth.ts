@@ -10,9 +10,6 @@ import { eq } from "drizzle-orm";
 const SESSION_TTL_MS = 7 * 24 * 60 * 60 * 1000;
 const LOGIN_CODE_TTL_MS = 10 * 60 * 1000;
 const LOGIN_CODE_RESEND_COOLDOWN_MS = 30 * 1000;
-const sessionConnectionString = cleanEnv(
-  process.env.CITYOFDAY_DATABASE_URL || process.env.DATABASE_URL || "",
-);
 
 type SessionAuthUser = {
   id: string;
@@ -25,6 +22,15 @@ const normalizeEmail = (value: unknown) => String(value || "").trim().toLowerCas
 const isValidEmail = (value: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 const generateCode = () => String(Math.floor(100000 + Math.random() * 900000));
 const cleanEnv = (value: unknown) => String(value ?? "").replace(/\r?\n/g, "").trim();
+const cleanConnectionString = (value: unknown) =>
+  String(value ?? "")
+    .replace(/\\r\\n/g, "")
+    .replace(/\\n/g, "")
+    .replace(/\r?\n/g, "")
+    .trim();
+const sessionConnectionString = cleanConnectionString(
+  process.env.CITYOFDAY_DATABASE_URL || process.env.DATABASE_URL || "",
+);
 
 const parseAdminEmails = () => {
   const emails = new Set<string>();
