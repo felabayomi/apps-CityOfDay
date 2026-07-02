@@ -47,13 +47,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
   await setupAuth(app);
 
   const isCronAuthorized = (req: any) => {
-    if (Boolean(req.headers["x-vercel-cron"])) {
+    // Vercel cron requests include x-vercel-cron-schedule and vercel-cron/1.0 user-agent.
+    // Keep compatibility with older x-vercel-cron behavior.
+    const hasVercelCronHeader = Boolean(
+      req.headers["x-vercel-cron"] || req.headers["x-vercel-cron-schedule"]
+    );
+    const userAgent = String(req.headers["user-agent"] || "").toLowerCase();
+    const isVercelCronUserAgent = userAgent.includes("vercel-cron/");
+    if (hasVercelCronHeader || isVercelCronUserAgent) {
       return true;
     }
 
     const configuredSecret = String(process.env.CRON_SECRET || "").trim();
     if (!configuredSecret) {
       return false;
+    }
+
+    const authHeader = String(req.headers["authorization"] || "").trim();
+    if (authHeader === `Bearer ${configuredSecret}`) {
+      return true;
     }
 
     const providedSecret = String(req.headers["x-cron-secret"] || req.query?.secret || "").trim();
