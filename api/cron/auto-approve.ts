@@ -1,3 +1,3 @@
-import handler from "../../[...slug]";
+import handler from "../[...slug]";
 
 export default handler;
