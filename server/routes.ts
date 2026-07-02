@@ -365,7 +365,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         country: finalCountry,
         isPublished: false,
         status: "draft",
-        publishedDate: null,
+        // DB requires published_date non-null; drafts stay hidden via isPublished=false.
+        publishedDate: scheduledDate ? new Date(scheduledDate) : new Date(),
         scheduledDate: scheduledDate ? new Date(scheduledDate) : null,
         sampleItinerary: sampleItinerary || null,
       };
