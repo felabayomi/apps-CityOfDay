@@ -1,14 +1,63 @@
 import webpush from "web-push";
 import { storage } from "./storage";
-import { log } from "./vite";
+import { pool } from "./db";
 
-const VAPID_PUBLIC_KEY = process.env.VAPID_PUBLIC_KEY!;
-const VAPID_PRIVATE_KEY = process.env.VAPID_PRIVATE_KEY!;
-const VAPID_EMAIL = process.env.VAPID_EMAIL || "mailto:admin@citydiscoverer.ai";
+const log = (message: string) => {
+  console.log(message);
+};
 
-webpush.setVapidDetails(VAPID_EMAIL, VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY);
+const VAPID_EMAIL = process.env.VAPID_EMAIL || "mailto:wordofday2025@gmail.com";
 
-export { VAPID_PUBLIC_KEY };
+let vapidInitialized = false;
+
+async function ensurePushSettingsTable() {
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS app_settings (
+      key text PRIMARY KEY,
+      value text NOT NULL,
+      updated_at timestamptz NOT NULL DEFAULT now()
+    )
+  `);
+}
+
+export async function initVapid() {
+  if (vapidInitialized) {
+    return;
+  }
+
+  await ensurePushSettingsTable();
+
+  const pubRow = await pool.query(`SELECT value FROM app_settings WHERE key = 'vapid_public_key' LIMIT 1`);
+  const privRow = await pool.query(`SELECT value FROM app_settings WHERE key = 'vapid_private_key' LIMIT 1`);
+
+  let publicKey = pubRow.rows[0]?.value as string | undefined;
+  let privateKey = privRow.rows[0]?.value as string | undefined;
+
+  if (!publicKey || !privateKey) {
+    const keys = webpush.generateVAPIDKeys();
+    publicKey = keys.publicKey;
+    privateKey = keys.privateKey;
+
+    await pool.query(
+      `INSERT INTO app_settings (key, value)
+       VALUES ('vapid_public_key', $1), ('vapid_private_key', $2)
+       ON CONFLICT (key)
+       DO UPDATE SET value = EXCLUDED.value, updated_at = NOW()`,
+      [publicKey, privateKey],
+    );
+
+    log("[Push] Generated and stored new VAPID keys");
+  }
+
+  webpush.setVapidDetails(VAPID_EMAIL, publicKey, privateKey);
+  vapidInitialized = true;
+}
+
+export async function getVapidPublicKey(): Promise<string | null> {
+  await ensurePushSettingsTable();
+  const row = await pool.query(`SELECT value FROM app_settings WHERE key = 'vapid_public_key' LIMIT 1`);
+  return (row.rows[0]?.value as string | undefined) || null;
+}
 
 export async function sendPushToAll(payload: {
   title: string;
@@ -16,6 +65,8 @@ export async function sendPushToAll(payload: {
   url?: string;
   icon?: string;
 }) {
+  await initVapid();
+
   const subscriptions = await storage.getAllPushSubscriptions();
   if (subscriptions.length === 0) {
     log("[Push] No subscribers to notify");
