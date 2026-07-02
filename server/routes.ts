@@ -36,6 +36,17 @@ const todaysCityCache = {
   }
 };
 
+const toIsoDate = (value: unknown): string | null => {
+  if (!value) return null;
+  const date = new Date(value as string | number | Date);
+  if (Number.isNaN(date.getTime())) return null;
+  return date.toISOString().split("T")[0];
+};
+
+const logCronTrace = (event: string, payload: Record<string, unknown>) => {
+  console.log(JSON.stringify({ event, ...payload }));
+};
+
 export async function registerRoutes(app: Express): Promise<Server> {
   try {
     await ensureCityOfDayCompatibility();
@@ -101,10 +112,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ message: 'Unauthorized cron invocation' });
       }
 
-      await generateTomorrowsDraft();
+      const result = await generateTomorrowsDraft();
+      logCronTrace('cron.generate-tomorrow', {
+        status: result.status ?? (result.generated ? 'draft-created' : 'skipped'),
+        cityId: result.cityId ?? null,
+        publishDate: result.publishDate ?? null,
+      });
       res.json({ ok: true, message: 'Tomorrow draft generation executed.' });
     } catch (error: any) {
       console.error('[Cron] generate-tomorrow failed:', error);
+      logCronTrace('cron.generate-tomorrow', {
+        status: 'error',
+        cityId: null,
+        publishDate: null,
+      });
       res.status(500).json({ message: error?.message || 'Cron generation failed' });
     }
   });
@@ -115,11 +136,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ message: 'Unauthorized cron invocation' });
       }
 
-      await autoApproveTodaysDrafts();
+      const result = await autoApproveTodaysDrafts();
+      const firstApproved = result.approvedCities[0];
+      logCronTrace('cron.auto-approve', {
+        status: result.approvedCount > 0 ? 'approved' : 'none-approved',
+        cityId: firstApproved?.cityId ?? null,
+        publishDate: firstApproved?.publishDate ?? null,
+      });
       todaysCityCache.clear();
       res.json({ ok: true, message: 'Today auto-approve executed.' });
     } catch (error: any) {
       console.error('[Cron] auto-approve failed:', error);
+      logCronTrace('cron.auto-approve', {
+        status: 'error',
+        cityId: null,
+        publishDate: null,
+      });
       res.status(500).json({ message: error?.message || 'Cron auto-approve failed' });
     }
   });
@@ -130,10 +162,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ message: 'Unauthorized cron invocation' });
       }
 
+      const todaysCity = await storage.getTodaysCity();
       await notifyEveningReminder();
+      logCronTrace('cron.evening-reminder', {
+        status: todaysCity?.status ?? 'no-today-city',
+        cityId: todaysCity?.id ?? null,
+        publishDate: toIsoDate(todaysCity?.publishedDate),
+      });
       res.json({ ok: true, message: 'Evening reminder executed.' });
     } catch (error: any) {
       console.error('[Cron] evening-reminder failed:', error);
+      logCronTrace('cron.evening-reminder', {
+        status: 'error',
+        cityId: null,
+        publishDate: null,
+      });
       res.status(500).json({ message: error?.message || 'Cron evening reminder failed' });
     }
   });

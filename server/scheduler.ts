@@ -206,7 +206,14 @@ function getTomorrowEastern(): Date {
   return new Date(Date.UTC(year, month - 1, day + 1, 0, 0, 0, 0));
 }
 
-export async function generateTomorrowsDraft(force = false): Promise<{ generated: boolean; cityName?: string; skippedReason?: string }> {
+export async function generateTomorrowsDraft(force = false): Promise<{
+  generated: boolean;
+  cityName?: string;
+  cityId?: string;
+  publishDate?: string;
+  status?: string;
+  skippedReason?: string;
+}> {
   try {
     const tomorrow = getTomorrowEastern();
     const tomorrowStr = tomorrow.toISOString().split('T')[0];
@@ -224,11 +231,25 @@ export async function generateTomorrowsDraft(force = false): Promise<{ generated
           await storage.deleteCity(existing.id);
         } else {
           log(`[Scheduler] Auto-generate: force=true but "${existing.name}" has content — skipping`);
-          return { generated: false, skippedReason: `"${existing.name}" is already scheduled for ${tomorrowStr} and has content. Delete it first to regenerate.` };
+          return {
+            generated: false,
+            cityName: `${existing.name}, ${existing.country}`,
+            cityId: existing.id,
+            publishDate: tomorrowStr,
+            status: existing.status,
+            skippedReason: `"${existing.name}" is already scheduled for ${tomorrowStr} and has content. Delete it first to regenerate.`,
+          };
         }
       } else if (!force) {
         log(`[Scheduler] Auto-generate: ${tomorrowStr} already has "${existing.name}" — skipping`);
-        return { generated: false, skippedReason: `"${existing.name}" is already scheduled for ${tomorrowStr}.` };
+        return {
+          generated: false,
+          cityName: `${existing.name}, ${existing.country}`,
+          cityId: existing.id,
+          publishDate: tomorrowStr,
+          status: existing.status,
+          skippedReason: `"${existing.name}" is already scheduled for ${tomorrowStr}.`,
+        };
       }
     }
 
@@ -236,7 +257,12 @@ export async function generateTomorrowsDraft(force = false): Promise<{ generated
     const cityToGenerate = await getNextCityToGenerate();
     if (!cityToGenerate) {
       log("[Scheduler] Auto-generate: All cities in the pool have been generated");
-      return { generated: false, skippedReason: "All cities in the pool have already been generated." };
+      return {
+        generated: false,
+        publishDate: tomorrowStr,
+        status: "none-available",
+        skippedReason: "All cities in the pool have already been generated.",
+      };
     }
 
     log(`[Scheduler] Auto-generate: Generating ${cityToGenerate.name}, ${cityToGenerate.country} for ${tomorrowStr}`);
@@ -274,20 +300,30 @@ export async function generateTomorrowsDraft(force = false): Promise<{ generated
     }
 
     log(`[Scheduler] Auto-generate: Draft created — ${cityToGenerate.name} scheduled for ${tomorrowStr} (id: ${city.id})`);
-    return { generated: true, cityName: `${cityToGenerate.name}, ${cityToGenerate.country}` };
+    return {
+      generated: true,
+      cityName: `${cityToGenerate.name}, ${cityToGenerate.country}`,
+      cityId: city.id,
+      publishDate: tomorrowStr,
+      status: city.status,
+    };
   } catch (error) {
     log(`[Scheduler] Auto-generate ERROR: ${(error as Error).message}`);
     throw error;
   }
 }
 
-export async function autoApproveTodaysDrafts() {
+export async function autoApproveTodaysDrafts(): Promise<{
+  approvedCount: number;
+  approvedCities: Array<{ cityId: string; publishDate: string | null; status: string }>;
+}> {
   try {
     const todayEST = getTodayEastern();
     log(`[Scheduler] Auto-approve: checking for drafts scheduled for ${todayEST} (Eastern)...`);
 
     const drafts = await storage.getDraftCities();
     let approved = 0;
+    const approvedCities: Array<{ cityId: string; publishDate: string | null; status: string }> = [];
 
     for (const draft of drafts) {
       if (!draft.scheduledDate) continue;
@@ -295,8 +331,13 @@ export async function autoApproveTodaysDrafts() {
       const scheduledStr = new Date(draft.scheduledDate).toISOString().split('T')[0];
       if (scheduledStr === todayEST) {
         log(`[Scheduler] Auto-approve: approving "${draft.name}" (${draft.id})`);
-        await storage.approveDraft(draft.id);
+        const approvedCity = await storage.approveDraft(draft.id);
         approved++;
+        approvedCities.push({
+          cityId: approvedCity.id,
+          publishDate: approvedCity.publishedDate ? new Date(approvedCity.publishedDate).toISOString().split("T")[0] : null,
+          status: approvedCity.status,
+        });
         // Notify all subscribers that today's city is live
         notifyCityOfTheDay(draft.name, draft.country).catch(err =>
           log(`[Scheduler] Push notify error: ${err.message}`)
@@ -309,8 +350,11 @@ export async function autoApproveTodaysDrafts() {
     } else {
       log(`[Scheduler] Auto-approve: approved ${approved} city(ies) for today`);
     }
+
+    return { approvedCount: approved, approvedCities };
   } catch (error) {
     log(`[Scheduler] Auto-approve ERROR: ${(error as Error).message}`);
+    throw error;
   }
 }
 
