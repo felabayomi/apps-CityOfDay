@@ -6,7 +6,7 @@ import { generateCityContent, generateCityImageSuggestions, generateCityHeroImag
 import { insertCitySchema, insertCityContentSchema, insertUserTravelPhotoSchema, insertColorThemeSchema, cities } from "@shared/schema";
 import { z } from "zod";
 import { eq } from "drizzle-orm";
-import { db } from "./db";
+import { db, pool } from "./db";
 import { ObjectStorageService } from "./objectStorage";
 import { generateTomorrowsDraft, autoApproveTodaysDrafts } from "./scheduler";
 import { getVapidPublicKey, initVapid, notifyEveningReminder, sendPushToAll } from "./push";
@@ -50,6 +50,17 @@ const logCronTrace = (event: string, payload: Record<string, unknown>) => {
 const isUsLocationLabel = (value: string) => {
   const normalized = value.trim().toLowerCase();
   return normalized === "usa" || normalized === "united states" || normalized.endsWith(", usa") || normalized.endsWith(", u.s.a.") || normalized.endsWith(", u.s.a") || normalized.includes("state") || normalized.includes("california") || normalized.includes("new york") || normalized.includes("texas") || normalized.includes("florida") || normalized.includes("illinois") || normalized.includes("pennsylvania") || normalized.includes("massachusetts") || normalized.includes("michigan") || normalized.includes("north carolina") || normalized.includes("south carolina") || normalized.includes("georgia") || normalized.includes("virginia") || normalized.includes("washington") || normalized.includes("oregon") || normalized.includes("arizona") || normalized.includes("colorado") || normalized.includes("utah") || normalized.includes("nevada") || normalized.includes("alabama") || normalized.includes("tennessee") || normalized.includes("kentucky") || normalized.includes("missouri") || normalized.includes("minnesota") || normalized.includes("wisconsin") || normalized.includes("ohio") || normalized.includes("indiana") || normalized.includes("iowa") || normalized.includes("kansas") || normalized.includes("nebraska") || normalized.includes("south dakota") || normalized.includes("north dakota") || normalized.includes("idaho") || normalized.includes("montana") || normalized.includes("wyoming") || normalized.includes("alaska") || normalized.includes("hawaii") || normalized.includes("new mexico") || normalized.includes("oklahoma") || normalized.includes("louisiana") || normalized.includes("arkansas") || normalized.includes("mississippi") || normalized.includes("west virginia") || normalized.includes("delaware") || normalized.includes("maryland") || normalized.includes("new jersey") || normalized.includes("connecticut") || normalized.includes("rhode island") || normalized.includes("vermont") || normalized.includes("new hampshire") || normalized.includes("maine");
+};
+
+const getTodayEasternIso = () =>
+  new Date().toLocaleDateString("en-CA", { timeZone: "America/New_York" });
+
+const getTomorrowEasternIso = () => {
+  const todayEt = getTodayEasternIso();
+  const [year, month, day] = todayEt.split("-").map(Number);
+  return new Date(Date.UTC(year, month - 1, day + 1)).toLocaleDateString("en-CA", {
+    timeZone: "America/New_York",
+  });
 };
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -133,6 +144,87 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
       res.status(500).json({ message: error?.message || 'Cron generation failed' });
     }
+  });
+
+  app.get('/api/health', async (_req, res) => {
+    const hasDbEnv = Boolean(
+      String(process.env.CITYOFDAY_DATABASE_URL || process.env.DATABASE_URL || "").trim(),
+    );
+    const hasOpenAiEnv = Boolean(
+      String(process.env.OPENAI_API_KEY || process.env.AI_INTEGRATIONS_OPENAI_API_KEY || "").trim(),
+    );
+
+    let dbConnected = false;
+    let citiesTableExists = false;
+    let todayPublishedCount = 0;
+    let tomorrowDraftCount = 0;
+    let dbError: string | null = null;
+
+    try {
+      await pool.query("select 1");
+      dbConnected = true;
+
+      const tableCheck = await pool.query("select to_regclass('public.cities') as table_name");
+      citiesTableExists = Boolean(tableCheck.rows?.[0]?.table_name);
+
+      if (citiesTableExists) {
+        const todayEt = getTodayEasternIso();
+        const tomorrowEt = getTomorrowEasternIso();
+
+        const readiness = await pool.query(
+          `
+            select
+              count(*) filter (
+                where app_scope = 'cityofday'
+                  and status = 'published'
+                  and is_published = true
+                  and (publish_date at time zone 'America/New_York')::date = $1::date
+              )::int as today_published,
+              count(*) filter (
+                where app_scope = 'cityofday'
+                  and status = 'draft'
+                  and (scheduled_date at time zone 'America/New_York')::date = $2::date
+              )::int as tomorrow_drafts
+            from public.cities
+          `,
+          [todayEt, tomorrowEt],
+        );
+
+        todayPublishedCount = readiness.rows?.[0]?.today_published ?? 0;
+        tomorrowDraftCount = readiness.rows?.[0]?.tomorrow_drafts ?? 0;
+      }
+    } catch (error: any) {
+      dbError = error?.message || "DB health check failed";
+    }
+
+    const cronReadinessOk = todayPublishedCount > 0 && tomorrowDraftCount > 0;
+    const ok = hasDbEnv && hasOpenAiEnv && dbConnected && citiesTableExists && cronReadinessOk;
+
+    res.status(ok ? 200 : 503).json({
+      ok,
+      service: "cityofday",
+      checks: {
+        env: {
+          ok: hasDbEnv && hasOpenAiEnv,
+          hasDatabaseUrl: hasDbEnv,
+          hasOpenAiKey: hasOpenAiEnv,
+        },
+        db: { ok: dbConnected, error: dbError },
+        schema: { ok: citiesTableExists, table: "cities" },
+        cronReadiness: {
+          ok: cronReadinessOk,
+          todayDate: getTodayEasternIso(),
+          tomorrowDate: getTomorrowEasternIso(),
+          todayPublishedCount,
+          tomorrowDraftCount,
+          expected: {
+            todayPublishedMin: 1,
+            tomorrowDraftMin: 1,
+          },
+        },
+      },
+      timestamp: new Date().toISOString(),
+    });
   });
 
   app.get('/api/cron/auto-approve', async (req: any, res) => {
