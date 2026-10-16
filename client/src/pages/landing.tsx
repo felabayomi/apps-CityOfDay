@@ -92,7 +92,7 @@ export default function Landing() {
                   size="lg"
                   variant="outline"
                   className="border-white text-white hover:bg-white/10"
-                  onClick={() => window.open("https://dailyfelix.org/", "_blank", "noopener,noreferrer")}
+                  onClick={() => window.open("https://international.citydiscoverer.guide/", "_blank", "noopener,noreferrer")}
                 >
                   International Cities
                 </Button>
